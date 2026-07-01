@@ -21,7 +21,6 @@ const REPLACEMENTS = new Map([
   ['\u2011', '-'], // U+2011 NON-BREAKING HYPHEN
 
   // Quotes.
-  ['\u0060', APOS], // U+0060 GRAVE ACCENT
   ['\u00B4', APOS], // U+00B4 ACUTE ACCENT
   ['\u201C', QUOTE], // U+201C LEFT DOUBLE QUOTATION MARK
   ['\u201D', QUOTE], // U+201D RIGHT DOUBLE QUOTATION MARK
@@ -62,37 +61,11 @@ const REPLACEMENTS = new Map([
   // Invisible format characters.
   ['\u00AD', ''], // U+00AD SOFT HYPHEN
   ['\u200B', ''], // U+200B ZERO WIDTH SPACE
-  ['\u200C', ''], // U+200C ZERO WIDTH NON-JOINER
-  ['\u200D', ''], // U+200D ZERO WIDTH JOINER
   ['\u2060', ''], // U+2060 WORD JOINER
   ['\uFEFF', ''], // U+FEFF ZERO WIDTH NO-BREAK SPACE / BOM
 
   // Other punctuation.
   ['\u2026', '...'], // U+2026 HORIZONTAL ELLIPSIS
-  ['\u2022', '*'], // U+2022 BULLET
-  ['\u00B7', '-'], // U+00B7 MIDDLE DOT
-  ['\u00B0', ' deg'], // U+00B0 DEGREE SIGN
-  ['\u00A9', '(c)'], // U+00A9 COPYRIGHT SIGN
-  ['\u00AE', '(R)'], // U+00AE REGISTERED SIGN
-  ['\u2122', 'TM'], // U+2122 TRADE MARK SIGN
-
-  // Status and math symbols.
-  ['\u2713', 'OK'], // U+2713 CHECK MARK
-  ['\u2714', 'OK'], // U+2714 HEAVY CHECK MARK
-  ['\u2717', 'x'], // U+2717 BALLOT X
-  ['\u2718', 'x'], // U+2718 HEAVY BALLOT X
-  ['\u00D7', 'x'], // U+00D7 MULTIPLICATION SIGN
-  ['\u00F7', '/'], // U+00F7 DIVISION SIGN
-  ['\u2264', '<='], // U+2264 LESS-THAN OR EQUAL TO
-  ['\u2265', '>='], // U+2265 GREATER-THAN OR EQUAL TO
-  ['\u2260', '!='], // U+2260 NOT EQUAL TO
-  ['\u2248', '~='], // U+2248 ALMOST EQUAL TO
-
-  // Arrows.
-  ['\u2192', '->'], // U+2192 RIGHTWARDS ARROW
-  ['\u2190', '<-'], // U+2190 LEFTWARDS ARROW
-  ['\u21D2', '=>'], // U+21D2 RIGHTWARDS DOUBLE ARROW
-  ['\u21D0', '<='], // U+21D0 LEFTWARDS DOUBLE ARROW
 ]);
 
 const CHARACTER_NAMES = new Map([
@@ -103,7 +76,6 @@ const CHARACTER_NAMES = new Map([
   ['\u2015', 'HORIZONTAL BAR'],
   ['\u2010', 'HYPHEN'],
   ['\u2011', 'NON-BREAKING HYPHEN'],
-  ['\u0060', 'GRAVE ACCENT'],
   ['\u00B4', 'ACUTE ACCENT'],
   ['\u201C', 'LEFT DOUBLE QUOTATION MARK'],
   ['\u201D', 'RIGHT DOUBLE QUOTATION MARK'],
@@ -716,8 +688,8 @@ Examples:
   ${path.basename(process.argv[1])} -r -p ${QUOTE}*.md${QUOTE} ./docs
   ${path.basename(process.argv[1])} --dry-run file1.txt file2.txt
 
-Replaces prose punctuation, weird spaces, invisible format characters, and common symbols with ASCII equivalents.
-This is intended for prose and copied rich text, not source code.
+Removes Apple/LLM typography artifacts and copy-paste junk while preserving source syntax and semantic symbols.
+ASCII syntax characters such as Markdown backticks are never replacement targets.
   `);
 }
 

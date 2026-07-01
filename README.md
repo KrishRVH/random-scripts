@@ -8,7 +8,7 @@ Personal scaffolds, small utilities, and learning examples.
 - `examples/cobol/` - COBOL learning and demonstration programs.
 - `libraries/typescript/argument-parser/` - Small TypeScript argument parser with self-contained tests.
 - `scaffolds/` - Project generator scripts.
-- `tools/unicode-text-wash/` - Prose-oriented Unicode-to-ASCII text cleanup CLI and tests.
+- `tools/unicode-text-wash/` - Prose-oriented Apple/LLM artifact cleanup CLI and tests.
 
 ## Examples
 
@@ -51,7 +51,7 @@ Run the Unicode text cleaner:
 node tools/unicode-text-wash/unicode-text-wash.js --dry-run README.md
 ```
 
-It normalizes copied prose and rich text. Do not run it over source code unless you intentionally want backticks and other code-significant characters normalized.
+It removes Apple/LLM typography artifacts and copy-paste junk while preserving Markdown/source syntax and semantic symbols.
 
 Run its tests:
 

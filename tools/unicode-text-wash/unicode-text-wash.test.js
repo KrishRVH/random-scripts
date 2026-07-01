@@ -19,9 +19,11 @@ async function withTempDir(fn) {
 }
 
 function runCli(args) {
-  return spawnSync(process.execPath, [scriptPath, ...args], {
+  const result = spawnSync(process.execPath, [scriptPath, ...args], {
     encoding: 'utf8',
   });
+  assert.ifError(result.error);
+  return result;
 }
 
 function runTransform(chunks) {
@@ -67,8 +69,45 @@ test('replacement map targets the intended Unicode spaces only', () => {
     assert.equal(REPLACEMENTS.get(char), ' ');
   }
 
-  for (const char of ['\u00AD', '\u200B', '\u200C', '\u200D', '\u2060', '\uFEFF']) {
+  for (const char of ['\u00AD', '\u200B', '\u2060', '\uFEFF']) {
     assert.equal(REPLACEMENTS.get(char), '');
+  }
+});
+
+test('replacement map does not target ASCII syntax characters', () => {
+  assert.equal(REPLACEMENTS.has('`'), false);
+
+  for (const char of REPLACEMENTS.keys()) {
+    assert.ok(char.codePointAt(0) > 0x7f, `ASCII replacement target is not fire-and-forget safe: ${char}`);
+  }
+});
+
+test('replacement map preserves semantic symbols and join controls', () => {
+  for (const char of [
+    '\u200C',
+    '\u200D',
+    '\u2022',
+    '\u00B7',
+    '\u00B0',
+    '\u00A9',
+    '\u00AE',
+    '\u2122',
+    '\u2713',
+    '\u2714',
+    '\u2717',
+    '\u2718',
+    '\u00D7',
+    '\u00F7',
+    '\u2264',
+    '\u2265',
+    '\u2260',
+    '\u2248',
+    '\u2192',
+    '\u2190',
+    '\u21D2',
+    '\u21D0',
+  ]) {
+    assert.equal(REPLACEMENTS.has(char), false);
   }
 });
 
@@ -76,25 +115,11 @@ test('replacement map includes LLM and Apple text cleanup cases', () => {
   const expected = new Map([
     ['\u2012', '-'],
     ['\u2015', '--'],
-    ['\u0060', "'"],
     ['\u00B4', "'"],
     ['\u2039', "'"],
     ['\u203A', "'"],
     ['\u02BB', "'"],
     ['\u02BC', "'"],
-    ['\u00A9', '(c)'],
-    ['\u00AE', '(R)'],
-    ['\u2122', 'TM'],
-    ['\u2713', 'OK'],
-    ['\u2714', 'OK'],
-    ['\u2717', 'x'],
-    ['\u2718', 'x'],
-    ['\u00D7', 'x'],
-    ['\u00F7', '/'],
-    ['\u2264', '<='],
-    ['\u2265', '>='],
-    ['\u2260', '!='],
-    ['\u2248', '~='],
   ]);
 
   for (const [char, replacement] of expected) {
@@ -136,8 +161,22 @@ test('processFile removes invisible formatting characters', async () => {
     const result = await processFile(file, { quiet: true });
 
     assert.equal(result.success, true);
-    assert.equal(result.stats.replacements, 5);
-    assert.equal(await fs.readFile(file, 'utf8'), 'softwordzerowidthjoiner');
+    assert.equal(result.stats.replacements, 3);
+    assert.equal(await fs.readFile(file, 'utf8'), 'softwordzero\u200Cwidth\u200Djoiner');
+  });
+});
+
+test('processFile preserves semantic symbols and ZWJ emoji', async () => {
+  await withTempDir(async (dir) => {
+    const file = path.join(dir, 'intentional.txt');
+    const input = 'A → B • 20°C © ACME™ family 👨\u200D👩\u200D👧\u200D👦\n';
+    await fs.writeFile(file, input, 'utf8');
+
+    const result = await processFile(file, { quiet: true });
+
+    assert.equal(result.success, true);
+    assert.equal(result.stats.replacements, 0);
+    assert.equal(await fs.readFile(file, 'utf8'), input);
   });
 });
 
@@ -153,6 +192,20 @@ test('processFile applies every configured replacement', async () => {
     assert.equal(result.success, true);
     assert.equal(result.stats.replacements, REPLACEMENTS.size);
     assert.equal(await fs.readFile(file, 'utf8'), expected);
+  });
+});
+
+test('processFile preserves Markdown and MDX backtick syntax', async () => {
+  await withTempDir(async (dir) => {
+    const file = path.join(dir, 'component.mdx');
+    const input = '```mdx\n<Component value={`literal`} />\n```\nCopy\u2014text\n';
+    await fs.writeFile(file, input, 'utf8');
+
+    const result = await processFile(file, { quiet: true });
+
+    assert.equal(result.success, true);
+    assert.equal(result.stats.replacements, 1);
+    assert.equal(await fs.readFile(file, 'utf8'), '```mdx\n<Component value={`literal`} />\n```\nCopy--text\n');
   });
 });
 
