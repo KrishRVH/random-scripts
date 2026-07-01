@@ -4,7 +4,8 @@
  * This program teaches you the fundamental concepts of C programming
  * through practical examples. Each section builds on the previous one.
  *
- * Compile with: gcc -Wall -std=c99 examples/c/c-programming-essentials.c -o c-programming-essentials
+ * Compile with: gcc -Wall -std=c99 examples/c/c-programming-essentials.c -o
+ * c-programming-essentials
  * Run with: ./c-programming-essentials
  */
 

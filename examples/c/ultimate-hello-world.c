@@ -10,8 +10,8 @@ education.
  * Compilation:
  * gcc -std=c2x -Wall -Wextra -pedantic -O3 -march=native -pthread -lm -ldl
 -fstack-protector-all -D_FORTIFY_SOURCE=2 -fPIC -fno-strict-aliasing
--finline-functions -funroll-loops -ftree-vectorize examples/c/ultimate-hello-world.c -o
-hello_world
+-finline-functions -funroll-loops -ftree-vectorize
+examples/c/ultimate-hello-world.c -o hello_world
  * Note: Some features require specific compiler support:
  * - C11 features: gcc 4.9+ or clang 3.1+
  * - C23 features: gcc 13+ or clang 16+

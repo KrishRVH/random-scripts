@@ -5,6 +5,7 @@ Personal scaffolds, small utilities, and learning examples.
 ## Layout
 
 - `examples/c/` - C learning and demonstration programs.
+- `examples/cobol/` - COBOL learning and demonstration programs.
 - `libraries/typescript/argument-parser/` - Small TypeScript argument parser with self-contained tests.
 - `scaffolds/` - Project generator scripts.
 - `tools/unicode-text-wash/` - Prose-oriented Unicode-to-ASCII text cleanup CLI and tests.
@@ -12,7 +13,13 @@ Personal scaffolds, small utilities, and learning examples.
 ## Examples
 
 - `examples/c/c-programming-essentials.c` - Beginner-oriented C walkthrough.
+- `examples/c/cgol.c` - Freestanding ANSI C cellular automaton example.
 - `examples/c/ultimate-hello-world.c` - Maximal C feature demonstration.
+- `examples/cobol/snake.cob` - Portable line-mode Snake in ANSI COBOL-85.
+
+The standards gate compiles the portable C examples. `ultimate-hello-world.c` is
+kept as an unsafe/platform-specific demonstration and is not part of the default
+compile gate.
 
 ## Libraries
 
@@ -22,10 +29,10 @@ The TypeScript argument parser lives in:
 libraries/typescript/argument-parser/parse-args.ts
 ```
 
-Its test file is self-contained but expects a TypeScript runner such as `tsx`:
+Its test file is self-contained and runs through Bun:
 
 ```sh
-tsx libraries/typescript/argument-parser/parse-args.test.ts
+bun libraries/typescript/argument-parser/parse-args.test.ts
 ```
 
 ## Scaffolds
@@ -50,4 +57,15 @@ Run its tests:
 
 ```sh
 node --test tools/unicode-text-wash/unicode-text-wash.test.js
+```
+
+## Standards
+
+This repo uses the shared standards baseline with a repo-specific mise command
+surface:
+
+```sh
+mise run install
+mise run standards
+mise run standards:check
 ```

@@ -1,0 +1,121 @@
+[settings]
+experimental = true
+lockfile = true
+
+[tools]
+clang-format = "22.1.8"
+gitleaks = "8.30.1"
+syft = "1.45.1"
+
+[tasks.install]
+description = "Install pinned project tools and dependencies"
+run = """
+mise install
+mise run ts:install
+"""
+
+[tasks.lock]
+description = "Refresh project lockfiles"
+run = """
+mise lock
+mise run ts:lock
+"""
+
+[tasks.doctor]
+description = "Inspect mise configuration and installed tools"
+run = "mise doctor"
+
+[tasks.tasks]
+description = "List available project tasks"
+run = "mise tasks"
+
+[tasks.secrets]
+description = "Scan the working tree for secrets"
+run = "gitleaks dir . --redact --no-banner"
+
+[tasks.sbom]
+description = "Generate a CycloneDX JSON SBOM for the project filesystem"
+run = """
+set -eu
+source_name="${SYFT_SOURCE_NAME:-$(basename "$PWD")}"
+source_version="${SYFT_SOURCE_VERSION:-0.0.0}"
+export SYFT_CHECK_FOR_APP_UPDATE="${SYFT_CHECK_FOR_APP_UPDATE:-false}"
+rm -rf sbom
+mkdir -p sbom
+syft scan dir:. --source-name "$source_name" --source-version "$source_version" --exclude ./sbom --exclude ./.git --output cyclonedx-json=sbom/sbom.cdx.json
+"""
+
+[tasks."c:fmt"]
+description = "Format C examples"
+run = "clang-format -i examples/c/*.c"
+
+[tasks."c:fmt:check"]
+description = "Check C example formatting"
+run = """
+set -eu
+for file in examples/c/*.c; do
+  clang-format "$file" | cmp -s "$file" - || {
+    echo "Needs formatting: $file" >&2
+    exit 1
+  }
+done
+"""
+
+[tasks."c:test"]
+description = "Compile portable C examples"
+run = """
+set -eu
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+cc -std=c89 -Wall -Wextra -Wpedantic -c examples/c/cgol.c -o "$tmp/cgol.o"
+cc -std=c99 -Wall -Wextra -Wpedantic examples/c/c-programming-essentials.c -o "$tmp/c-programming-essentials"
+"""
+
+[tasks."shell:lint"]
+description = "Check scaffold shell syntax"
+run = "bash -n scaffolds/*.sh"
+
+[tasks.fmt]
+description = "Format project files"
+run = """
+mise run ts:fmt
+mise run c:fmt
+"""
+
+[tasks."fmt:check"]
+description = "Check project formatting"
+run = """
+mise run ts:fmt:check
+mise run c:fmt:check
+"""
+
+[tasks.lint]
+description = "Lint/analyze project files"
+run = """
+mise run ts:lint
+mise run shell:lint
+"""
+
+[tasks.test]
+description = "Run project tests"
+run = """
+mise run ts:test
+mise run c:test
+"""
+
+[tasks.standards]
+description = "Run standards autofixes"
+run = """
+mise run ts:standards
+mise run c:fmt
+"""
+
+[tasks."standards:check"]
+description = "Run the project standards CI gate"
+run = """
+mise run secrets
+mise run ts:standards:check
+mise run c:fmt:check
+mise run c:test
+mise run shell:lint
+"""
