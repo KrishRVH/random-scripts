@@ -10,7 +10,7 @@ education.
  * Compilation:
  * gcc -std=c2x -Wall -Wextra -pedantic -O3 -march=native -pthread -lm -ldl
 -fstack-protector-all -D_FORTIFY_SOURCE=2 -fPIC -fno-strict-aliasing
--finline-functions -funroll-loops -ftree-vectorize hello_ultimate.c -o
+-finline-functions -funroll-loops -ftree-vectorize examples/c/ultimate-hello-world.c -o
 hello_world
  * Note: Some features require specific compiler support:
  * - C11 features: gcc 4.9+ or clang 3.1+
@@ -24,7 +24,7 @@ Requires following tweaks:
  * Compile with relaxed security
 gcc -std=c2x -Wall -Wextra -O3 -march=native -pthread -lm -ldl \
     -z execstack -no-pie -fno-stack-protector \
-    hello_ultimate.c -o hello_world_unsafe
+    examples/c/ultimate-hello-world.c -o hello_world_unsafe
  * Run it
 ./hello_world_unsafe
  * Re-enable ASLR afterward

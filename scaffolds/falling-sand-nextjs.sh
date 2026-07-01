@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Complete Falling Sand Scaffold with All Fixes
-# Works with Next.js 15.4.4 and src/ directory structure
+# Falling Sand Next.js Scaffold
+# Works with Next.js 15.4.4 and src/ directory structure.
 
 set -e
 
-echo "🏗️ Scaffolding Falling Sand Simulation (Fixed Version)..."
+echo "Scaffolding Falling Sand Simulation..."
 
 # Detect if we're using src/ structure
 if [ -d "src/app" ]; then

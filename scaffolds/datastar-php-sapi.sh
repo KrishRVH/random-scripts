@@ -4,7 +4,7 @@ set -euo pipefail
 # Datastar + Bulma + PHTML + FastRoute + Diactoros (SAPI dev server)
 #
 # Usage:
-#   ./datastar_sapi.sh my-app
+#   ./scaffolds/datastar-php-sapi.sh my-app
 #
 # Then:
 #   cd my-app

@@ -1,4 +1,4 @@
-import { parseArgs } from './Parser';
+import { parseArgs } from './parse-args';
 export function runTests(): void {
     const tests: Array<{ name: string; fn: () => void }> = [
        {
@@ -1559,4 +1559,3 @@ function assertDeepEqual<T>(actual: T, expected: T): void {
     }
 }
 runTests();
- 

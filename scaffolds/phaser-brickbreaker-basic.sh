@@ -1,8 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# Brickbreaker TypeScript/Phaser Project Scaffold
-# Production-quality with SQLite-level testing standards
-# CORRECTED VERSION - All ASCII, valid configs, working dependencies
+# Phaser Brickbreaker Basic Scaffold
+# Generates a TypeScript, Phaser, Vite, Biome, Vitest, and Playwright project.
 
 set -e
 
