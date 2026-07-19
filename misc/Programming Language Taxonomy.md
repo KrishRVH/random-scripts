@@ -1,292 +1,372 @@
+# Programming Language Taxonomy
 
+## Scope and representation rules
 
-|Column|Meaning|
-|---|---|
-|**Canonical representative**|The language most representative of the class under a specific interpretation: origin, pure specimen, industrial exemplar, or research exemplar.|
-|**Same-slot alternates**|Other languages that genuinely represent the same class.|
-|**Ecosystem / implementation notes**|Runtimes, solvers, libraries, front ends, clones, or backends. These are not treated as alternate languages.|
+This taxonomy classifies language-shaped systems by the computation, coordination,
+or description model they expose. It is not restricted to standalone,
+general-purpose languages.
+
+| Form                                             | Treatment here                                                                                               |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| Standalone language                              | May be a canonical representative or same-slot alternate.                                                    |
+| Embedded DSL                                     | May own a row when it has a coherent domain model and composition rules; its host must be stated.            |
+| Formal notation                                  | May own a row when the notation itself has defined syntax and semantics, as with regular expressions or BNF. |
+| Schema, interchange language, IR, or virtual ISA | May own a row when programs or tools consume it as a stable language boundary.                               |
+| Library, framework, runtime, solver, or tool     | Belongs in ecosystem notes unless it also exposes a genuine embedded DSL.                                    |
+
+The representation form is independent of the class. Yampa, dplyr, Qiskit, and
+SwiftUI can therefore appear as embedded DSLs without being misreported as
+standalone languages; Akka remains a framework. A representative may recur on
+different axes, but an intentional cross-list must be stated. Dialect families
+are named by the formalism where possible, not by one implementation.
+
+| Column                               | Meaning                                                                                                                                          |
+| ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Canonical representative**         | The language most representative of the class under a specific interpretation: origin, pure specimen, industrial exemplar, or research exemplar. |
+| **Same-slot alternates**             | Other languages that genuinely represent the same class.                                                                                         |
+| **Ecosystem / implementation notes** | Runtimes, solvers, libraries, front ends, clones, or backends. These are not treated as alternate languages.                                     |
 
 ### 1. Core computational paradigms
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Machine-level programming|**Assembly language**|RISC-V asm, x86-64 asm, MIPS asm|ISA-specific, not one universal language.|
-|Imperative / procedural|**C**|Pascal, Ada, Modula-2|C remains the cleanest portable procedural systems specimen.|
-|Structured programming|**ALGOL 60** as ancestor; **Pascal** as exemplar|Ada, Modula-2, Oberon|ALGOL 60 supplies block-structured ancestry; Pascal embodies the later teaching discipline.|
-|Scientific imperative / HPC|**Fortran**|C, C++, Julia|Fortran remains the canonical legacy and current numerical-HPC lineage.|
-|Business record processing|**COBOL**|RPG, ABAP, PL/I|Canonical for batch, records, reports, and enterprise transaction processing.|
-|Pure lazy functional|**Haskell**|Clean|Haskell is the cleanest mainstream specimen of purity, laziness, static typing, and type classes.|
-|Strict ML-family functional|**Standard ML**|OCaml, F#|SML is the formal/pedagogical anchor; OCaml is the pragmatic descendant.|
-|Practical typed functional|**OCaml**|F#, Scala, Standard ML|More industrial/practical than SML, less pure than Haskell.|
-|Minimal Lisp|**Scheme**|Racket|Canonical small Lisp with lexical scope, first-class procedures, and hygienic macro lineage.|
-|Industrial Lisp / macro metaprogramming|**Common Lisp**|Scheme, Racket|Common Lisp is the large-scale Lisp with macros, conditions, CLOS, and image-based development.|
-|Language-oriented programming|**Racket**|Common Lisp, JetBrains MPS, Rascal|Racket is the clearest “build languages as libraries” specimen.|
-|Logic programming|**Prolog**|Mercury, λProlog|Prolog is the canonical facts/rules/query language with unification and backtracking.|
-|Relational programming|**miniKanren**|αKanren, microKanren|`core.logic` is an implementation/embedding, not a separate paradigm representative.|
-|Deductive database logic|**Datalog**|LogiQL, Datafun|Soufflé is best treated as a major Datalog system/dialect/compiler, not merely an alternate class.|
-|Answer-set programming|**ASP / clingo-style ASP**|DLV-style ASP|Clingo and DLV are solver systems/ecosystems; ASP is distinct from Prolog and Datalog because of stable-model/answer-set semantics.|
-|Constraint modeling|**MiniZinc**|AMPL, Essence, OPL|MiniZinc is the clean open modeling-language representative.|
-|Rule-based expert systems|**CLIPS**|OPS5|Jess is better treated as a CLIPS-inspired Java rule engine/ecosystem entry.|
-|Term rewriting / equational logic|**Maude**|OBJ, Stratego|Canonical executable rewriting-logic style.|
-|Array programming|**APL**|J, K, q, BQN|APL is the archetype; J/K/q/BQN are descendants or modern variants.|
-|Matrix-first numerical programming|**MATLAB**|Scilab, Julia in some uses|Octave is a MATLAB-compatible clone, not a paradigm alternate in the same sense.|
-|Stack programming|**Forth**|PostScript|Forth is practical/extensible; PostScript overlaps as a stack-based page-description language.|
-|Pure concatenative programming|**Joy**|Factor, Cat|Joy is the cleaner theoretical concatenative representative; Forth is the practical ancestor.|
-|Symbolic computation / CAS|**Wolfram Language**|Macsyma/Maxima, Maple|Mathematica removed: it is not a separate language alternate.|
-|Regular-expression language|**Perl-compatible regex**|POSIX regex, Oniguruma-style regex|Regexes are small formal-pattern languages embedded in many hosts.|
-|Grammar specification|**BNF / EBNF**|ANTLR grammars, yacc grammars|Parser-generator grammars are DSLs over grammar formalisms.|
+| Class                                   |                         Canonical representative |               Same-slot alternates | Ecosystem / implementation notes                                                                                                                            |
+| --------------------------------------- | -----------------------------------------------: | ---------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Machine-level programming               |                            **Assembly language** |   RISC-V asm, x86-64 asm, MIPS asm | ISA-specific, not one universal language.                                                                                                                   |
+| Imperative / procedural                 |                                            **C** |              Pascal, Ada, Modula-2 | C remains the cleanest portable procedural systems specimen.                                                                                                |
+| Structured programming                  | **ALGOL 60** as ancestor; **Pascal** as exemplar |              Ada, Modula-2, Oberon | ALGOL 60 supplies block-structured ancestry; Pascal embodies the later teaching discipline.                                                                 |
+| Scientific imperative / HPC             |                                      **Fortran** |                      C, C++, Julia | Fortran remains the canonical legacy and current numerical-HPC lineage.                                                                                     |
+| Business record processing              |                                        **COBOL** |                    RPG, ABAP, PL/I | Canonical for batch, records, reports, and enterprise transaction processing.                                                                               |
+| Pure lazy functional                    |                                      **Haskell** |                              Clean | Haskell is the cleanest mainstream specimen of purity, laziness, static typing, and type classes.                                                           |
+| Strict ML-family functional             |                                  **Standard ML** |                          OCaml, F# | SML is the formal/pedagogical anchor; OCaml is the pragmatic descendant.                                                                                    |
+| Practical typed functional              |                                        **OCaml** |             F#, Scala, Standard ML | More industrial/practical than SML, less pure than Haskell.                                                                                                 |
+| Minimal Lisp                            |                                       **Scheme** |                             Racket | Canonical small Lisp with lexical scope, first-class procedures, and hygienic macro lineage.                                                                |
+| Industrial Lisp / macro metaprogramming |                                  **Common Lisp** |                     Scheme, Racket | Common Lisp is the large-scale Lisp with macros, conditions, CLOS, and image-based development.                                                             |
+| Language-oriented programming           |                                       **Racket** | Common Lisp, JetBrains MPS, Rascal | Racket is the clearest “build languages as libraries” specimen.                                                                                             |
+| Logic programming                       |                                       **Prolog** |                   Mercury, λProlog | Prolog is the canonical facts/rules/query language with unification and backtracking.                                                                       |
+| Functional-logic programming            |                                        **Curry** |                                TOY | Narrowing and residuation integrate functional evaluation with logic variables and constraints; this is not just “Haskell plus Prolog.”                     |
+| Relational programming                  |                                   **miniKanren** |               αKanren, microKanren | `core.logic` is an implementation/embedding, not a separate paradigm representative.                                                                        |
+| Deductive database logic                |                                      **Datalog** |                    LogiQL, Datafun | Soufflé is best treated as a major Datalog system/dialect/compiler, not merely an alternate class.                                                          |
+| Answer-set programming                  |                       **ASP / clingo-style ASP** |                      DLV-style ASP | Clingo and DLV are solver systems/ecosystems; ASP is distinct from Prolog and Datalog because of stable-model/answer-set semantics.                         |
+| Constraint modeling                     |                                     **MiniZinc** |                 AMPL, Essence, OPL | MiniZinc is the clean open modeling-language representative.                                                                                                |
+| Rule-based expert systems               |                                        **CLIPS** |                               OPS5 | Jess is better treated as a CLIPS-inspired Java rule engine/ecosystem entry.                                                                                |
+| Term rewriting / equational logic       |                                        **Maude** |                      OBJ, Stratego | Canonical executable rewriting-logic style.                                                                                                                 |
+| Array programming                       |                                          **APL** |                       J, K, q, BQN | APL is the archetype; J/K/q/BQN are descendants or modern variants.                                                                                         |
+| Matrix-first numerical programming      |                                       **MATLAB** |         Scilab, Julia in some uses | Octave is a MATLAB-compatible clone, not a paradigm alternate in the same sense.                                                                            |
+| Stack programming                       |                                        **Forth** |                         PostScript | Forth is practical/extensible; PostScript overlaps as a stack-based page-description language.                                                              |
+| Pure concatenative programming          |                                          **Joy** |                        Factor, Cat | Joy is the cleaner theoretical concatenative representative; Forth is the practical ancestor.                                                               |
+| Reversible programming                  |                                        **Janus** |                              ROOPL | Research class in which execution can be inverted without retaining an unbounded history.                                                                   |
+| Symbolic computation / CAS              |                             **Wolfram Language** |              Macsyma/Maxima, Maple | Mathematica removed: it is not a separate language alternate.                                                                                               |
+| Regular-expression language             |         **Regular expressions** as the formalism | POSIX BRE/ERE, Perl-style dialects | PCRE and Oniguruma are implementations with influential dialects, not the formalism itself. Modern dialects extend well beyond classical regular languages. |
+| Grammar specification                   |                                   **BNF / EBNF** |      ANTLR grammars, yacc grammars | Parser-generator grammars are DSLs over grammar formalisms.                                                                                                 |
 
 ### 2. Object models
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Class-based OO origin|**Simula**|Smalltalk|Simula is the historical origin for classes, objects, inheritance, and simulation-driven OO.|
-|Pure message-passing OO|**Smalltalk**|Ruby, Objective-C|Smalltalk is the clean “objects + messages” exemplar.|
-|Industrial nominal class OO|**Java**|C#, C++|Java is the mainstream class/interface/inheritance/package specimen.|
-|Zero-overhead systems OO|**C++**|Ada, Objective-C|C++ combines class OO, RAII, templates, and systems-level control.|
-|Prototype-based OO|**Self**|JavaScript, Io|Self is the pure canonical prototype language; JavaScript is the industrial exemplar.|
-|Generic-function / multiple-dispatch OO|**CLOS**|Julia, Dylan|CLOS is the classic generic-function object model; Julia is the modern technical-computing exemplar.|
-|Aspect-oriented programming|**AspectJ**|Hyper/J, Spring AOP style|Spring AOP is framework/ecosystem; AspectJ is the language-level exemplar.|
-|Actor-object hybrid|**Erlang** for actors; **Pony** for typed actor objects|Akka/Scala|Erlang belongs more strongly under actors; Pony is a typed object/actor language.|
+| Class                                   |                                Canonical representative |      Same-slot alternates | Ecosystem / implementation notes                                                                                                |
+| --------------------------------------- | ------------------------------------------------------: | ------------------------: | ------------------------------------------------------------------------------------------------------------------------------- |
+| Class-based OO origin                   |                                              **Simula** |                 Smalltalk | Simula is the historical origin for classes, objects, inheritance, and simulation-driven OO.                                    |
+| Pure message-passing OO                 |                                           **Smalltalk** |         Ruby, Objective-C | Smalltalk is the clean “objects + messages” exemplar.                                                                           |
+| Industrial nominal class OO             |                                                **Java** |                   C#, C++ | Java is the mainstream class/interface/inheritance/package specimen.                                                            |
+| Zero-overhead systems OO                |                                                 **C++** |          Ada, Objective-C | C++ combines class OO, RAII, templates, and systems-level control.                                                              |
+| Prototype-based OO                      |                                                **Self** |            JavaScript, Io | Self is the pure canonical prototype language; JavaScript is the industrial exemplar.                                           |
+| Generic-function / multiple-dispatch OO |                                                **CLOS** |              Julia, Dylan | CLOS is the classic generic-function object model; Julia is the modern technical-computing exemplar.                            |
+| Aspect-oriented programming             |                                             **AspectJ** | Hyper/J, Spring AOP style | Spring AOP is framework/ecosystem; AspectJ is the language-level exemplar.                                                      |
+| Actor-object hybrid                     | **Erlang** for actors; **Pony** for typed actor objects |                Akka/Scala | Erlang belongs more strongly under actors; Pony is a typed object/actor language.                                               |
+| Object-capability security              |                                                   **E** |               Joe-E, Caja | The authority model is part of the object/reference semantics; libraries that merely wrap ambient authority are not equivalent. |
 
 ### 3. Type-system and abstraction axes
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Dynamic typing|**Python**|Ruby, JavaScript, Scheme|Python is the modern general-purpose dynamic-typing exemplar.|
-|Optional / erased typing|**TypeScript**|Flow, JSDoc type checking|TypeScript is optional, structural, erased, and intentionally unsound; not sound gradual typing.|
-|Sound gradual typing|**Typed Racket**|Reticulated Python, Pyret-style systems|Typed Racket is the canonical research/production example because typed/untyped boundaries can be enforced with contracts.|
-|Hindley–Milner inference|**ML / Standard ML**|OCaml, Haskell|This is a type-system projection of the ML family, not a duplicate of the functional row.|
-|Module/functor systems|**Standard ML**|OCaml|SML is the cleanest formal module-system representative.|
-|Type classes / constrained ad-hoc polymorphism|**Haskell**|PureScript, Scala, Rust traits|Haskell is canonical; Rust traits are the systems-language descendant.|
-|Generic programming|**C++ templates**|Ada generics, Rust generics, Haskell type classes|C++ is the industrially canonical compile-time generic-programming language.|
-|Ownership / borrowing|**Rust**|Cyclone, Linear Haskell, Clean uniqueness types|Rust is the mainstream canonical ownership/borrow-checking language.|
-|Linear / affine resource typing|**Linear Haskell**|Rust, Clean, ATS|Rust is practical; Linear Haskell is closer to the type-theoretic axis.|
-|Refinement types|**Liquid Haskell**|F*, Dafny, Flux/Rust research|Canonical for SMT-backed predicates refining ordinary types.|
-|Dependent types for programming|**Agda**|Idris, Lean, Rocq/Coq Gallina|Agda is the clean specimen; Idris is more general-purpose-programming oriented.|
-|Effect systems|**Koka**|Eff, Links, Frank|Koka is the clearest modern typed-effect language.|
-|Algebraic effects / handlers|**Eff**|Koka, Multicore OCaml-style effects|OCaml 5 has effects, but as a mainstream host rather than the pure research specimen.|
-|Session types / protocol typing|**Scribble**|Links, Effpi, session-typed Haskell/Scala systems|Scribble is a protocol-language exemplar rather than a general-purpose language.|
-|Structural object typing|**TypeScript**|OCaml object types, Go interfaces|TypeScript is canonical for mainstream structural object typing.|
+| Class                                          |                         Canonical representative |                              Same-slot alternates | Ecosystem / implementation notes                                                                                                                               |
+| ---------------------------------------------- | -----------------------------------------------: | ------------------------------------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dynamic typing                                 |                                       **Python** |                          Ruby, JavaScript, Scheme | Python is the modern general-purpose dynamic-typing exemplar.                                                                                                  |
+| Optional / erased typing                       |                                   **TypeScript** |                         Flow, JSDoc type checking | TypeScript is optional, structural, erased, and intentionally unsound; not sound gradual typing.                                                               |
+| Sound gradual typing                           |                                 **Typed Racket** |           Reticulated Python, Pyret-style systems | Typed Racket is the canonical research/production example because typed/untyped boundaries can be enforced with contracts.                                     |
+| Hindley–Milner inference                       |                             **ML / Standard ML** |                                    OCaml, Haskell | This is a type-system projection of the ML family, not a duplicate of the functional row.                                                                      |
+| Module/functor systems                         |                                  **Standard ML** |                                             OCaml | SML is the cleanest formal module-system representative.                                                                                                       |
+| Type classes / constrained ad-hoc polymorphism |                                      **Haskell** |                    PureScript, Scala, Rust traits | Haskell is canonical; Rust traits are the systems-language descendant.                                                                                         |
+| Generic programming                            |                                **C++ templates** | Ada generics, Rust generics, Haskell type classes | C++ is the industrially canonical compile-time generic-programming language.                                                                                   |
+| Ownership / borrowing                          |                                         **Rust** |   Cyclone, Linear Haskell, Clean uniqueness types | Rust is the mainstream canonical ownership/borrow-checking language.                                                                                           |
+| Linear / affine resource typing                |                               **Linear Haskell** |                                  Rust, Clean, ATS | Rust is practical; Linear Haskell is closer to the type-theoretic axis.                                                                                        |
+| Refinement types                               |                               **Liquid Haskell** |                     F*, Dafny, Flux/Rust research | Canonical for SMT-backed predicates refining ordinary types.                                                                                                   |
+| Dependent types for programming                |                                         **Agda** |                     Idris, Lean, Rocq/Coq Gallina | Agda is the clean specimen; Idris is more general-purpose-programming oriented.                                                                                |
+| Contract-based programming                     |                                       **Eiffel** |                       Ada 2012/SPARK contracts, D | Eiffel is the canonical design-by-contract language; contracts are broader than refinement typing or external verification.                                    |
+| Typed algebraic effects and handlers           | **Koka** for typed effects; **Eff** for handlers |                     Links, Frank, OCaml 5 effects | Static effect tracking and handlers are distinguishable axes, but the exemplar sets overlap too heavily to pretend they are independent language classes here. |
+| Session types / protocol typing                |                                     **Scribble** | Links, Effpi, session-typed Haskell/Scala systems | Scribble is a protocol-language exemplar rather than a general-purpose language.                                                                               |
+| Structural object typing                       |                                   **TypeScript** |                 OCaml object types, Go interfaces | TypeScript is canonical for mainstream structural object typing.                                                                                               |
+| Multi-stage programming                        |                                    **MetaOCaml** |                           Template Haskell, Terra | Typed quotation, splicing, and stage separation make code generation part of the language model rather than an external build step.                            |
 
 ### 4. Concurrency, distribution, time, and reactivity
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Actor model|**Erlang**|Elixir, Pony|Akka is a framework/library ecosystem, not a language in the same sense.|
-|CSP / channel concurrency|**occam**|Go, XC|occam is the paradigmatic CSP language; Go is the industrial descendant.|
-|Async event loop|**JavaScript**|Python `asyncio`, Lua in evented hosts|Node.js is a runtime/ecosystem for JavaScript, not a language alternate.|
-|Monitor/thread concurrency|**Mesa** historically; **Java** industrially|Concurrent Pascal, C#|Java is the mainstream monitor/thread teaching exemplar.|
-|Software transactional memory|**Clojure**|Haskell STM|Clojure is the canonical mainstream STM language.|
-|Dataflow programming|**Lucid** theoretically; **LabVIEW** visually|SISAL, Oz dataflow variables|LabVIEW is visual dataflow; Lucid is the older textual dataflow representative.|
-|Visual dataflow engineering|**LabVIEW**|Simulink, Max/MSP|Simulink is modeling/simulation-oriented; Max/MSP is media/dataflow-oriented.|
-|Synchronous reactive programming|**Lustre**|Esterel, SIGNAL|SCADE is a tool/language ecosystem based on this lineage.|
-|Functional reactive programming|**Fran / Yampa**|Reflex, reactive-banana|Elm should not be used as the canonical FRP row; it is better under reactive UI/MVU. Yampa is a Haskell-embedded FRP DSL.|
-|Reactive UI / MVU|**Elm**|React/Redux style, SwiftUI-style architectures|Elm’s canonical architecture is Model–View–Update: model, view, update.|
-|Distributed fault-tolerant systems|**Erlang**|Elixir|Erlang is canonical both for actors and telecom-style fault tolerance.|
-|Productive parallel HPC|**Chapel**|X10, Fortress, UPC|Chapel is the surviving HPCS-style productive-parallel-language exemplar.|
-|GPU kernel programming|**CUDA C/C++**|OpenCL C, SYCL, ISPC|CUDA is the industrial CUDA/NVIDIA ecosystem anchor.|
-|Shader programming|**GLSL**|HLSL, WGSL, Metal Shading Language|Canonical for graphics pipeline stage programming.|
-|Stream processing DSLs|**StreamSQL / Flink SQL style**|ksqlDB, Beam-style pipelines|Mostly embedded in data-processing systems rather than standalone languages.|
+| Class                                |                                                    Canonical representative |                           Same-slot alternates | Ecosystem / implementation notes                                                                                                                            |
+| ------------------------------------ | --------------------------------------------------------------------------: | ---------------------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Actor model                          |                                                                  **Erlang** |                                   Elixir, Pony | Akka is a framework/library ecosystem, not a language in the same sense.                                                                                    |
+| CSP / channel concurrency            |                                                                   **occam** |                                         Go, XC | occam is the paradigmatic CSP language; Go is the industrial descendant.                                                                                    |
+| Async event loop                     |                                                              **JavaScript** |         Python `asyncio`, Lua in evented hosts | Node.js is a runtime/ecosystem for JavaScript, not a language alternate.                                                                                    |
+| Monitor/thread concurrency           | **Concurrent Pascal** as the early language exemplar; **Java** industrially |                                       Mesa, C# | Concurrent Pascal predates Mesa's monitor-based systems work; Java is the mainstream monitor/thread teaching exemplar.                                      |
+| Software transactional memory        |                                                                 **Clojure** |                                    Haskell STM | Clojure is the canonical mainstream STM language.                                                                                                           |
+| Dataflow programming                 |                               **Lucid** theoretically; **LabVIEW** visually |                   SISAL, Oz dataflow variables | LabVIEW is visual dataflow; Lucid is the older textual dataflow representative.                                                                             |
+| Visual dataflow engineering          |                                                                 **LabVIEW** |                              Simulink, Max/MSP | Simulink is modeling/simulation-oriented; Max/MSP is media/dataflow-oriented.                                                                               |
+| Synchronous reactive programming     |                                                                  **Lustre** |                                Esterel, SIGNAL | SCADE is a tool/language ecosystem based on this lineage.                                                                                                   |
+| Functional reactive programming      |                                                            **Fran / Yampa** |                        Reflex, reactive-banana | Elm should not be used as the canonical FRP row; it is better under reactive UI/MVU. Yampa is a Haskell-embedded FRP DSL.                                   |
+| Reactive UI / MVU                    |                                                                     **Elm** | React/Redux style, SwiftUI-style architectures | Elm’s canonical architecture is Model–View–Update: model, view, update.                                                                                     |
+| Declarative UI description           |                                 **QML** / **XAML** as declarative languages |                SwiftUI as a Swift-embedded DSL | UI-tree description and binding are distinct from the MVU state-transition architecture, even though systems often combine them.                            |
+| Distributed fault-tolerant systems   |                                                                  **Erlang** |                                         Elixir | Erlang is canonical both for actors and telecom-style fault tolerance.                                                                                      |
+| Coordination language / tuple spaces |                                                                   **Linda** |                            JavaSpaces, TSpaces | Linda coordinates independently executing processes through a generative tuple space; it is commonly embedded rather than shipped as a standalone language. |
+| Productive parallel HPC              |                                                                  **Chapel** |                             X10, Fortress, UPC | Chapel is the surviving HPCS-style productive-parallel-language exemplar.                                                                                   |
+| GPU kernel programming               |                                                              **CUDA C/C++** |                           OpenCL C, SYCL, ISPC | CUDA is the industrial CUDA/NVIDIA ecosystem anchor.                                                                                                        |
+| Shader programming                   |                                                                    **GLSL** |             HLSL, WGSL, Metal Shading Language | Canonical for graphics pipeline stage programming.                                                                                                          |
+| Stream processing DSLs               |                                             **StreamSQL / Flink SQL style** |                   ksqlDB, Beam-style pipelines | Mostly embedded in data-processing systems rather than standalone languages.                                                                                |
 
 ### 5. Systems, scripting, operational, and infrastructure languages
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Systems programming|**C**|C++, Zig, Rust|C is still the canonical portable systems language.|
-|Safe systems programming|**Rust**|SPARK Ada, Cyclone|Rust is the mainstream ownership-based safe-systems exemplar.|
-|Manual-resource systems programming|**C++**|C, Zig, Ada|Kept distinct from “systems OO” only when emphasizing RAII/templates/resource control.|
-|General scripting|**Python**|Ruby, Perl|Python is the modern canonical scripting/glue/general automation language.|
-|Text/glue scripting|**Perl**|Python, Ruby|Perl is the historical Unix regex/text/glue scripting exemplar.|
-|Shell command language|**POSIX sh** / **Bash**|zsh, fish|Bash is the mainstream interactive/scripting shell; POSIX sh is the portability anchor.|
-|Object pipeline shell|**PowerShell**|Nushell|PowerShell is canonical for object-valued shell pipelines.|
-|Text pattern/action processing|**AWK**|sed, Perl|AWK is the pattern-action text-processing language.|
-|Embeddable extension language|**Lua**|Tcl, Guile Scheme|Lua is the game/tool embedding exemplar; Tcl is the command-language ancestor.|
-|Build/dependency language|**Make**|Bazel/Starlark, Shake|Ninja is more build-file executor/generator target than canonical human-authored language.|
-|Hermetic functional package/config language|**Nix**|Guix Scheme, Dhall|Nix is canonical for purely functional package/build configuration.|
-|Infrastructure-as-code configuration|**Terraform HCL**|Pulumi languages, AWS CDK languages|HCL is the Terraform declarative configuration language; Pulumi/CDK are host-language APIs.|
-|Typed configuration / data validation|**CUE**|Dhall, Jsonnet|YAML/JSON are data formats, not strong programming-language exemplars.|
-|Policy language|**Rego**|Cedar, XACML|Canonical modern policy-as-code language.|
-|Smart contracts|**Solidity**|Move, Michelson, Clarity|Solidity is the industrial Ethereum exemplar; Move is important for resource-oriented smart contracts.|
-|PLC / industrial control|**Structured Text**|Ladder Logic, Function Block Diagram|IEC 61131-3 language family; Ladder is visual/relay-logic style.|
-|Hardware description|**Verilog**|VHDL|Verilog is the classic canonical HDL.|
-|Hardware verification|**SystemVerilog**|e / Specman|UVM is a SystemVerilog verification methodology/library, not a language alternate.|
-|Hardware construction language|**Chisel**|Bluespec SystemVerilog, Clash|Chisel is embedded in Scala; Bluespec is rule-based HDL.|
-|Page-description language|**PostScript**|PDF imaging model|PostScript also overlaps with stack programming.|
-|Typesetting macro language|**TeX**|troff|LaTeX is a macro package/format over TeX, not the clean alternate-language entry.|
-|Physical-system modeling|**Modelica**|Simscape, Simulink|Modelica is the textual acausal modeling-language exemplar.|
+| Class                                             |                                                   Canonical representative |                       Same-slot alternates | Ecosystem / implementation notes                                                                                                                                    |
+| ------------------------------------------------- | -------------------------------------------------------------------------: | -----------------------------------------: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Systems programming                               |                                                                      **C** |                             C++, Zig, Rust | C is still the canonical portable systems language.                                                                                                                 |
+| Safe systems programming                          |                                                                   **Rust** |                         SPARK Ada, Cyclone | Rust is the mainstream ownership-based safe-systems exemplar.                                                                                                       |
+| Manual-resource systems programming               |                                                                    **C++** |                                C, Zig, Ada | Kept distinct from “systems OO” only when emphasizing RAII/templates/resource control.                                                                              |
+| General scripting                                 |                                                                 **Python** |                                 Ruby, Perl | Python is the modern canonical scripting/glue/general automation language.                                                                                          |
+| Text/glue scripting                               |                                                                   **Perl** |                               Python, Ruby | Perl is the historical Unix regex/text/glue scripting exemplar.                                                                                                     |
+| Shell command language                            |                                                    **POSIX sh** / **Bash** |                                  zsh, fish | Bash is the mainstream interactive/scripting shell; POSIX sh is the portability anchor.                                                                             |
+| Object pipeline shell                             |                                                             **PowerShell** |                                    Nushell | PowerShell is canonical for object-valued shell pipelines.                                                                                                          |
+| Text pattern/action processing                    |                                                                    **AWK** |                                  sed, Perl | AWK is the pattern-action text-processing language.                                                                                                                 |
+| Embeddable extension language                     |                                                                    **Lua** |                          Tcl, Guile Scheme | Lua is the game/tool embedding exemplar; Tcl is the command-language ancestor.                                                                                      |
+| Lexical macro / preprocessing language            |                                                                     **m4** |                             C preprocessor | Textual substitution and conditional expansion are a separate, deliberately limited metaprogramming model from Lisp-style syntactic macros.                         |
+| Text templating                                   |                                                                  **Jinja** |                              Mustache, ERB | A host-embedded document-generation DSL; template engines are implementations, while their template syntax is the language.                                         |
+| Build/dependency language                         |                                                                   **Make** |                      Bazel/Starlark, Shake | Ninja is more build-file executor/generator target than canonical human-authored language.                                                                          |
+| Scientific/data workflow                          |                                                               **Nextflow** |                             Snakemake, CWL | Nextflow is a Groovy-hosted dataflow DSL; Snakemake is Python-embedded, while CWL is a declarative workflow-description standard.                                   |
+| Service-oriented programming / orchestration      | **Jolie** as a service-oriented language; **BPEL** as an orchestration DSL |                    Executable BPMN subsets | BPEL describes centralized orchestration, not choreography; the original “service choreography” label conflated distinct interaction models.                        |
+| Hermetic functional package/config language       |                                                                    **Nix** |                         Guix Scheme, Dhall | Nix is canonical for purely functional package/build configuration.                                                                                                 |
+| Infrastructure-as-code configuration              |                                                          **Terraform HCL** |        Pulumi languages, AWS CDK languages | HCL is the Terraform declarative configuration language; Pulumi/CDK are host-language APIs.                                                                         |
+| Typed configuration / data validation             |                                                                    **CUE** |                             Dhall, Jsonnet | YAML/JSON are data formats, not strong programming-language exemplars.                                                                                              |
+| Policy language                                   |                                                                   **Rego** |                               Cedar, XACML | Canonical modern policy-as-code language. Catala's computable-legislation model is adjacent, not interchangeable with a policy decision engine.                     |
+| Smart contracts                                   |                                                               **Solidity** |                   Move, Michelson, Clarity | Solidity is the industrial Ethereum exemplar; Move is important for resource-oriented smart contracts.                                                              |
+| Zero-knowledge circuit description                |                                                                 **Circom** |                                   ZoKrates | Circom directly describes arithmetic constraints and compiles them to circuit representations such as R1CS.                                                         |
+| Provable / zero-knowledge application programming |     **Noir** for ZK applications; **Cairo** for general provable execution |                                        Leo | Noir compiles high-level programs toward constraints; Cairo targets a proof-oriented VM. They are adjacent to, but not the same class as, direct circuit languages. |
+| PLC / industrial control                          |                                                        **Structured Text** |       Ladder Logic, Function Block Diagram | IEC 61131-3 language family; Ladder is visual/relay-logic style.                                                                                                    |
+| Numerical machine control                         |                                                                 **G-code** |                                        APT | A deployed motion/tool-control language family; adjacent to PLCs but centered on trajectories and machine operations rather than controller logic.                  |
+| Hardware description                              |                                                                **Verilog** |                                       VHDL | Verilog is the classic canonical HDL.                                                                                                                               |
+| Hardware verification                             |                                                          **SystemVerilog** |                                e / Specman | UVM is a SystemVerilog verification methodology/library, not a language alternate.                                                                                  |
+| Hardware construction language                    |                                                                 **Chisel** |              Bluespec SystemVerilog, Clash | Chisel is embedded in Scala; Bluespec is rule-based HDL.                                                                                                            |
+| Network data-plane programming                    |                                                                     **P4** |                                          — | P4 specifies parsers and packet-processing behavior for programmable switches, NICs, and related targets.                                                           |
+| Portable virtual ISA / compilation target         |                                                            **WebAssembly** | JVM bytecode, Common Intermediate Language | WebAssembly is a standardized portable execution and compilation target, not a source-language paradigm.                                                            |
+| Compiler intermediate representation              |                                                                **LLVM IR** |                  MLIR dialects, GCC GIMPLE | Compiler-facing SSA-style IRs are programmable language boundaries even when humans rarely author them.                                                             |
+| Data serialization schema                         |                                              **Protocol Buffers language** |                     ASN.1, Apache Avro IDL | Defines data shape and wire-facing contracts; code generators and encoders are ecosystem implementations.                                                           |
+| Interface definition language                     |                                                 **CORBA IDL** historically |                        Web IDL, Thrift IDL | Defines callable interfaces across language or process boundaries, which is distinct from grammar specification and data-only schemas.                              |
+| Page-description language                         |                                                             **PostScript** |                          PDF imaging model | PostScript also overlaps with stack programming.                                                                                                                    |
+| Typesetting macro language                        |                                                                    **TeX** |                                      troff | LaTeX is a macro package/format over TeX, not the clean alternate-language entry.                                                                                   |
+| Physical-system modeling                          |                                                               **Modelica** |                         Simscape, Simulink | Modelica is the textual acausal modeling-language exemplar; cross-listed under simulation modeling because the two rows project different axes.                     |
 
 ### 6. Formal methods, specification, and verification
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Dependent-type proof assistant|**Rocq / Coq**|Lean, Agda|Rocq is the current name of the former Coq Proof Assistant; Lean is the modern fast-growing proof/programming ecosystem.|
-|HOL proof assistant|**Isabelle/HOL**|HOL4, HOL Light|Canonical higher-order-logic proof-assistant lineage.|
-|Mathematical proof assistant|**Lean**|Rocq, Isabelle/HOL, Mizar|Lean is especially canonical for current formalized mathematics communities.|
-|Auto-active verification language|**Dafny**|Viper, WhyML|Canonical for code plus specifications plus SMT-backed verification.|
-|Proof-oriented effectful programming|**F***|WhyML, Dafny|F* is the dependent/effectful verification-programming exemplar.|
-|Verified high-integrity imperative|**SPARK Ada**|Ada + contracts, MISRA C + tools|SPARK is the industrial proof-oriented Ada subset/ecosystem.|
-|Deductive verification platform|**WhyML / Why3**|Boogie, Viper|Often serves as an intermediate verification language.|
-|Temporal/action system specification|**TLA+**|Promela/SPIN for model checking; Event-B for refinement|PlusCal is not an alternate to TLA+; it translates to TLA+.|
-|Relational model finding|**Alloy**|Z, B/Event-B|TLA+ removed from this slot. Kodkod is Alloy’s model-finding backend, not an alternate language.|
-|State-based formal specification|**Z notation**|B, Event-B, VDM|Z is set-theoretic/schema-based; better neighbor for Alloy than TLA+.|
-|Process algebra / protocol modeling|**CSPm**|Promela, mCRL2, LOTOS|Distinct from actor/CSP implementation languages.|
-|SMT solver interchange language|**SMT-LIB**|TPTP for theorem proving|Z3, CVC5, Yices are solvers, not language alternates.|
-|C annotation/specification language|**ACSL**|JML for Java, SPARK contracts for Ada|ACSL is canonical around Frama-C-style C verification.|
+| Class                                | Canonical representative |                                    Same-slot alternates | Ecosystem / implementation notes                                                                                         |
+| ------------------------------------ | -----------------------: | ------------------------------------------------------: | ------------------------------------------------------------------------------------------------------------------------ |
+| Dependent-type proof assistant       |           **Rocq / Coq** |                                              Lean, Agda | Rocq is the current name of the former Coq Proof Assistant; Lean is the modern fast-growing proof/programming ecosystem. |
+| HOL proof assistant                  |         **Isabelle/HOL** |                                         HOL4, HOL Light | Canonical higher-order-logic proof-assistant lineage.                                                                    |
+| Mathematical proof assistant         |                 **Lean** |                               Rocq, Isabelle/HOL, Mizar | Lean is especially canonical for current formalized mathematics communities.                                             |
+| Auto-active verification language    |                **Dafny** |                                            Viper, WhyML | Canonical for code plus specifications plus SMT-backed verification.                                                     |
+| Proof-oriented effectful programming |                   **F*** |                                            WhyML, Dafny | F* is the dependent/effectful verification-programming exemplar.                                                         |
+| Verified high-integrity imperative   |            **SPARK Ada** |                        Ada + contracts, MISRA C + tools | SPARK is the industrial proof-oriented Ada subset/ecosystem.                                                             |
+| Deductive verification platform      |         **WhyML / Why3** |                                           Boogie, Viper | Often serves as an intermediate verification language.                                                                   |
+| Temporal/action system specification |                 **TLA+** | Promela/SPIN for model checking; Event-B for refinement | PlusCal is not an alternate to TLA+; it translates to TLA+.                                                              |
+| Relational model finding             |                **Alloy** |                                            Z, B/Event-B | TLA+ removed from this slot. Kodkod is Alloy’s model-finding backend, not an alternate language.                         |
+| State-based formal specification     |           **Z notation** |                                         B, Event-B, VDM | Z is set-theoretic/schema-based; better neighbor for Alloy than TLA+.                                                    |
+| Process algebra / protocol modeling  |                 **CSPm** |                                   Promela, mCRL2, LOTOS | Distinct from actor/CSP implementation languages.                                                                        |
+| SMT solver interchange language      |              **SMT-LIB** |                                TPTP for theorem proving | Z3, CVC5, Yices are solvers, not language alternates.                                                                    |
+| C annotation/specification language  |                 **ACSL** |                   JML for Java, SPARK contracts for Ada | ACSL is canonical around Frama-C-style C verification.                                                                   |
 
 ### 7. Data, query, statistical, scientific, and AI-adjacent DSLs
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Relational database/query|**SQL**|Tutorial D, Rel|PostgreSQL/MySQL/SQLite are implementations/systems, not language alternates.|
-|RDF graph query|**SPARQL**|—|Canonical for RDF triple/graph querying.|
-|Property-graph query|**Cypher**|GQL, Gremlin|GQL is the standardization direction; Cypher is the practical canonical syntax.|
-|XML query/transformation|**XQuery**|XPath, XSLT|XSLT is transformation-first; XPath is selector/query sublanguage.|
-|JSON query/transformation|**jq**|JSONata, JMESPath|jq is the canonical programmable JSON pipeline language.|
-|Statistical programming|**R**|S, SAS, Stata|R is the canonical open statistical-computing language.|
-|Split-apply-combine dataframe programming|**dplyr**|pandas, Polars, data.table|dplyr is a grammar of data manipulation; pandas/Polars are APIs/libraries, though they function as embedded DSLs.|
-|Numerical engineering|**MATLAB**|Julia, NumPy/SciPy Python, Scilab|MATLAB is matrix-first; Julia is more general technical computing.|
-|Modern scientific multiple dispatch|**Julia**|—|Julia overlaps with multiple-dispatch OO and scientific computing.|
-|Symbolic mathematics|**Wolfram Language**|Macsyma/Maxima, Maple|Same correction as above: Mathematica is not the alternate.|
-|Probabilistic statistical modeling|**Stan**|PyMC, Turing.jl|Stan is the practical canonical Bayesian/statistical modeling language.|
-|Historical Bayesian PPL|**BUGS**|JAGS, WinBUGS, OpenBUGS|BUGS is the historical graphical-model Bayesian PPL lineage.|
-|Universal/generative probabilistic programming|**Church**|WebPPL, Anglican, Gen|Church/WebPPL are canonical research exemplars; Gen is important for programmable inference.|
-|Differentiable programming|**Dex** research-wise; **Swift differentiable programming** as language-feature exemplar|Julia/Zygote-style systems, JAX as embedded Python framework|JAX/PyTorch are frameworks, not standalone languages. Swift’s differentiable-programming work is a language-feature exemplar.|
-|Agent-based modeling|**NetLogo**|StarLogo, Repast DSLs|NetLogo is the canonical educational/scientific ABM language.|
-|Simulation modeling|**Modelica**|Simulink, GPSS|Modelica is acausal physical modeling; GPSS is classic discrete-event simulation.|
+| Class                                                 |                                                                        Canonical representative |                                                    Same-slot alternates | Ecosystem / implementation notes                                                                                                                                 |
+| ----------------------------------------------------- | ----------------------------------------------------------------------------------------------: | ----------------------------------------------------------------------: | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Relational database/query                             |                                                                                         **SQL** |                                                         Tutorial D, Rel | PostgreSQL/MySQL/SQLite are implementations/systems, not language alternates.                                                                                    |
+| Ontology / description-logic knowledge representation |                                                                                       **OWL 2** |                                   Common Logic, frame-language lineages | OWL models classes, properties, individuals, and logical restrictions; SPARQL queries RDF graphs but does not replace the ontology language.                     |
+| RDF graph query                                       |                                                                                      **SPARQL** |                                                                       — | Canonical for RDF triple/graph querying.                                                                                                                         |
+| Property-graph query                                  |                                                                                      **Cypher** |                                                            GQL, Gremlin | GQL is the standardization direction; Cypher is the practical canonical syntax.                                                                                  |
+| XML query/transformation                              |                                                                                      **XQuery** |                                                             XPath, XSLT | XSLT is transformation-first; XPath is selector/query sublanguage.                                                                                               |
+| JSON query/transformation                             |                                                                                          **jq** |                                                       JSONata, JMESPath | jq is the canonical programmable JSON pipeline language.                                                                                                         |
+| Statistical programming                               |                                                                                           **R** |                                                           S, SAS, Stata | R is the canonical open statistical-computing language.                                                                                                          |
+| Split-apply-combine dataframe programming             |                                                                                       **dplyr** |                                              pandas, Polars, data.table | dplyr is an R package exposing an embedded grammar/DSL; pandas and Polars are APIs with DSL-like query or expression layers.                                     |
+| Numerical engineering                                 |                                                                                      **MATLAB** |                                       Julia, NumPy/SciPy Python, Scilab | MATLAB is matrix-first; Julia is more general technical computing.                                                                                               |
+| Modern scientific multiple dispatch                   |                                                                                       **Julia** |                                                                       — | Julia overlaps with multiple-dispatch OO and scientific computing.                                                                                               |
+| Symbolic mathematics                                  |                                                                            **Wolfram Language** |                                                   Macsyma/Maxima, Maple | Same correction as above: Mathematica is not the alternate.                                                                                                      |
+| Probabilistic statistical modeling                    |                                                                                        **Stan** |                                                         PyMC, Turing.jl | Stan is the practical canonical Bayesian/statistical modeling language.                                                                                          |
+| Historical Bayesian PPL                               |                                                                                        **BUGS** |                                                 JAGS, WinBUGS, OpenBUGS | BUGS is the historical graphical-model Bayesian PPL lineage.                                                                                                     |
+| Universal/generative probabilistic programming        |                                                                                      **Church** |                                                   WebPPL, Anglican, Gen | Church/WebPPL are canonical research exemplars; Gen is important for programmable inference.                                                                     |
+| Differentiable programming                            | **Dex** research-wise; **Swift differentiable programming** as an experimental language feature | Julia/Zygote-style systems, JAX as a Python-embedded transformation DSL | JAX/PyTorch are not standalone languages. Swift’s feature remains under active development, but it is experimental rather than an industrially settled exemplar. |
+| Agent-based modeling                                  |                                                                                     **NetLogo** |                                                   StarLogo, Repast DSLs | NetLogo is the canonical educational/scientific ABM language.                                                                                                    |
+| Simulation modeling                                   |                                                                                    **Modelica** |                                                          Simulink, GPSS | Intentional cross-list: Modelica is acausal physical modeling, while this row groups it with simulation languages; GPSS is classic discrete-event simulation.    |
 
 ### 8. Quantum programming
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Quantum algorithm language|**Q#**|Quipper, Silq|Q# is the current industrial standalone language exemplar from Microsoft.|
-|Quantum embedded circuit DSL|**Qiskit** as Python-embedded DSL/SDK|Cirq, PennyLane|Qiskit is officially an SDK for constructing/optimizing/executing quantum circuits, so it belongs in ecosystem/embedded-DSL space rather than “standalone language.”|
-|Functional quantum programming|**Quipper**|Proto-Quipper, QWire|Quipper is the canonical scalable functional quantum-language research exemplar.|
-|Safe high-level quantum programming|**Silq**|—|Silq is notable for high-level quantum programming with a static type system and safe automatic uncomputation.|
+| Class                                   |                Canonical representative | Same-slot alternates | Ecosystem / implementation notes                                                                                                                         |
+| --------------------------------------- | --------------------------------------: | -------------------: | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Quantum algorithm language              |                                  **Q#** |        Quipper, Silq | Q# is an active high-level standalone language in Microsoft’s QDK; “current industrial exemplar” would overstate the maturity of the field.              |
+| Quantum embedded circuit DSL            | **Qiskit** as a Python-embedded DSL/SDK |      Cirq, PennyLane | Qiskit is officially an SDK whose circuit objects and composition operations form an embedded DSL, not a standalone language.                            |
+| Quantum assembly / hardware interchange |                          **OpenQASM 3** |                 Quil | OpenQASM is both an imperative quantum language and a compiler-to-hardware interchange boundary, parallel in taxonomic role to SMT-LIB and compiler IRs. |
+| Functional quantum programming          |                             **Quipper** | Proto-Quipper, QWire | Quipper is the canonical scalable functional quantum-language research exemplar.                                                                         |
+| Safe high-level quantum programming     |                                **Silq** |                    — | Silq is notable for high-level quantum programming with a static type system and safe automatic uncomputation.                                           |
 
 ### 9. Educational, end-user, and visual languages
 
-|Class|Canonical representative|Same-slot alternates|Ecosystem / implementation notes|
-|---|--:|--:|---|
-|Beginner interactive programming|**BASIC**|Python, Pascal|BASIC is the historical canonical beginner-access language.|
-|Educational turtle programming|**Logo**|NetLogo, StarLogo|Logo is the turtle/constructivist educational archetype.|
-|Block-based novice programming|**Scratch**|Blockly, Snap!|Scratch is the canonical modern blocks language.|
-|End-user spreadsheet programming|**Excel formulas**|Google Sheets formulas, Lotus 1-2-3|Spreadsheets are end-user functional/dataflow programming environments, even if not always classified as PLs.|
-|Visual dataflow|**LabVIEW**|Simulink, Max/MSP|Listed once here conceptually; also relevant to concurrency/dataflow, but not duplicated as a separate row.|
-|Visual block/dataflow for children|**Scratch**|Blockly, Snap!|Different from LabVIEW: novice education rather than engineering dataflow.|
-|Notebook-centered computational language use|**Wolfram notebooks / Mathematica environment**|Jupyter notebooks|This is an interaction environment, not a separate language class.|
+| Class                                        |                                                                                 Canonical representative |                Same-slot alternates | Ecosystem / implementation notes                                                                                                                                        |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------: | ----------------------------------: | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Beginner interactive programming             |                                                                                                **BASIC** |                      Python, Pascal | BASIC is the historical canonical beginner-access language.                                                                                                             |
+| Educational turtle programming               |                                                                                                 **Logo** |                   NetLogo, StarLogo | Logo is the turtle/constructivist educational archetype.                                                                                                                |
+| Block-based novice programming               |                                                                                              **Scratch** |                      Blockly, Snap! | Scratch is the canonical modern blocks language.                                                                                                                        |
+| End-user spreadsheet programming             |                                                                                       **Excel formulas** | Google Sheets formulas, Lotus 1-2-3 | Spreadsheets are end-user functional/dataflow programming environments, even if not always classified as PLs.                                                           |
+| Visual dataflow                              |                                                                                              **LabVIEW** |                   Simulink, Max/MSP | Intentional cross-list with the concurrency/dataflow section: this row emphasizes end-user visual notation rather than execution semantics.                             |
+| Visual block/dataflow for children           |                                                                                              **Scratch** |                      Blockly, Snap! | Different from LabVIEW: novice education rather than engineering dataflow.                                                                                              |
+| Controlled-natural-language programming      |                                                                                             **Inform 7** |                                   — | Inform 7 uses a constrained English-like language for interactive fiction; “natural-language programming” without the “controlled” qualifier overclaims its generality. |
+| Computer music / live coding                 | **SuperCollider** / **ChucK** for audio languages; **TidalCycles** as a Haskell-embedded live-coding DSL |                   Csound, Pure Data | Audio synthesis and musical time are first-class domain semantics, not merely generic event-loop programming.                                                           |
+| Notebook-centered computational language use |                                                          **Wolfram notebooks / Mathematica environment** |                   Jupyter notebooks | This is an interaction environment, not a separate language class.                                                                                                      |
 
 ## Condensed canon after the corrections
 
-|Class|Canonical answer|
-|---|--:|
-|Imperative / procedural|**C**|
-|Structured|**ALGOL 60** ancestor; **Pascal** exemplar|
-|Systems|**C**|
-|Safe systems|**Rust**|
-|Class-based OO origin|**Simula**|
-|Pure message OO|**Smalltalk**|
-|Industrial OO|**Java**|
-|Prototype OO|**Self**; **JavaScript** industrially|
-|Multiple dispatch|**CLOS**; **Julia** modernly|
-|Pure lazy FP|**Haskell**|
-|Strict typed FP|**Standard ML**; **OCaml** practically|
-|Minimal Lisp|**Scheme**|
-|Industrial Lisp/metaprogramming|**Common Lisp**|
-|Language-oriented programming|**Racket**|
-|Logic|**Prolog**|
-|Relational programming|**miniKanren**|
-|Deductive database|**Datalog**|
-|Answer-set programming|**ASP / clingo-style ASP**|
-|Constraint modeling|**MiniZinc**|
-|Relational query|**SQL**|
-|Array|**APL**|
-|Stack|**Forth**|
-|Concatenative|**Joy** / **Factor**|
-|Symbolic computation|**Wolfram Language**; alternates **Macsyma/Maxima**, **Maple**|
-|Scripting|**Python**|
-|Shell|**POSIX sh / Bash**|
-|Text processing|**AWK**|
-|Actor model|**Erlang**|
-|CSP/channel concurrency|**occam**; **Go** industrially|
-|Async event loop|**JavaScript**|
-|Synchronous reactive|**Lustre**|
-|Functional reactive programming|**Fran / Yampa**|
-|Reactive UI / MVU|**Elm**|
-|Visual dataflow|**LabVIEW**|
-|Generic programming|**C++**|
-|Optional erased typing|**TypeScript**|
-|Sound gradual typing|**Typed Racket**|
-|Dependent typed programming|**Agda** / **Idris**|
-|Proof assistant|**Rocq/Coq**, **Lean**|
-|HOL proof assistant|**Isabelle/HOL**|
-|Auto-active verification|**Dafny**|
-|Verified high-integrity imperative|**SPARK Ada**|
-|Temporal/action specification|**TLA+**|
-|Relational model finding|**Alloy**|
-|Statistical programming|**R**|
-|Numerical/matrix|**MATLAB**|
-|Scientific/HPC|**Fortran**|
-|Modern technical computing|**Julia**|
-|Dataframe split-apply-combine|**dplyr**; pandas/Polars as embedded API exemplars|
-|Hardware description|**Verilog**|
-|Hardware verification|**SystemVerilog**|
-|Rule-based expert systems|**CLIPS**|
-|Probabilistic programming|**Stan**, **BUGS**, **Church/WebPPL/Gen** by subfamily|
-|Quantum programming|**Q#**, **Quipper**, **Silq** by subfamily|
-|Build/dependency|**Make**|
-|Functional package/config|**Nix**|
-|Infrastructure config|**Terraform HCL**|
-|Policy-as-code|**Rego**|
-|Educational blocks|**Scratch**|
-|Educational turtle|**Logo**|
-|Beginner interactive|**BASIC**|
+| Class                                        |                                                           Canonical answer |
+| -------------------------------------------- | -------------------------------------------------------------------------: |
+| Imperative / procedural                      |                                                                      **C** |
+| Structured                                   |                                 **ALGOL 60** ancestor; **Pascal** exemplar |
+| Systems                                      |                                                                      **C** |
+| Safe systems                                 |                                                                   **Rust** |
+| Class-based OO origin                        |                                                                 **Simula** |
+| Pure message OO                              |                                                              **Smalltalk** |
+| Industrial OO                                |                                                                   **Java** |
+| Prototype OO                                 |                                      **Self**; **JavaScript** industrially |
+| Multiple dispatch                            |                                               **CLOS**; **Julia** modernly |
+| Object-capability security                   |                                                                      **E** |
+| Pure lazy FP                                 |                                                                **Haskell** |
+| Strict typed FP                              |                                     **Standard ML**; **OCaml** practically |
+| Minimal Lisp                                 |                                                                 **Scheme** |
+| Industrial Lisp/metaprogramming              |                                                            **Common Lisp** |
+| Language-oriented programming                |                                                                 **Racket** |
+| Logic                                        |                                                                 **Prolog** |
+| Functional-logic                             |                                                                  **Curry** |
+| Relational programming                       |                                                             **miniKanren** |
+| Deductive database                           |                                                                **Datalog** |
+| Answer-set programming                       |                                                 **ASP / clingo-style ASP** |
+| Constraint modeling                          |                                                               **MiniZinc** |
+| Relational query                             |                                                                    **SQL** |
+| Array                                        |                                                                    **APL** |
+| Stack                                        |                                                                  **Forth** |
+| Concatenative                                |                                                       **Joy** / **Factor** |
+| Reversible programming                       |                                                                  **Janus** |
+| Symbolic computation                         |             **Wolfram Language**; alternates **Macsyma/Maxima**, **Maple** |
+| Scripting                                    |                                                                 **Python** |
+| Shell                                        |                                                        **POSIX sh / Bash** |
+| Text processing                              |                                                                    **AWK** |
+| Actor model                                  |                                                                 **Erlang** |
+| CSP/channel concurrency                      |                                             **occam**; **Go** industrially |
+| Async event loop                             |                                                             **JavaScript** |
+| Synchronous reactive                         |                                                                 **Lustre** |
+| Functional reactive programming              |                                                           **Fran / Yampa** |
+| Reactive UI / MVU                            |                                                                    **Elm** |
+| Declarative UI                               |                             **QML / XAML**; **SwiftUI** as an embedded DSL |
+| Tuple-space coordination                     |                                                                  **Linda** |
+| Visual dataflow                              |                                                                **LabVIEW** |
+| Generic programming                          |                                                                    **C++** |
+| Optional erased typing                       |                                                             **TypeScript** |
+| Sound gradual typing                         |                                                           **Typed Racket** |
+| Dependent typed programming                  |                                                       **Agda** / **Idris** |
+| Contract-based programming                   |                                                                 **Eiffel** |
+| Typed algebraic effects / handlers           |                                                 **Koka / Eff** by emphasis |
+| Multi-stage programming                      |                                                              **MetaOCaml** |
+| Proof assistant                              |                                                     **Rocq/Coq**, **Lean** |
+| HOL proof assistant                          |                                                           **Isabelle/HOL** |
+| Auto-active verification                     |                                                                  **Dafny** |
+| Verified high-integrity imperative           |                                                              **SPARK Ada** |
+| Temporal/action specification                |                                                                   **TLA+** |
+| Relational model finding                     |                                                                  **Alloy** |
+| Ontology / knowledge representation          |                                                                  **OWL 2** |
+| Statistical programming                      |                                                                      **R** |
+| Numerical/matrix                             |                                                                 **MATLAB** |
+| Scientific/HPC                               |                                                                **Fortran** |
+| Modern technical computing                   |                                                                  **Julia** |
+| Dataframe split-apply-combine                |                     **dplyr**; pandas/Polars as embedded DSL/API exemplars |
+| Differentiable programming                   |        **Dex**; experimental **Swift** feature; **JAX** as an embedded DSL |
+| Hardware description                         |                                                                **Verilog** |
+| Hardware verification                        |                                                          **SystemVerilog** |
+| Network data plane                           |                                                                     **P4** |
+| Numerical machine control                    |                                                                 **G-code** |
+| Portable compilation target                  |                                                            **WebAssembly** |
+| Compiler IR                                  |                                                                **LLVM IR** |
+| Data schema                                  |                                      **Protocol Buffers language / ASN.1** |
+| Interface definition                         |                          **CORBA IDL** historically; **Web IDL** currently |
+| Rule-based expert systems                    |                                                                  **CLIPS** |
+| Probabilistic programming                    |                     **Stan**, **BUGS**, **Church/WebPPL/Gen** by subfamily |
+| Zero-knowledge circuit description           |                                                                 **Circom** |
+| Provable / ZK application programming        |                                     **Noir**, **Cairo** by execution model |
+| Quantum programming                          | **Q#**, **Quipper**, **Silq** by subfamily; **OpenQASM 3** for interchange |
+| Build/dependency                             |                                                                   **Make** |
+| Scientific workflow                          |                                  **Nextflow**; **Snakemake / CWL** by form |
+| Service-oriented programming / orchestration |                                              **Jolie / BPEL** by subfamily |
+| Text templating                              |                                                                  **Jinja** |
+| Lexical preprocessing                        |                                                               **m4 / cpp** |
+| Functional package/config                    |                                                                    **Nix** |
+| Infrastructure config                        |                                                          **Terraform HCL** |
+| Policy-as-code                               |                                                                   **Rego** |
+| Educational blocks                           |                                                                **Scratch** |
+| Educational turtle                           |                                                                   **Logo** |
+| Beginner interactive                         |                                                                  **BASIC** |
+| Controlled-natural-language programming      |                                                               **Inform 7** |
+| Computer music / live coding                 |                       **SuperCollider / ChucK / TidalCycles** by subfamily |
 
+## Forced 15-item compression
 
-Forced 15 item compression:
+1. Systems and performance programming — C; C++ and Rust as the abstraction and safety branches. Folds machine-level, imperative/procedural, all three systems rows, generic programming, ownership, the GPU/shader rows (CUDA is a C++ dialect), and WebAssembly/LLVM IR as compilation-target strata. C stays canonical as the ABI substrate; the doc's own three-way systems split is the eras of one domain.
 
-1. Systems and performance programming — C; C++ and Rust as the abstraction and safety branches. Folds machine-level, imperative/procedural, all three systems rows, generic programming, ownership, and the GPU/shader rows (CUDA is a C++ dialect). C stays canonical as the ABI substrate; the doc's own three-way systems split is the eras of one domain.
+2. Managed industrial OO — Java (C#). Folds industrial nominal OO and monitor/thread concurrency, with Simula/Smalltalk retained as origins. COBOL does not fit this slot and is an explicit cut below. Java earns the slot on ecosystem mass, not design merit.
 
-
-2. Managed industrial OO — Java (C#). Folds industrial nominal OO, monitor/thread concurrency, and absorbs Simula/Smalltalk as origins and COBOL as the legacy stratum it displaced. Java earns it on ecosystem mass, not design merit.
-
-
-3. The web platform — JavaScript/TypeScript. Folds async event loop, industrial prototype OO, optional erased typing, structural object typing, and MVU (Elm as concept source). Four of the doc's rows are projections of one deployment monopoly: the browser.
-
+3. The web platform — JavaScript/TypeScript. Folds async event loop, industrial prototype OO, optional erased typing, structural object typing, MVU (Elm as concept source), and declarative UI as an adjacent presentation stratum. Several of the doc's rows are projections of one deployment monopoly: the browser.
 
 4. Scripting and automation — Python; strata: AWK/Perl (text), Bash/PowerShell (process composition), Lua/Tcl (embedding). Folds general scripting, dynamic typing, text rows, regex, both shell rows, and embeddable extension. One super-domain — coordination of existing programs and text — with four honest sub-models. Demoting Lua from a standalone slot is the cost of importance-weighting; I'd defend it reluctantly.
 
+5. Typed functional programming — Haskell; SML/OCaml as the strict lineage. Folds pure-lazy FP, both ML rows, Hindley–Milner, type classes, modules, and the refinement/linear/effects research periphery, which are features of this tradition rather than domains. Curry is the bridge to the logic slot, not evidence that either slot subsumes functional-logic programming cleanly.
 
-5. Typed functional programming — Haskell; SML/OCaml as the strict lineage. Folds pure-lazy FP, both ML rows, Hindley–Milner, type classes, modules, and the refinement/linear/effects research periphery, which are features of this tradition rather than domains.
+6. Lisp and language-oriented metaprogramming — Scheme, Common Lisp, Racket jointly. The doc's three rows are one irreducible axis: homoiconicity and syntactic abstraction. Multi-stage programming and lexical preprocessors survive only as secondary staging mechanisms here.
 
-
-6. Lisp and language-oriented metaprogramming — Scheme, Common Lisp, Racket jointly. The doc's three rows are one irreducible axis: homoiconicity and syntactic abstraction. No other slot can absorb "programs that write programs" without losing the concept.
-
-
-7. Logic, constraint, and rule systems — Prolog; Datalog and MiniZinc as the industrial descendants. Folds logic, relational programming (miniKanren), deductive databases, ASP, constraint modeling, expert systems, and rewriting. Computation as deduction/search over declarations; Prolog is origin, Datalog is where it actually ships (static analysis, Datomic).
-
+7. Logic, constraint, knowledge, and rule systems — Prolog; Datalog, MiniZinc, and OWL as the deductive, constraint, and knowledge-representation poles. Folds logic, relational programming (miniKanren), functional-logic (Curry), deductive databases, ASP, constraint modeling, expert systems, rewriting, and description logics.
 
 8. Declarative query — SQL; SPARQL/Cypher/jq for graph and document shapes. Folds the §7 query rows. SQL alone justifies the slot: fifty years unreplaced, the most-executed declarative language in existence.
 
-
 9. Statistical and probabilistic computing — R; Stan as the Bayesian frontier. Folds statistical programming, dataframe grammars, and all three PPL rows. R is where statistics is natively spoken; probabilistic programming is that domain's live edge, not a separate one.
-
 
 10. Numerical, array, and symbolic scientific computing — Fortran/MATLAB/Julia; APL lineage and Wolfram Language as the array and symbolic poles. Folds scientific HPC, matrix-first, array programming, symbolic computation, and Chapel. One domain — mathematics executed — with Julia as the ongoing unification attempt.
 
+11. Concurrent and fault-tolerant distributed systems — Erlang; Go as the CSP-industrial pole (occam as ancestor). Folds actor model, CSP/channels, Linda-style coordination, distributed fault tolerance, and STM as a footnote. The doc's Erlang duplication resolves itself once these rows merge.
 
-11. Concurrent and fault-tolerant distributed systems — Erlang; Go as the CSP-industrial pole (occam as ancestor). Folds actor model, CSP/channels, distributed fault tolerance, and STM as a footnote. The doc's Erlang duplication resolves itself once these rows merge.
+12. Formal specification and verification — Rocq/Lean for proof, TLA+ for design-level specification; Dafny, SPARK, Alloy, Isabelle, and Eiffel-style contracts in between. Folds all of §6 plus dependent-typed and contract-based programming. Two genuinely different activities (proving programs vs. model-checking designs) share one correctness-by-construction domain only because the limit is forced.
 
+13. Hardware and physical-system description — Verilog/SystemVerilog; VHDL, Chisel, plus Lustre, Structured Text, Modelica, P4, and G-code as control-and-target strata. Folds HDL, hardware verification and construction, synchronous reactive, PLC, network data-plane, machine control, and simulation modeling. The compression sacrifices important differences between describing hardware, packets, controllers, and motion.
 
-12. Formal specification and verification — Rocq/Lean for proof, TLA+ for design-level specification; Dafny, SPARK, Alloy, Isabelle in between. Folds all of §6 plus dependent-typed programming. Two genuinely different activities (proving programs vs. model-checking designs) sharing one correctness-by-construction domain.
+14. Build, configuration, workflow, and infrastructure — Make as ancestor; Nix and Terraform HCL as the modern declarative poles, CUE/Rego adjacent. Folds the §5 infra rows plus scientific workflow and service orchestration. Schema/IDL languages sit at this slot's interfaces but are not conceptually absorbed by it.
 
+15. End-user, educational, and creative programming — Excel formulas; Scratch/Logo/BASIC for pedagogy, Inform 7 for controlled-natural-language authoring, and the SuperCollider/ChucK/TidalCycles family for music. Folds §9 at the cost of merging education, end-user calculation, and artistic performance.
 
-13. Hardware and physical-system description — Verilog/SystemVerilog; VHDL, Chisel, plus Lustre, Structured Text, and Modelica as the control-and-modeling stratum. Folds HDL, hardware verification and construction, synchronous reactive, PLC, and simulation modeling. The unifying idea: describing concurrent physical/temporal systems rather than instruction streams — the taxonomy's only fully non-von-Neumann territory.
+### Coverage audit for the forced compression
 
+The 15 slots are a lossy importance ranking, not a partition of the full
+taxonomy. “Folded” means that a slot preserves at least the dominant domain; it
+does not mean every class in that source section remains conceptually visible.
 
-14. Build, configuration, and infrastructure — Make as ancestor; Nix and Terraform HCL as the modern declarative poles, CUE/Rego adjacent. Folds the §5 infra rows. Underrated expansive: every deployed system passes through these languages.
+| Full-taxonomy section                                            | 15-slot placement | Identity lost or deliberately cut                                                                                                                                                                             |
+| ---------------------------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| §1 Core computational paradigms                                  | 1, 4–7, 10        | COBOL/business record processing, Forth/Joy stack and concatenative models, reversible programming, and BNF grammar specification have no honest slot. Regular expressions are retained explicitly in slot 4. |
+| §2 Object models                                                 | 2, 3, 10–11       | Aspect orientation and object-capability security lose independent identity; Simula and Smalltalk survive only as origins.                                                                                    |
+| §3 Type-system and abstraction axes                              | 1, 3, 5–6, 12     | The distinctions among refinement/linear/effect/session typing and multi-stage programming are flattened into host traditions.                                                                                |
+| §4 Concurrency, distribution, time, and reactivity               | 3, 11, 13         | FRP, dataflow, and declarative-UI boundaries are flattened, but the section is represented.                                                                                                                   |
+| §5 Systems, scripting, operational, and infrastructure languages | 1, 4, 13–14       | Smart contracts, zero-knowledge/provable programming, data schema/IDL languages, PostScript, and TeX are explicit cuts.                                                                                       |
+| §6 Formal methods, specification, and verification               | 12                | Proof, model checking, contracts, process models, and solver interchange are compressed into one correctness domain.                                                                                          |
+| §7 Data, query, statistical, scientific, and AI-adjacent DSLs    | 7–10, 13          | Specialized modeling boundaries are flattened, but every major domain has a placement.                                                                                                                        |
+| §8 Quantum programming                                           | None              | The entire section, including OpenQASM interchange, is deliberately cut rather than awkwardly mislabeled as formal verification or hardware description.                                                      |
+| §9 Educational, end-user, and visual languages                   | 15                | Education, end-user calculation, controlled-natural-language authoring, visual programming, and music are merged.                                                                                             |
 
+### Boundary decisions and deliberate non-rows
 
-15. End-user and educational programming — Excel formulas; Scratch/Logo/BASIC for pedagogy. Folds §9. Spreadsheet formulas are, by user count, the most-used functional language ever shipped
-
-
+- Esolangs are examples under the computational model they illuminate, not a
+  class merely because they are intentionally difficult or playful.
+- JCL remains a batch/job-control ecosystem entry adjacent to workflow and build
+  languages; it does not get a separate paradigm row.
+- Unison's content-addressed code identity is a real and unusual language design,
+  but it is a cross-cutting code-identity/storage choice rather than a distinct
+  computation, coordination, or description model. It remains a near-miss unless
+  a broader language family forms around that axis.
+- Mojo belongs with heterogeneous systems/accelerator programming as currently
+  documented. It is not a differentiable-programming exemplar.
