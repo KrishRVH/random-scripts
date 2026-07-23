@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>product-engineer-lab · Jul 2026 → Jul 2027</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0E141A; --bg-2:#141C24; --bg-3:#1C2731;
+    --line:#293743; --line-soft:#1E2932;
+    --fg:#EAEEF2; --fg-2:#A9B6C1; --fg-3:#6C7B88;
+    --amber:#E6AC5B; --amber-d:#C6924A; --amber-dd:#A67B3E;
+    --cyan:#57BACB; --cyan-d:#469FB0; --cyan-dd:#37808F;
+    --r:14px; --r-s:9px; --r-l:22px;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+    --disp:"Bricolage Grotesque",var(--sans);
+    --sans:"Instrument Sans",system-ui,-apple-system,Segoe UI,sans-serif;
+    --wrap:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font-family:var(--sans); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    background-image:radial-gradient(rgba(255,255,255,.028) 1px, transparent 1px);
+    background-size:26px 26px;
+  }
+  a{color:inherit}
+  h1,h2,h3,h4{margin:0; font-family:var(--disp); font-weight:600; line-height:1.08; letter-spacing:-.015em}
+  p{margin:0}
+
+  /* ---- layout ---- */
+  .wrap{max-width:var(--wrap); margin:0 auto; padding-inline:clamp(1.15rem,4vw,2rem)}
+  .section{padding-block:clamp(3.4rem,8vw,5.8rem); border-top:1px solid var(--line-soft)}
+  .eyebrow{font-family:var(--mono); font-size:.72rem; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--fg-3)}
+  .sec-head{margin-bottom:clamp(1.8rem,4vw,2.6rem)}
+  .sec-head .eyebrow{margin-bottom:.7rem; display:block}
+  .sec-title{font-size:clamp(1.7rem,3.6vw,2.5rem); font-weight:700}
+  .sec-sub{color:var(--fg-2); max-width:60ch; margin-top:.85rem}
+  .amber{color:var(--amber)} .cyan{color:var(--cyan)}
+
+  /* ---- progress + nav ---- */
+  #scroll{position:fixed; top:0; left:0; height:2px; width:0; background:linear-gradient(90deg,var(--amber),var(--cyan)); z-index:60; transition:width .1s linear}
+  nav{position:sticky; top:0; z-index:50; background:rgba(14,20,26,.82); backdrop-filter:blur(12px); border-bottom:1px solid var(--line-soft)}
+  .nav-in{max-width:var(--wrap); margin:0 auto; padding:.65rem clamp(1.15rem,4vw,2rem); display:flex; align-items:center; gap:1.4rem; justify-content:space-between}
+  .brand{font-family:var(--mono); font-size:.82rem; font-weight:700; letter-spacing:.02em; white-space:nowrap; display:flex; align-items:center; gap:.5rem}
+  .brand .dot{width:8px; height:8px; border-radius:50%; background:conic-gradient(from 45deg,var(--amber),var(--cyan),var(--amber))}
+  .nav-links{display:flex; gap:.35rem; font-family:var(--mono); font-size:.74rem; letter-spacing:.04em}
+  .nav-links a{color:var(--fg-3); text-decoration:none; padding:.35rem .55rem; border-radius:8px; transition:color .15s, background .15s}
+  .nav-links a:hover{color:var(--fg)}
+  .nav-links a.active{color:var(--fg); background:var(--bg-3)}
+
+  /* ---- hero ---- */
+  .hero{padding-top:clamp(3rem,7vw,5rem); padding-bottom:clamp(2.4rem,6vw,4rem); border-top:none}
+  .hero-grid{display:grid; grid-template-columns:1.05fr .95fr; gap:clamp(2rem,5vw,3.5rem); align-items:center}
+  .hero-eye{display:flex; flex-wrap:wrap; gap:.5rem .9rem; align-items:center; margin-bottom:1.3rem}
+  .tag{font-family:var(--mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--fg-3); border:1px solid var(--line); border-radius:999px; padding:.28rem .7rem}
+  .tag.live{color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 40%, var(--line))}
+  h1.title{font-size:clamp(2.35rem,5.6vw,4.1rem); font-weight:700; letter-spacing:-.025em}
+  h1.title .b{background:linear-gradient(100deg,var(--amber),var(--cyan)); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .lede{color:var(--fg-2); font-size:clamp(1rem,1.4vw,1.12rem); margin-top:1.2rem; max-width:52ch}
+  .lede b{color:var(--fg); font-weight:600}
+  .stats{display:flex; gap:1.6rem; margin-top:1.9rem; flex-wrap:wrap}
+  .stat .n{font-family:var(--mono); font-size:1.65rem; font-weight:700; line-height:1}
+  .stat .l{font-family:var(--mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--fg-3); margin-top:.4rem}
+
+  /* ---- loop svg ---- */
+  .loop{width:100%; max-width:460px; margin-inline:auto; display:block; overflow:visible}
+  .ring{fill:none; stroke:url(#g-ring); stroke-width:2.5; stroke-linecap:round}
+  .ring-anim{stroke-dasharray:100; stroke-dashoffset:100; animation:draw 1.7s .2s cubic-bezier(.65,0,.35,1) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .chev{stroke:var(--fg-3); stroke-width:2; fill:none; opacity:.55}
+  .node{opacity:0; animation:pop .5s forwards; animation-delay:calc(var(--i)*.11s + .55s)}
+  @keyframes pop{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+  .node circle{stroke:var(--bg); stroke-width:3}
+  .node .lbl{font-family:var(--mono); font-size:20px; font-weight:500; fill:var(--fg)}
+  .node .num{font-family:var(--mono); font-size:14px; font-weight:700}
+  .loop-core .k{font-family:var(--mono); font-size:15px; letter-spacing:.22em; fill:var(--fg-3)}
+  .loop-core .k2{font-family:var(--mono); font-size:13px; fill:var(--fg-3); opacity:.7}
+
+  /* ---- generic cards ---- */
+  .card{background:var(--bg-2); border:1px solid var(--line); border-radius:var(--r); padding:1.35rem 1.4rem}
+  .grid{display:grid; gap:1rem}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+
+  /* ---- target: risks + goals ---- */
+  .risks{grid-template-columns:repeat(4,1fr); margin-bottom:1.3rem}
+  .risk{border-radius:var(--r); border:1px solid var(--line); background:var(--bg-2); padding:1.1rem 1.15rem}
+  .risk .rn{font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--cyan)}
+  .risk h4{font-size:1.05rem; margin:.5rem 0 .4rem}
+  .risk p{color:var(--fg-2); font-size:.9rem}
+  .goals{list-style:none; padding:0; margin:1.4rem 0 0; display:grid; gap:.55rem}
+  .goals li{display:flex; gap:.85rem; align-items:baseline; color:var(--fg-2); border-left:2px solid var(--amber); padding:.15rem 0 .15rem 1rem}
+  .goals li b{color:var(--fg); font-weight:600}
+  .goals .gi{font-family:var(--mono); font-size:.72rem; color:var(--fg-3); flex:none}
+  .note{font-family:var(--mono); font-size:.8rem; color:var(--fg-3); border:1px dashed var(--line); border-radius:var(--r-s); padding:.9rem 1rem; margin-top:1.4rem; line-height:1.55}
+
+  /* ---- weekly OS ---- */
+  .bar{display:flex; height:56px; border-radius:12px; overflow:hidden; border:1px solid var(--line); margin-bottom:1.4rem}
+  .seg{display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.72rem; font-weight:700; color:#0E141A; position:relative; min-width:0}
+  .seg span{padding-inline:.4rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .blocks{grid-template-columns:repeat(5,1fr)}
+  .block{background:var(--bg-2); border:1px solid var(--line); border-radius:var(--r); padding:1.05rem 1.05rem; border-top:3px solid var(--bl,var(--fg-3))}
+  .block .bm{font-family:var(--mono); font-size:1.35rem; font-weight:700}
+  .block .bt{font-weight:600; margin:.15rem 0 .45rem; font-size:.98rem}
+  .block .bd{color:var(--fg-2); font-size:.85rem}
+  .block .out{font-family:var(--mono); font-size:.7rem; color:var(--fg-3); margin-top:.7rem; display:block}
+
+  /* ---- track ruler ---- */
+  .ruler{display:flex; height:44px; border-radius:10px; overflow:hidden; border:1px solid var(--line); margin-bottom:.5rem}
+  .rseg{display:flex; flex-direction:column; align-items:flex-start; justify-content:center; padding:0 .7rem; color:#0E141A; min-width:0}
+  .rseg b{font-family:var(--mono); font-size:.76rem; font-weight:700; line-height:1}
+  .rseg small{font-family:var(--mono); font-size:.6rem; opacity:.85; line-height:1; margin-top:.15rem}
+  .ruler-legend{display:flex; gap:1.4rem; font-family:var(--mono); font-size:.72rem; color:var(--fg-3); margin-bottom:2.2rem; flex-wrap:wrap}
+  .ruler-legend span{display:flex; align-items:center; gap:.45rem}
+  .ruler-legend i{width:20px; height:8px; border-radius:3px; display:inline-block}
+
+  .part-head{display:flex; align-items:baseline; gap:.9rem; margin:2.4rem 0 1.1rem; padding-bottom:.7rem; border-bottom:1px solid var(--line)}
+  .part-head:first-of-type{margin-top:0}
+  .part-head .pk{font-family:var(--mono); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; padding:.25rem .6rem; border-radius:999px}
+  .part-head.i .pk{color:var(--amber); border:1px solid color-mix(in srgb,var(--amber) 45%,var(--line))}
+  .part-head.ii .pk{color:var(--cyan); border:1px solid color-mix(in srgb,var(--cyan) 45%,var(--line))}
+  .part-head h3{font-size:1.15rem; font-weight:600}
+  .part-head .pw{margin-left:auto; font-family:var(--mono); font-size:.72rem; color:var(--fg-3)}
+
+  /* ---- phase modules ---- */
+  .phase{background:var(--bg-2); border:1px solid var(--line); border-radius:var(--r); margin-bottom:1rem; border-left:3px solid var(--acc,var(--fg-3)); overflow:hidden}
+  .phase.i{--acc:var(--amber)} .phase.ii{--acc:var(--cyan)}
+  .phase>summary{list-style:none; cursor:pointer; padding:1.2rem 1.35rem; display:grid; grid-template-columns:auto 1fr auto; gap:1.1rem; align-items:center; transition:background .15s}
+  .phase>summary::-webkit-details-marker{display:none}
+  .phase>summary:hover{background:var(--bg-3)}
+  .pnum{font-family:var(--mono); font-size:1.9rem; font-weight:700; color:var(--acc); line-height:1; letter-spacing:-.03em}
+  .pmid h4{font-size:1.12rem; font-weight:600}
+  .pmid .foc{color:var(--fg-2); font-size:.9rem; margin-top:.3rem}
+  .pmeta{text-align:right; font-family:var(--mono); font-size:.72rem; color:var(--fg-3); white-space:nowrap; display:flex; flex-direction:column; gap:.25rem; align-items:flex-end}
+  .pmeta .hrs{font-size:1.05rem; font-weight:700; color:var(--fg)}
+  .chevd{width:11px; height:11px; border-right:2px solid var(--fg-3); border-bottom:2px solid var(--fg-3); transform:rotate(45deg); transition:transform .2s; margin-top:.15rem}
+  .phase[open]>summary .chevd{transform:rotate(-135deg)}
+  .pbody{padding:0 1.35rem 1.4rem; border-top:1px solid var(--line-soft)}
+  .pcols{display:grid; grid-template-columns:1fr 1fr; gap:1.4rem 2rem; margin-top:1.3rem}
+  .col-h{font-family:var(--mono); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--fg-3); margin-bottom:.7rem}
+  ul.learn{list-style:none; padding:0; margin:0; display:grid; gap:.4rem}
+  ul.learn li{color:var(--fg-2); font-size:.9rem; padding-left:1.1rem; position:relative}
+  ul.learn li::before{content:"›"; position:absolute; left:0; color:var(--acc); font-family:var(--mono)}
+  .pass{background:var(--bg-3); border-radius:var(--r-s); padding:.9rem 1rem; margin-top:1.3rem; border-left:2px solid var(--acc)}
+  .pass .col-h{margin-bottom:.4rem}
+  .pass p{color:var(--fg); font-size:.9rem}
+  .sources{margin-top:1.3rem}
+  .sources ol{margin:.4rem 0 0; padding-left:1.2rem; display:grid; gap:.3rem}
+  .sources li{color:var(--fg-2); font-size:.86rem}
+  .sources a{color:var(--fg); text-decoration:none; border-bottom:1px solid var(--line); transition:border-color .15s}
+  .sources a:hover{border-color:var(--acc)}
+  .sources .au{color:var(--fg-3)}
+  .subnote{font-family:var(--mono); font-size:.74rem; color:var(--fg-3); margin-top:1rem; line-height:1.5}
+
+  /* ---- task checkboxes ---- */
+  .tasks{list-style:none; padding:0; margin:0; display:grid; gap:.15rem}
+  .task{display:flex; gap:.7rem; align-items:flex-start; padding:.35rem .1rem; cursor:pointer; font-size:.9rem; color:var(--fg-2); border-radius:6px}
+  .task:hover{color:var(--fg)}
+  .task input{appearance:none; -webkit-appearance:none; width:17px; height:17px; border:1.5px solid var(--line); border-radius:5px; flex:none; margin-top:.15rem; cursor:pointer; position:relative; transition:border-color .15s, background .15s}
+  .task input:checked{background:var(--acc); border-color:var(--acc)}
+  .task input:checked::after{content:""; position:absolute; left:4.5px; top:1px; width:5px; height:9px; border:solid #0E141A; border-width:0 2px 2px 0; transform:rotate(45deg)}
+  .task input:focus-visible{outline:2px solid var(--acc); outline-offset:2px}
+  .task:has(input:checked) span{color:var(--fg-3); text-decoration:line-through; text-decoration-color:color-mix(in srgb,var(--acc) 60%, transparent)}
+  .prog{font-family:var(--mono); font-size:.72rem; color:var(--fg-3); display:flex; align-items:center; gap:.6rem; margin-top:.9rem}
+  .prog .track{flex:1; height:5px; background:var(--bg-3); border-radius:99px; overflow:hidden; max-width:180px}
+  .prog .fill{height:100%; width:0; background:var(--acc); border-radius:99px; transition:width .3s}
+
+  /* ---- reading ---- */
+  .tranche-k{display:flex; align-items:center; gap:.7rem; margin-bottom:.9rem}
+  .tranche-k .n{font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--line); color:var(--fg-3)}
+  .tranche-k.now .n{color:var(--amber); border-color:color-mix(in srgb,var(--amber) 45%,var(--line))}
+  .tranche-k.later .n{color:var(--cyan); border-color:color-mix(in srgb,var(--cyan) 45%,var(--line))}
+  .tranche-k h4{font-size:.98rem; font-weight:600}
+  .books{list-style:none; padding:0; margin:0; display:grid; gap:.55rem}
+  .book{display:flex; flex-direction:column; gap:.1rem; padding:.65rem .75rem; background:var(--bg-3); border-radius:var(--r-s); border:1px solid transparent}
+  .book .bt{font-weight:600; font-size:.92rem}
+  .book a.bt{text-decoration:none; border-bottom:1px solid var(--line)}
+  .book a.bt:hover{border-color:var(--fg-2)}
+  .book .ba{font-family:var(--mono); font-size:.7rem; color:var(--fg-3)}
+  .online{display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.3rem}
+  .chip{font-family:var(--mono); font-size:.74rem; color:var(--fg-2); background:var(--bg-3); border:1px solid var(--line); border-radius:999px; padding:.35rem .7rem; text-decoration:none; transition:border-color .15s,color .15s}
+  .chip:hover{border-color:var(--cyan); color:var(--fg)}
+  .hier{display:flex; flex-wrap:wrap; align-items:center; gap:.5rem; font-family:var(--mono); font-size:.78rem; color:var(--fg-2); margin-top:1.2rem; line-height:2}
+  .hier b{color:var(--fg); font-weight:500}
+  .hier .ar{color:var(--fg-3)}
+  details.more{margin-top:1.6rem; border:1px solid var(--line); border-radius:var(--r); background:var(--bg-2)}
+  details.more>summary{cursor:pointer; list-style:none; padding:1rem 1.2rem; font-family:var(--mono); font-size:.8rem; color:var(--fg-2); display:flex; justify-content:space-between; align-items:center}
+  details.more>summary::-webkit-details-marker{display:none}
+  details.more[open]>summary{border-bottom:1px solid var(--line-soft)}
+  .more-body{padding:1.2rem; display:grid; gap:.9rem}
+  .shelf-row{display:grid; grid-template-columns:auto 1fr; gap:1rem; align-items:baseline}
+  .shelf-row .sk{font-family:var(--mono); font-size:.72rem; color:var(--cyan); white-space:nowrap}
+  .shelf-row .sv{color:var(--fg-2); font-size:.9rem}
+
+  /* ---- first 30 days ---- */
+  .weeks30{grid-template-columns:repeat(4,1fr)}
+  .wk{background:var(--bg-2); border:1px solid var(--line); border-radius:var(--r); padding:1.15rem; position:relative; --acc:var(--amber)}
+  .wk .wn{font-family:var(--mono); font-size:.7rem; letter-spacing:.12em; text-transform:uppercase; color:var(--acc)}
+  .wk h4{font-size:1.02rem; margin:.4rem 0 .5rem}
+  .wk p{color:var(--fg-2); font-size:.87rem}
+  .wk .out{font-family:var(--mono); font-size:.7rem; color:var(--cyan); background:var(--bg-3); border-radius:6px; padding:.45rem .55rem; margin-top:.8rem; display:block; word-break:break-word}
+  .wk .tasks{margin-top:.8rem}
+
+  /* ---- footer / setup ---- */
+  footer{border-top:1px solid var(--line); background:var(--bg-2); padding-block:clamp(3rem,7vw,4.5rem)}
+  .setup-grid{display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; align-items:start}
+  .tree{font-family:var(--mono); font-size:.82rem; line-height:1.85; color:var(--fg-2)}
+  .tree .root{color:var(--fg); font-weight:700}
+  .tree .d{color:var(--cyan)}
+  .tree .c{color:var(--fg-3)}
+  .cmd{background:var(--bg); border:1px solid var(--line); border-radius:var(--r-s); padding:.9rem 1rem; font-family:var(--mono); font-size:.8rem; color:var(--fg); overflow-x:auto; margin-top:1rem; position:relative}
+  .cmd .p{color:var(--cyan)}
+  .copy{position:absolute; top:.55rem; right:.55rem; font-family:var(--mono); font-size:.66rem; color:var(--fg-3); background:var(--bg-3); border:1px solid var(--line); border-radius:6px; padding:.25rem .5rem; cursor:pointer}
+  .copy:hover{color:var(--fg)}
+  .setup-cta{color:var(--fg-2); font-size:.92rem; margin-top:1.1rem}
+  .setup-cta b{color:var(--fg)}
+  .foot-meta{max-width:var(--wrap); margin:2.6rem auto 0; padding-top:1.6rem; border-top:1px solid var(--line-soft); display:flex; justify-content:space-between; flex-wrap:wrap; gap:1rem; font-family:var(--mono); font-size:.72rem; color:var(--fg-3)}
+  .reset{background:none; border:1px solid var(--line); color:var(--fg-3); font-family:var(--mono); font-size:.7rem; padding:.35rem .7rem; border-radius:7px; cursor:pointer}
+  .reset:hover{color:var(--fg); border-color:var(--fg-3)}
+
+  /* ---- responsive ---- */
+  @media (max-width:900px){
+    .hero-grid{grid-template-columns:1fr; gap:2.4rem}
+    .loop{max-width:400px}
+    .risks{grid-template-columns:repeat(2,1fr)}
+    .blocks{grid-template-columns:repeat(2,1fr)}
+    .g4,.g3{grid-template-columns:repeat(2,1fr)}
+    .weeks30{grid-template-columns:repeat(2,1fr)}
+    .setup-grid{grid-template-columns:1fr; gap:1.8rem}
+    .nav-links a:nth-child(n+4){display:none}
+  }
+  @media (max-width:560px){
+    .risks,.blocks,.g2,.g3,.g4,.weeks30{grid-template-columns:1fr}
+    .pcols{grid-template-columns:1fr; gap:1.1rem}
+    .phase>summary{grid-template-columns:auto 1fr; gap:.9rem}
+    .pmeta{grid-column:2; text-align:left; flex-direction:row; align-items:baseline; gap:.7rem}
+    .chevd{display:none}
+    .stats{gap:1.2rem}
+    .nav-links{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .ring-anim{animation:none; stroke-dashoffset:0}
+    .node{animation:none; opacity:1}
+    *{transition:none!important}
+  }
+  @media print{
+    body{background:#fff; color:#111}
+    nav,#scroll,.copy,.reset{display:none}
+    .section,footer{border-color:#ddd}
+    .card,.phase,.block,.risk,.wk,.book{background:#fff; border-color:#ccc}
+    .amber,.cyan{color:#111}
+  }
+</style>
+</head>
+<body>
+<div id="scroll"></div>
+
+<nav>
+  <div class="nav-in">
+    <div class="brand"><span class="dot"></span>product-engineer-lab</div>
+    <div class="nav-links">
+      <a href="#target">target</a>
+      <a href="#market">market</a>
+      <a href="#weekly">weekly</a>
+      <a href="#track">track</a>
+      <a href="#reading">reading</a>
+      <a href="#start">30 days</a>
+      <a href="#position">position</a>
+      <a href="#cautions">anti-patterns</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ================= HERO ================= -->
+<header class="section hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hero-eye">
+          <span class="tag live">● Jul 2026 → Jul 2027</span>
+          <span class="tag">7 hrs / week</span>
+          <span class="tag">≈ 364 hrs</span>
+        </div>
+        <h1 class="title">Train the <span class="b">AI-native<br>product engineer.</span></h1>
+        <p class="lede">Not a prompt engineer, not a designer who codes, not a generalist mediocre at six jobs. Someone who owns the whole loop — and can be held <b>accountable for the outcome</b>, not just the code.</p>
+        <div class="stats">
+          <div class="stat"><div class="n">6</div><div class="l">phases</div></div>
+          <div class="stat"><div class="n">52</div><div class="l">weeks</div></div>
+          <div class="stat"><div class="n">1</div><div class="l">capstone</div></div>
+          <div class="stat"><div class="n amber">≥10</div><div class="l">real users</div></div>
+        </div>
+      </div>
+
+      <div>
+        <svg class="loop" viewBox="0 0 640 640" role="img" aria-label="The eight-stage loop: Observe, Decide, Shape, Architect, Direct, Verify, Measure, Iterate — repeating.">
+          <defs>
+            <linearGradient id="g-ring" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#E6AC5B"/>
+              <stop offset=".5" stop-color="#9CB59A"/>
+              <stop offset="1" stop-color="#57BACB"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring ring-anim" cx="320" cy="320" r="210" pathLength="100"/>
+          <!-- direction chevrons -->
+          <path class="chev" d="M392 130 l16 6 l-6 16"/>
+          <path class="chev" d="M510 392 l6 16 l-16 6"/>
+          <path class="chev" d="M248 510 l-16 -6 l6 -16"/>
+          <path class="chev" d="M130 248 l-6 -16 l16 -6"/>
+
+          <g class="loop-core" text-anchor="middle">
+            <text class="k" x="320" y="315">THE  LOOP</text>
+            <text class="k2" x="320" y="340">own it end-to-end</text>
+          </g>
+
+          <!-- nodes: 8 @ 45deg from top, clockwise -->
+          <g class="node" style="--i:0"><circle cx="320" cy="110" r="9" fill="#E6AC5B"/><text class="lbl" x="320" y="80" text-anchor="middle"><tspan class="num" fill="#E6AC5B">01 </tspan>Observe</text></g>
+          <g class="node" style="--i:1"><circle cx="469" cy="171" r="9" fill="#E6AC5B"/><text class="lbl" x="489" y="164" text-anchor="start"><tspan class="num" fill="#E6AC5B">02 </tspan>Decide</text></g>
+          <g class="node" style="--i:2"><circle cx="530" cy="320" r="9" fill="#DBB073"/><text class="lbl" x="550" y="325" text-anchor="start"><tspan class="num" fill="#DBB073">03 </tspan>Shape</text></g>
+          <g class="node" style="--i:3"><circle cx="469" cy="469" r="9" fill="#57BACB"/><text class="lbl" x="489" y="486" text-anchor="start"><tspan class="num" fill="#57BACB">04 </tspan>Architect</text></g>
+          <g class="node" style="--i:4"><circle cx="320" cy="530" r="9" fill="#57BACB"/><text class="lbl" x="320" y="562" text-anchor="middle"><tspan class="num" fill="#57BACB">05 </tspan>Direct</text></g>
+          <g class="node" style="--i:5"><circle cx="171" cy="469" r="9" fill="#57BACB"/><text class="lbl" x="151" y="486" text-anchor="end"><tspan class="num" fill="#57BACB">06 </tspan>Verify</text></g>
+          <g class="node" style="--i:6"><circle cx="110" cy="320" r="9" fill="#57BACB"/><text class="lbl" x="90" y="325" text-anchor="end"><tspan class="num" fill="#57BACB">07 </tspan>Measure</text></g>
+          <g class="node" style="--i:7"><circle cx="171" cy="171" r="9" fill="#9CB59A"/><text class="lbl" x="151" y="164" text-anchor="end"><tspan class="num" fill="#9CB59A">08 </tspan>Iterate</text></g>
+        </svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ================= TARGET ================= -->
+<section class="section" id="target">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The role you are training for</span>
+      <h2 class="sec-title">Judgment, not throughput</h2>
+      <p class="sec-sub">Agent runtimes already handle execution, sessions, tracing, guardrails, and orchestration. Raw implementation stops being defensible as an identity. Specification, verification, security, architecture, and accountability get <em>more</em> important — measured against SVPG's four risks.</p>
+    </div>
+
+    <div class="grid risks">
+      <div class="risk"><div class="rn">Risk 01 · Value</div><h4>Will anyone choose this?</h4><p>Would a real user pick it over their current workaround.</p></div>
+      <div class="risk"><div class="rn">Risk 02 · Usability</div><h4>Can they figure it out?</h4><p>Task completion without you standing there to explain it.</p></div>
+      <div class="risk"><div class="rn">Risk 03 · Feasibility</div><h4>Can we build &amp; operate it?</h4><p>Shippable and runnable under real constraints and failure.</p></div>
+      <div class="risk"><div class="rn">Risk 04 · Viability</div><h4>Does it work for the business?</h4><p>Sustainable inside strategy, cost, legal, and org limits.</p></div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">By July 2027 you can</span>
+      <ul class="goals">
+        <li><span class="gi">01</span><span><b>Discover and validate</b> a meaningful user problem.</span></li>
+        <li><span class="gi">02</span><span><b>Design</b> a polished, accessible end-to-end experience.</span></li>
+        <li><span class="gi">03</span><span><b>Architect and operate</b> an evolvable production system.</span></li>
+        <li><span class="gi">04</span><span><b>Build agentic capability</b> with tools, evals, security, and observability.</span></li>
+        <li><span class="gi">05</span><span><b>Demonstrate measured outcomes</b> — behavior changed, not code shipped.</span></li>
+      </ul>
+      <div class="note">No curriculum guarantees job security. This one moves toward work that is harder to commoditize: <span class="amber">deciding, integrating, evaluating, and taking responsibility for outcomes.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= MARKET ================= -->
+<section class="section" id="market">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Why this bet · what the data says</span>
+      <h2 class="sec-title">The market already split</h2>
+      <p class="sec-sub">Fear is a bad planner; labor-market data is a better one. Four signals, checked July 2026 — re-check them quarterly and let <em>them</em> steer the track, not headlines.</p>
+    </div>
+
+    <div class="grid risks">
+      <div class="risk"><div class="rn">Signal 01 · Bifurcation</div><h4>Generic coding is depreciating</h4><p>US software-dev postings sit roughly a third below the pre-2020 baseline (Indeed Hiring Lab) while ML/AI openings run well above it. AI-skilled engineers carry a 28–56% pay premium.</p></div>
+      <div class="risk"><div class="rn">Signal 02 · Verification</div><h4>Review is the new bottleneck</h4><p>DORA: AI adoption raises delivery throughput <em>and</em> instability, together. Spec quality, review judgment, and trust systems are the scarce inputs — what Phases 4–5 train.</p></div>
+      <div class="risk"><div class="rn">Signal 03 · Deployment gap</div><h4>Shipping into messy reality pays</h4><p>Forward-deployed engineer postings grew ~800–1,100% into 2026. The most-listed skills: customer discovery, problem decomposition, AI product judgment — Part I of this track, verbatim.</p></div>
+      <div class="risk"><div class="rn">Signal 04 · Eval literacy</div><h4>Evals are the hiring signal</h4><p>Production teams screen for evaluation ability over framework trivia; evals, context, and agent-security work are consolidating into titled roles under the "AI product engineer" umbrella.</p></div>
+    </div>
+
+    <div class="card">
+      <span class="eyebrow">Roles this track maps to — use their vocabulary when you search</span>
+      <p style="margin-top:.7rem;color:var(--fg-2)">Product engineer · forward-deployed / applied AI engineer · AI product engineer · evals &amp; agent-reliability roles. Postings fragment across titles and most candidates apply under the wrong one. Match the language, not just the skills.</p>
+      <div class="online" style="margin-top:.9rem">
+        <a class="chip" href="https://www.hiringlab.org/">Indeed Hiring Lab</a>
+        <a class="chip" href="https://dora.dev/research/">DORA — AI-assisted development</a>
+        <a class="chip" href="https://newsletter.pragmaticengineer.com/">Pragmatic Engineer — job market</a>
+        <a class="chip" href="https://addyosmani.com/blog/agentic-code-review/">Osmani — Agentic code review</a>
+      </div>
+      <div class="note">Quarterly ritual, 30 minutes: re-read these four, adjust the track if the signals move. A plan that can't absorb new evidence is superstition.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= WEEKLY OS ================= -->
+<section class="section" id="weekly">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The operating system</span>
+      <h2 class="sec-title">Every week ends in an artifact</h2>
+      <p class="sec-sub">Passive reading will not produce product judgment. Seven hours, five blocks, one observable output. The build block is the biggest by design.</p>
+    </div>
+
+    <div class="bar" aria-hidden="true">
+      <div class="seg" style="flex:75; background:var(--amber)"><span>Study · 75</span></div>
+      <div class="seg" style="flex:60; background:var(--amber-d)"><span>Teardown · 60</span></div>
+      <div class="seg" style="flex:180; background:var(--cyan)"><span>Build · 180</span></div>
+      <div class="seg" style="flex:75; background:var(--cyan-d)"><span>Observe · 75</span></div>
+      <div class="seg" style="flex:30; background:var(--fg-3)"><span>Log · 30</span></div>
+    </div>
+
+    <div class="grid blocks">
+      <div class="block" style="--bl:var(--amber)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Study</div><div class="bd">One focused chapter or article.</div><span class="out">→ 5 extracted principles</span></div>
+      <div class="block" style="--bl:var(--amber-d)"><div class="bm">60<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Teardown</div><div class="bd">One shipped workflow, incl. states &amp; failures.</div><span class="out">→ annotated flow</span></div>
+      <div class="block" style="--bl:var(--cyan)"><div class="bm">180<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Build</div><div class="bd">Direct agents on one vertical slice; verify before it counts.</div><span class="out">→ trusted slice</span></div>
+      <div class="block" style="--bl:var(--cyan-d)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Observe</div><div class="bd">A user session, analytics, or an agent eval.</div><span class="out">→ evidence</span></div>
+      <div class="block" style="--bl:var(--fg-3)"><div class="bm">30<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Decision log</div><div class="bd">Evidence, decision, tradeoff, result.</div><span class="out">→ next test</span></div>
+    </div>
+
+    <div class="card" style="margin-top:1.3rem">
+      <span class="eyebrow">Run the build block agent-first</span>
+      <p style="margin-top:.7rem; color:var(--fg-2); max-width:72ch">Write the spec before the prompt: behavior, constraints, edge states, and how you'll verify. Delegate implementation to an agent. Review the diff like a hostile senior, then log every catch in the decision log. <span class="amber">Diffs are cheap now; trusted change is the product.</span> If you can't verify it, you didn't build it.</p>
+      <div class="note">This is deliberate practice for the two skills the data says stay expensive — specification and verification — run 52 times, on real work, with a written record of what your review caught.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRACK ================= -->
+<section class="section" id="track">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The track · 52 weeks</span>
+      <h2 class="sec-title">Two halves, six phases</h2>
+      <p class="sec-sub">Part I builds human and product foundations. Part II builds technical and AI-native leverage. Expand any phase for what to learn, what to produce, and the condition that says you've passed.</p>
+    </div>
+
+    <div class="ruler" aria-hidden="true">
+      <div class="rseg" style="flex:8; background:var(--amber)"><b>P1</b><small>W1–8</small></div>
+      <div class="rseg" style="flex:8; background:var(--amber-d)"><b>P2</b><small>W9–16</small></div>
+      <div class="rseg" style="flex:10; background:var(--amber-dd)"><b>P3</b><small>W17–26</small></div>
+      <div class="rseg" style="flex:10; background:var(--cyan)"><b>P4</b><small>W27–36</small></div>
+      <div class="rseg" style="flex:8; background:var(--cyan-d)"><b>P5</b><small>W37–44</small></div>
+      <div class="rseg" style="flex:8; background:var(--cyan-dd)"><b>P6</b><small>W45–52</small></div>
+    </div>
+    <div class="ruler-legend">
+      <span><i style="background:var(--amber)"></i> Part I — Human &amp; product foundations</span>
+      <span><i style="background:var(--cyan)"></i> Part II — Technical &amp; AI-native leverage</span>
+    </div>
+
+    <!-- PART I -->
+    <div class="part-head i">
+      <span class="pk">Part I</span>
+      <h3>Human &amp; product foundations</h3>
+      <span class="pw">Weeks 1–26 · 182 hrs</span>
+    </div>
+
+    <details class="phase i" open>
+      <summary>
+        <div class="pnum">01</div>
+        <div class="pmid"><h4>UX, usability &amp; accessibility</h4><div class="foc">Watch someone struggle without rescuing them — then fix the workflow and prove it helped.</div></div>
+        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 1–8</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Learn</div>
+            <ul class="learn">
+              <li>Mental models, mappings, affordances, signifiers, feedback, constraints</li>
+              <li>Information scent, recognition vs. recall, cognitive load</li>
+              <li>Error prevention, recovery, undo, defaults, progressive disclosure</li>
+              <li>Keyboard, focus, semantics, target size, contrast, assistive tech</li>
+              <li>Moderated usability testing &amp; evidence-based prioritization</li>
+            </ul>
+          </div>
+          <div>
+            <div class="col-h">Produce</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p1a"><span>4 heuristic evaluations of existing products</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p1b"><span>2 accessibility audits (keyboard-only)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p1c"><span>5 moderated sessions across ≥2 iterations</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p1d"><span>Redesign one broken workflow, test vs. original</span></label></li>
+            </ul>
+            <div class="subnote">Per issue: evidence → violated principle → user consequence → severity → correction.</div>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You distinguish an observed problem from your interpretation, prioritize by user consequence, fix the workflow, and verify the change helped.</p></div>
+        <div class="sources"><div class="col-h">Sources, in order</div><ol>
+          <li><a href="https://sensible.com/dont-make-me-think/">Don't Make Me Think, Revisited</a> <span class="au">— Krug</span></li>
+          <li>The Design of Everyday Things <span class="au">— Norman</span></li>
+          <li><a href="https://www.nngroup.com/articles/ten-usability-heuristics/">NN/g — 10 Heuristics + Heuristic Evaluation</a></li>
+          <li><a href="https://www.w3.org/WAI/WCAG22/quickref/">WCAG 2.2 Quick Reference</a></li>
+          <li><a href="https://www.gov.uk/service-manual/user-research">GOV.UK Service Manual — User Research</a></li>
+        </ol></div>
+      </div>
+    </details>
+
+    <details class="phase i">
+      <summary>
+        <div class="pnum">02</div>
+        <div class="pmid"><h4>Consumer feel &amp; visual execution</h4><div class="foc">Make an interface feel intentional — and justify every decision in hierarchy, not "it looks cleaner."</div></div>
+        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 9–16</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Learn</div>
+            <ul class="learn">
+              <li>Hierarchy &amp; emphasis; density &amp; rhythm</li>
+              <li>Typography &amp; interface language</li>
+              <li>Responsiveness &amp; perceived speed</li>
+              <li>Conventions, transitions, edge states</li>
+            </ul>
+            <div class="col-h" style="margin-top:1.1rem">Teardown template</div>
+            <ul class="learn">
+              <li>Intent · Attention · Interaction · State · Emotion</li>
+            </ul>
+          </div>
+          <div>
+            <div class="col-h">Produce</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p2a"><span>6 full-flow teardowns (not screen critiques)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p2b"><span>Reconstruct 3 flows without copying CSS</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p2c"><span>Small design system (type, space, color, input, action)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p2d"><span>One workflow across all 6 states</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p2e"><span>3 usability sessions + 1 preference test</span></label></li>
+            </ul>
+            <div class="subnote">Preference tests only after task completion works.</div>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You explain every major visual decision in terms of hierarchy, comprehension, behavior, convention, or brand.</p></div>
+        <div class="sources"><div class="col-h">Sources, in order</div><ol>
+          <li><a href="https://refactoringui.com/">Refactoring UI</a> <span class="au">— Wathan &amp; Schoger</span></li>
+          <li>Thinking with Type, 3e <span class="au">— Lupton</span></li>
+          <li>Designing Interfaces <span class="au">— Tidwell et al.</span></li>
+          <li>Writing Is Designing <span class="au">— Metts &amp; Welfle</span></li>
+          <li><a href="https://baymard.com/research/checkout-usability">Mobbin + Baymard as laboratories</a></li>
+        </ol></div>
+      </div>
+    </details>
+
+    <details class="phase i">
+      <summary>
+        <div class="pnum">03</div>
+        <div class="pmid"><h4>Discovery, shaping, strategy &amp; measurement</h4><div class="foc">Move from "receives requirements" to "helps decide what deserves to be built."</div></div>
+        <div class="pmeta"><span class="hrs">70 hrs</span><span>Weeks 17–26</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Learn</div>
+            <ul class="learn">
+              <li>Outcomes, continuous customer contact, opportunity solution trees</li>
+              <li>Assumption identification &amp; testing; interviewing without leading</li>
+              <li>Appetites, shaping, breadboards, rabbit holes, fixed-time / variable-scope</li>
+              <li>Hypotheses, guardrails, novelty effects, sample-ratio mismatch</li>
+              <li>Trustworthy numbers &gt; easy numbers</li>
+            </ul>
+            <div class="col-h" style="margin-top:1.1rem">Ask past behavior, not opinion</div>
+            <ul class="learn">
+              <li>"Walk me through the last time this happened."</li>
+              <li>"What did that cost you? What did you try?"</li>
+            </ul>
+          </div>
+          <div>
+            <div class="col-h">Produce</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p3a"><span>10 problem interviews on one workflow</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3b"><span>Opportunity solution tree tied to an outcome</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3c"><span>Test 3 riskiest assumptions (prototype / concierge)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3d"><span>Shape Up pitch: appetite, boundaries, no-gos</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3e"><span>Instrument a funnel + one real experiment / rollout</span></label></li>
+            </ul>
+            <div class="subnote">Metrics: 1 primary · 1 activation · 1 retention · 2 guardrails · defined population + window.</div>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You reject or reshape one of your own ideas on evidence, and can state what behavior you're changing, why it matters, and how you'll know.</p></div>
+        <div class="sources"><div class="col-h">Sources, in order</div><ol>
+          <li><a href="https://www.producttalk.org/getting-started-with-discovery/">Continuous Discovery Habits</a> <span class="au">— Torres</span></li>
+          <li><a href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/">Interviewing Users, 2e</a> <span class="au">— Portigal</span></li>
+          <li><a href="https://www.svpg.com/four-big-risks/">SVPG — Four Big Risks + Operating Model</a></li>
+          <li><a href="https://basecamp.com/shapeup">Shape Up</a> <span class="au">— Singer</span></li>
+          <li><a href="https://www.cambridge.org/core/books/trustworthy-online-controlled-experiments/D97B26382EB0EB2DC2019A7A7B518F59">Trustworthy Online Controlled Experiments</a> <span class="au">— Kohavi et al.</span></li>
+        </ol></div>
+      </div>
+    </details>
+
+    <!-- PART II -->
+    <div class="part-head ii">
+      <span class="pk">Part II</span>
+      <h3>Technical judgment &amp; AI-native leverage</h3>
+      <span class="pw">Weeks 27–52 · 182 hrs</span>
+    </div>
+
+    <details class="phase ii">
+      <summary>
+        <div class="pnum">04</div>
+        <div class="pmid"><h4>Architecture, reliability, security &amp; evolution</h4><div class="foc">Decide under uncertainty while keeping a viable path for change. A diagram without arguments isn't architecture.</div></div>
+        <div class="pmeta"><span class="hrs">70 hrs</span><span>Weeks 27–36</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Learn</div>
+            <ul class="learn">
+              <li>Modularity, information hiding, cohesion, coupling, abstraction depth</li>
+              <li>Quality attributes and their conflicts</li>
+              <li>Data models, transactions, consistency, replication, partitioning, streams</li>
+              <li>Timeouts, retries, idempotency, backpressure, overload</li>
+              <li>Operability, security, cost, migration, org constraints</li>
+            </ul>
+            <div class="col-h" style="margin-top:1.1rem">ADR template</div>
+            <ul class="learn"><li>Context · Decision · Alternatives · Consequences · Revisit trigger</li></ul>
+          </div>
+          <div>
+            <div class="col-h">Produce</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p4a"><span>Quality-attribute scenarios (avail, latency, sec, cost, change)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p4b"><span>C4 context + container diagrams</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p4c"><span>≥5 architecture decision records</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p4d"><span>SLOs, error budget, runbook, 1 controlled failure drill</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p4e"><span>Cost model + threat model for the key workflow</span></label></li>
+            </ul>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You explain why the architecture fits the current product, team, scale, and failure tolerance — and name its breaking point and a credible migration path.</p></div>
+        <div class="sources"><div class="col-h">Sources, in order</div><ol>
+          <li>A Philosophy of Software Design, 2e <span class="au">— Ousterhout</span></li>
+          <li>Fundamentals of Software Architecture, 2e <span class="au">— Richards &amp; Ford</span></li>
+          <li><a href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781098119058/">Designing Data-Intensive Applications, 2e</a> <span class="au">— Kleppmann &amp; Riccomini</span></li>
+          <li><a href="https://www.oreilly.com/library/view/software-architecture-the/9781492086888/">Software Architecture: The Hard Parts</a> <span class="au">— Ford et al.</span></li>
+          <li><a href="https://sre.google/books/">Google SRE</a> + <a href="https://aws.amazon.com/builders-library/">AWS Builders' Library</a></li>
+        </ol></div>
+      </div>
+    </details>
+
+    <details class="phase ii">
+      <summary>
+        <div class="pnum">05</div>
+        <div class="pmid"><h4>AI-native &amp; agentic product engineering</h4><div class="foc">Learn the full lifecycle, not prompt tricks. "More autonomous" is not itself a success criterion.</div></div>
+        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 37–44</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Implementation order</div>
+            <ul class="learn">
+              <li>① Deterministic code</li>
+              <li>② Single model call</li>
+              <li>③ Fixed workflow (route / chain / parallel)</li>
+              <li>④ Bounded agent</li>
+              <li>⑤ Multi-agent — <span class="cyan">most projects stop before here</span></li>
+            </ul>
+            <div class="col-h" style="margin-top:1.1rem">Evaluation stack</div>
+            <ul class="learn"><li>Deterministic checks · representative cases · behavioral graders · operational measures · production feedback</li></ul>
+          </div>
+          <div>
+            <div class="col-h">Produce</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p5a"><span>Deterministic baseline for one useful task</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5b"><span>Bounded agent with ≤5 well-defined tools</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5c"><span>50–100 version-controlled eval cases</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5d"><span>Failure taxonomy from traces, not anecdotes</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5e"><span>Least-privilege perms, stopping conditions, approval gates</span></label></li>
+            </ul>
+            <div class="subnote">Tools: narrow purpose, typed I/O, explicit side effects + authz, idempotency, machine-readable errors.</div>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You show the agentic version beats the simpler baseline on a defined outcome while staying acceptable on cost, latency, reliability, and risk.</p></div>
+        <div class="sources"><div class="col-h">Sources, in order</div><ol>
+          <li><a href="https://www.anthropic.com/research/building-effective-agents">Anthropic — Building Effective Agents</a></li>
+          <li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic — Effective Context Engineering</a></li>
+          <li><a href="https://openai.github.io/openai-agents-python/">OpenAI Agents SDK · Guardrails · Tracing · Evals</a></li>
+          <li><a href="https://modelcontextprotocol.io/docs/learn/architecture">Model Context Protocol spec</a></li>
+          <li><a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST GenAI Profile</a> + <a href="https://genai.owasp.org/">OWASP Agentic Top 10</a></li>
+        </ol></div>
+      </div>
+    </details>
+
+    <details class="phase ii">
+      <summary>
+        <div class="pnum">06</div>
+        <div class="pmid"><h4>Integrated capstone</h4><div class="foc">One real product on a recurring problem. No generic task manager, habit tracker, or chat wrapper.</div></div>
+        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 45–52</span><span class="chevd"></span></div>
+      </summary>
+      <div class="pbody">
+        <div class="pcols">
+          <div>
+            <div class="col-h">Choose a workflow where</div>
+            <ul class="learn">
+              <li>People already use an awkward workaround</li>
+              <li>The task recurs and success is observable</li>
+              <li>You can reach real users</li>
+              <li>One bounded agentic capability may materially help</li>
+            </ul>
+            <div class="col-h" style="margin-top:1.1rem">Case study arc</div>
+            <ul class="learn"><li>Problem → evidence → rejected ideas → chosen behavior → design → architecture → agent boundary → evaluation → measured result → remaining uncertainty</li></ul>
+          </div>
+          <div>
+            <div class="col-h">Ship all five</div>
+            <ul class="tasks" data-phase>
+              <li><label class="task"><input type="checkbox" data-k="p6a"><span>Human evidence: ≥10 users or 8 recorded sessions</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6b"><span>One polished, accessible end-to-end flow, all states</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6c"><span>Instrumented funnel + guardrails + 1 controlled test</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6d"><span>C4, 5 ADRs, SLOs, threat model, cost model, runbook</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6e"><span>Baseline, eval dataset, traces, perms, measured comparison</span></label></li>
+            </ul>
+            <div class="subnote">Include failures and reversals. A case study that hides mistakes is marketing, not judgment.</div>
+          </div>
+        </div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>A senior engineer, designer, and PM can independently inspect your evidence and understand why the problem mattered, why this design and architecture, how you controlled the agent, and whether the product improved anything.</p></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= READING ================= -->
+<section class="section" id="reading">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Reading order</span>
+      <h2 class="sec-title">Buy in tranches, not all at once</h2>
+      <p class="sec-sub">Finish the first five while producing the matching artifacts. Everything else stays online until a phase — or a real project — asks for it.</p>
+    </div>
+
+    <div class="grid g2">
+      <div class="card">
+        <div class="tranche-k now"><span class="n">Buy now</span><h4>The first five</h4></div>
+        <ul class="books">
+          <li class="book"><span class="bt">Don't Make Me Think, Revisited</span><span class="ba">Steve Krug</span></li>
+          <li class="book"><span class="bt">The Design of Everyday Things</span><span class="ba">Don Norman</span></li>
+          <li class="book"><a class="bt" href="https://refactoringui.com/">Refactoring UI</a><span class="ba">Wathan &amp; Schoger</span></li>
+          <li class="book"><span class="bt">Continuous Discovery Habits</span><span class="ba">Teresa Torres</span></li>
+          <li class="book"><span class="bt">A Philosophy of Software Design, 2e</span><span class="ba">John Ousterhout</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="tranche-k later"><span class="n">When the phase begins</span><h4>The next five</h4></div>
+        <ul class="books">
+          <li class="book"><a class="bt" href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/">Interviewing Users, 2e</a><span class="ba">Steve Portigal</span></li>
+          <li class="book"><span class="bt">Thinking with Type, 3e</span><span class="ba">Ellen Lupton</span></li>
+          <li class="book"><a class="bt" href="https://www.cambridge.org/core/books/trustworthy-online-controlled-experiments/D97B26382EB0EB2DC2019A7A7B518F59">Trustworthy Online Controlled Experiments</a><span class="ba">Kohavi, Tang &amp; Xu</span></li>
+          <li class="book"><a class="bt" href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781098119058/">Designing Data-Intensive Applications, 2e</a><span class="ba">Kleppmann &amp; Riccomini</span></li>
+          <li class="book"><a class="bt" href="https://www.oreilly.com/library/view/software-architecture-the/9781492086888/">Software Architecture: The Hard Parts</a><span class="ba">Ford, Richards et al.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <span class="eyebrow">Use online — free, primary, authoritative</span>
+      <div class="online">
+        <a class="chip" href="https://basecamp.com/shapeup">Shape Up</a>
+        <a class="chip" href="https://www.nngroup.com/articles/ten-usability-heuristics/">NN/g</a>
+        <a class="chip" href="https://www.w3.org/WAI/WCAG22/quickref/">WCAG 2.2</a>
+        <a class="chip" href="https://www.gov.uk/service-manual/user-research">GOV.UK</a>
+        <a class="chip" href="https://sre.google/books/">Google SRE</a>
+        <a class="chip" href="https://aws.amazon.com/builders-library/">AWS Builders' Library</a>
+        <a class="chip" href="https://posthog.com/handbook/engineering/product-engineering">PostHog Handbook</a>
+        <a class="chip" href="https://linear.app/method">Linear Method</a>
+        <a class="chip" href="https://modelcontextprotocol.io/docs/learn/architecture">MCP</a>
+        <a class="chip" href="https://www.nist.gov/itl/ai-risk-management-framework">NIST</a>
+        <a class="chip" href="https://genai.owasp.org/">OWASP</a>
+        <a class="chip" href="https://openai.github.io/openai-agents-python/">OpenAI Agents</a>
+        <a class="chip" href="https://www.anthropic.com/research/building-effective-agents">Anthropic</a>
+      </div>
+      <div class="hier"><span class="eyebrow" style="width:100%">Source-quality hierarchy</span>
+        <b>Standards &amp; primary docs</b><span class="ar">→</span><b>canonical books</b><span class="ar">→</span><b>production handbooks</b><span class="ar">→</span><b>empirical pattern libraries</b><span class="ar">→</span><b>visual inspiration</b>
+      </div>
+    </div>
+
+    <details class="more">
+      <summary><span>Secondary shelf — pull in only when a real project exposes the gap</span><span style="color:var(--fg-3)">+</span></summary>
+      <div class="more-body">
+        <div class="shelf-row"><span class="sk">Business &amp; positioning</span><span class="sv">Good Strategy/Bad Strategy · <a href="https://7powers.com/" style="color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)">7 Powers</a> · Obviously Awesome</span></div>
+        <div class="shelf-row"><span class="sk">Team &amp; org</span><span class="sv">Team Topologies · Software Engineering at Google</span></div>
+        <div class="shelf-row"><span class="sk">Architectural evolution</span><span class="sv">Building Evolutionary Architectures · DDD Distilled · Patterns of Enterprise Application Architecture</span></div>
+        <div class="shelf-row"><span class="sk">Design systems</span><span class="sv">Material Design 3 · Apple HIG · GOV.UK Design System</span></div>
+        <div class="shelf-row"><span class="sk">Deeper interaction</span><span class="sv">About Face · Information Architecture for the Web and Beyond · Microinteractions</span></div>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= FIRST 30 DAYS ================= -->
+<section class="section" id="start">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Start here · first 30 days</span>
+      <h2 class="sec-title">One full evidence-to-iteration cycle</h2>
+      <p class="sec-sub">Not accumulated vocabulary — a complete loop, run once, end to end. Four weeks, four outputs.</p>
+    </div>
+
+    <div class="grid weeks30">
+      <div class="wk">
+        <div class="wn">Week 1 · Baseline</div>
+        <h4>Read &amp; tear down</h4>
+        <p>7 hrs: first half of DMMT, pick one workflow, complete a heuristic teardown.</p>
+        <span class="out">teardowns/001-baseline.md</span>
+        <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w1"><span>Done</span></label></li></ul>
+      </div>
+      <div class="wk">
+        <div class="wn">Week 2 · Accessibility</div>
+        <h4>Redesign low-fi</h4>
+        <p>Finish the book, check the relevant WCAG 2.2 criteria, redesign in low fidelity.</p>
+        <span class="out">prototype · normal/empty/loading/error/success</span>
+        <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w2"><span>Done</span></label></li></ul>
+      </div>
+      <div class="wk">
+        <div class="wn">Week 3 · Observation</div>
+        <h4>Watch, don't explain</h4>
+        <p>3 moderated sessions. Record completion, hesitation, errors, quotes, recovery.</p>
+        <span class="out">research/session-001…003.md + ranked issues</span>
+        <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w3"><span>Done</span></label></li></ul>
+      </div>
+      <div class="wk">
+        <div class="wn">Week 4 · Ship</div>
+        <h4>Ship &amp; measure</h4>
+        <p>Implement one corrected slice, instrument its primary events, test with 2 more people.</p>
+        <span class="out">visible win: the full cycle, closed</span>
+        <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w4"><span>Done</span></label></li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= POSITION ================= -->
+<section class="section" id="position">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The layer skills don't cover</span>
+      <h2 class="sec-title">Skill is necessary. Position pays the rent.</h2>
+      <p class="sec-sub">In a contracting general market, hiring runs on referrals and visible proof, not application volume. Private competence protects no one. Three habits and a floor.</p>
+    </div>
+
+    <div class="grid g3">
+      <div class="risk"><div class="rn">Habit 01 · Publish</div><h4>Make the work findable</h4><p>You already produce weekly artifacts. Sanitize and publish one per month — a teardown, an ADR, an eval write-up. The capstone case study is the resume.</p></div>
+      <div class="risk"><div class="rn">Habit 02 · People</div><h4>Two conversations a month</h4><p>Talk to people already doing product-engineer, FDE, or applied-AI work. Ask what their week looks like and what they screen for. 24 conversations beat 500 applications.</p></div>
+      <div class="risk"><div class="rn">Habit 03 · Domain</div><h4>Pick a domain by week 26</h4><p>Generic capability commoditizes first. Anchor the capstone in a domain with real constraints — money, health, logistics, compliance — where context can't be prompted away.</p></div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <span class="eyebrow">Position milestones</span>
+      <ul class="tasks" data-phase style="--acc:var(--cyan); margin-top:.8rem">
+        <li><label class="task"><input type="checkbox" data-k="pos1"><span>Public home for artifacts exists (site or repo)</span></label></li>
+        <li><label class="task"><input type="checkbox" data-k="pos2"><span>First public teardown or ADR shipped</span></label></li>
+        <li><label class="task"><input type="checkbox" data-k="pos3"><span>Domain chosen and named (by week 26)</span></label></li>
+        <li><label class="task"><input type="checkbox" data-k="pos4"><span>10 practitioner conversations logged</span></label></li>
+        <li><label class="task"><input type="checkbox" data-k="pos5"><span>Quarterly market re-check on the calendar</span></label></li>
+        <li><label class="task"><input type="checkbox" data-k="pos6"><span>Capstone case study published where a hiring manager will find it</span></label></li>
+      </ul>
+      <div class="note">The floor, stated once: hold toward six months of expenses, and run one real interview loop every quarter or two even while employed — calibration is cheapest before you need it. Fear shrinks when the downside is funded.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAUTIONS ================= -->
+<section class="section" id="cautions">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">What not to optimize for</span>
+      <h2 class="sec-title">Five traps that look like progress</h2>
+    </div>
+    <div class="grid g3">
+      <div class="risk"><div class="rn">Trap 01</div><h4>Language tourism</h4><p>Use the stack you ship and instrument fastest for the first 90 days.</p></div>
+      <div class="risk"><div class="rn">Trap 02</div><h4>Prompt collections</h4><p>Prompts without datasets, graders, and failure analysis are fragile folklore.</p></div>
+      <div class="risk"><div class="rn">Trap 03</div><h4>Multi-agent novelty</h4><p>Add agents only after simpler designs fail a measured requirement.</p></div>
+      <div class="risk"><div class="rn">Trap 04</div><h4>Dribbble imitation</h4><p>Copying surfaces without understanding flows and users is portfolio theater.</p></div>
+      <div class="risk"><div class="rn">Trap 05</div><h4>Pattern collecting</h4><p>A named pattern without constraints, consequences, and evidence is trivia.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER / SETUP ================= -->
+<footer>
+  <div class="wrap">
+    <span class="eyebrow" style="display:block;margin-bottom:1.8rem">Setup · run this now</span>
+    <div class="setup-grid">
+      <div>
+        <div class="tree">
+<span class="root">product-engineer-lab/</span>
+├── <span class="d">research/</span>      <span class="c"># sessions, interviews, findings</span>
+├── <span class="d">teardowns/</span>     <span class="c"># shipped-workflow analyses</span>
+├── <span class="d">product/</span>       <span class="c"># pitches, trees, metrics</span>
+├── <span class="d">architecture/</span>  <span class="c"># C4, ADRs, SLOs, threat models</span>
+└── <span class="d">agents/</span>        <span class="c"># tools, evals, traces, perms</span>
+        </div>
+      </div>
+      <div>
+        <div class="cmd" id="cmd"><button class="copy" onclick="copyCmd()">copy</button><span class="p">$</span> mkdir -p product-engineer-lab/{research,teardowns,product,architecture,agents}</div>
+        <p class="setup-cta">Then block <b>a two-hour study slot and a five-hour build slot</b> on this week's calendar — and start with <b>teardowns/001-baseline.md</b>. Progress you check on this page saves in your browser.</p>
+      </div>
+    </div>
+    <div class="foot-meta">
+      <span>product-engineer-lab · 7 hrs/wk · Jul 2026 → Jul 2027 · ≈364 hrs</span>
+      <button class="reset" onclick="resetProgress()">Reset progress</button>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var KEY="pel-progress-v1";
+  var boxes=Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][data-k]'));
+
+  function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
+  function save(m){ try{ localStorage.setItem(KEY, JSON.stringify(m)); }catch(e){} }
+
+  var state=load();
+  boxes.forEach(function(b){ if(state[b.dataset.k]) b.checked=true; });
+
+  function updateMeters(){
+    document.querySelectorAll('ul.tasks[data-phase]').forEach(function(ul){
+      var ins=ul.querySelectorAll('input[type=checkbox]');
+      if(ins.length<2) return; // skip single-box (30-day) lists
+      var done=Array.prototype.filter.call(ins,function(i){return i.checked;}).length;
+      var meter=ul.nextElementSibling && ul.parentElement.querySelector('.prog');
+      if(!meter){
+        meter=document.createElement('div'); meter.className='prog';
+        meter.innerHTML='<span class="c">'+done+' / '+ins.length+'</span><span class="track"><span class="fill"></span></span>';
+        ul.parentElement.appendChild(meter);
+      }
+      meter.querySelector('.c').textContent=done+' / '+ins.length;
+      meter.querySelector('.fill').style.width=(done/ins.length*100)+'%';
+    });
+  }
+
+  boxes.forEach(function(b){
+    b.addEventListener('change',function(){
+      state[b.dataset.k]=b.checked;
+      if(!b.checked) delete state[b.dataset.k];
+      save(state); updateMeters();
+    });
+  });
+  updateMeters();
+
+  window.resetProgress=function(){
+    boxes.forEach(function(b){ b.checked=false; });
+    state={}; save(state); updateMeters();
+  };
+  window.copyCmd=function(){
+    var t="mkdir -p product-engineer-lab/{research,teardowns,product,architecture,agents}";
+    try{ navigator.clipboard.writeText(t); var btn=document.querySelector('#cmd .copy'); if(btn){ var o=btn.textContent; btn.textContent='copied'; setTimeout(function(){btn.textContent=o;},1400);} }catch(e){}
+  };
+
+  // scroll progress bar
+  var bar=document.getElementById('scroll');
+  var ticking=false;
+  function onScroll(){
+    if(ticking) return; ticking=true;
+    requestAnimationFrame(function(){
+      var h=document.documentElement.scrollHeight-window.innerHeight;
+      bar.style.width=(h>0?(window.scrollY/h*100):0)+'%'; ticking=false;
+    });
+  }
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+  // active nav highlight
+  var links=Array.prototype.slice.call(document.querySelectorAll('.nav-links a'));
+  var map={}; links.forEach(function(a){ map[a.getAttribute('href').slice(1)]=a; });
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){
+          links.forEach(function(a){a.classList.remove('active');});
+          if(map[en.target.id]) map[en.target.id].classList.add('active');
+        }
+      });
+    },{rootMargin:'-45% 0px -50% 0px'});
+    ['target','market','weekly','track','reading','start','position','cautions'].forEach(function(id){
+      var el=document.getElementById(id); if(el) io.observe(el);
+    });
+  }
+
+  // expand all details for printing
+  var opened=[];
+  window.addEventListener('beforeprint',function(){
+    opened=[]; document.querySelectorAll('details').forEach(function(d){ opened.push(d.open); d.open=true; });
+  });
+  window.addEventListener('afterprint',function(){
+    var d=document.querySelectorAll('details'); d.forEach(function(el,i){ el.open=opened[i]; });
+  });
+})();
+</script>
+</body>
+</html>
