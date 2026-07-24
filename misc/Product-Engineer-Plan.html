@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>product-engineer-lab · Jul 2026 → Jul 2027</title>
+<title>product-engineer-lab · 9 hrs/week · Jul 2026 → Jul 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -105,7 +105,7 @@
   .bar{display:flex; height:56px; border-radius:12px; overflow:hidden; border:1px solid var(--line); margin-bottom:1.4rem}
   .seg{display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:.72rem; font-weight:700; color:#0E141A; position:relative; min-width:0}
   .seg span{padding-inline:.4rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
-  .blocks{grid-template-columns:repeat(5,1fr)}
+  .blocks{grid-template-columns:repeat(3,1fr)}
   .block{background:var(--bg-2); border:1px solid var(--line); border-radius:var(--r); padding:1.05rem 1.05rem; border-top:3px solid var(--bl,var(--fg-3))}
   .block .bm{font-family:var(--mono); font-size:1.35rem; font-weight:700}
   .block .bt{font-weight:600; margin:.15rem 0 .45rem; font-size:.98rem}
@@ -270,6 +270,7 @@
       <a href="#target">target</a>
       <a href="#market">market</a>
       <a href="#weekly">weekly</a>
+      <a href="#pragmatic">pragmatic</a>
       <a href="#track">track</a>
       <a href="#reading">reading</a>
       <a href="#start">30 days</a>
@@ -286,8 +287,8 @@
       <div>
         <div class="hero-eye">
           <span class="tag live">● Jul 2026 → Jul 2027</span>
-          <span class="tag">7 hrs / week</span>
-          <span class="tag">≈ 364 hrs</span>
+          <span class="tag">9 hrs / week</span>
+          <span class="tag">≈ 468 hrs</span>
         </div>
         <h1 class="title">Train the <span class="b">AI-native<br>product engineer.</span></h1>
         <p class="lede">Not a prompt engineer, not a designer who codes, not a generalist mediocre at six jobs. Someone who owns the whole loop — and can be held <b>accountable for the outcome</b>, not just the code.</p>
@@ -401,30 +402,72 @@
     <div class="sec-head">
       <span class="eyebrow">The operating system</span>
       <h2 class="sec-title">Every week ends in an artifact</h2>
-      <p class="sec-sub">Passive reading will not produce product judgment. Seven hours, five blocks, one observable output. The build block is the biggest by design.</p>
+      <p class="sec-sub">Passive reading will not produce product judgment. Nine hours, six blocks, one observable output. Pragmatic study feeds directly into applied build work and deliberate reflection.</p>
     </div>
 
     <div class="bar" aria-hidden="true">
-      <div class="seg" style="flex:75; background:var(--amber)"><span>Study · 75</span></div>
-      <div class="seg" style="flex:60; background:var(--amber-d)"><span>Teardown · 60</span></div>
-      <div class="seg" style="flex:180; background:var(--cyan)"><span>Build · 180</span></div>
+      <div class="seg" style="flex:75; background:var(--amber)"><span>Phase study · 75</span></div>
+      <div class="seg" style="flex:60; background:var(--amber-d)"><span>Pragmatic · 60</span></div>
+      <div class="seg" style="flex:60; background:var(--amber-dd)"><span>Teardown · 60</span></div>
+      <div class="seg" style="flex:225; background:var(--cyan)"><span>Build · 225</span></div>
       <div class="seg" style="flex:75; background:var(--cyan-d)"><span>Observe · 75</span></div>
-      <div class="seg" style="flex:30; background:var(--fg-3)"><span>Log · 30</span></div>
+      <div class="seg" style="flex:45; background:var(--fg-3)"><span>Log · 45</span></div>
     </div>
 
     <div class="grid blocks">
-      <div class="block" style="--bl:var(--amber)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Study</div><div class="bd">One focused chapter or article.</div><span class="out">→ 5 extracted principles</span></div>
-      <div class="block" style="--bl:var(--amber-d)"><div class="bm">60<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Teardown</div><div class="bd">One shipped workflow, incl. states &amp; failures.</div><span class="out">→ annotated flow</span></div>
-      <div class="block" style="--bl:var(--cyan)"><div class="bm">180<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Build</div><div class="bd">Direct agents on one vertical slice; verify before it counts.</div><span class="out">→ trusted slice</span></div>
+      <div class="block" style="--bl:var(--amber)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Phase study</div><div class="bd">One focused chapter or article from the active phase.</div><span class="out">→ 5 extracted principles</span></div>
+      <div class="block" style="--bl:var(--amber-d)"><div class="bm">60<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Pragmatic practice</div><div class="bd">Read for 45 minutes; spend 15 making one idea operational.</div><span class="out">→ principle + trigger + experiment</span></div>
+      <div class="block" style="--bl:var(--amber-dd)"><div class="bm">60<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Teardown</div><div class="bd">One shipped workflow, incl. states &amp; failures.</div><span class="out">→ annotated flow</span></div>
+      <div class="block" style="--bl:var(--cyan)"><div class="bm">225<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Build</div><div class="bd">Direct agents on one vertical slice; apply the week's pragmatic principle and verify both.</div><span class="out">→ trusted slice + applied practice</span></div>
       <div class="block" style="--bl:var(--cyan-d)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Observe</div><div class="bd">A user session, analytics, or an agent eval.</div><span class="out">→ evidence</span></div>
-      <div class="block" style="--bl:var(--fg-3)"><div class="bm">30<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Decision log</div><div class="bd">Evidence, decision, tradeoff, result.</div><span class="out">→ next test</span></div>
+      <div class="block" style="--bl:var(--fg-3)"><div class="bm">45<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Decision log</div><div class="bd">Evidence, decision, tradeoff, result, and whether the pragmatic practice earned reuse.</div><span class="out">→ next test + retained lesson</span></div>
     </div>
 
     <div class="card" style="margin-top:1.3rem">
       <span class="eyebrow">Run the build block agent-first</span>
       <p style="margin-top:.7rem; color:var(--fg-2); max-width:72ch">Write the spec before the prompt: behavior, constraints, edge states, and how you'll verify. Delegate implementation to an agent. Review the diff like a hostile senior, then log every catch in the decision log. <span class="amber">Diffs are cheap now; trusted change is the product.</span> If you can't verify it, you didn't build it.</p>
       <div class="note">This is deliberate practice for the two skills the data says stay expensive — specification and verification — run 52 times, on real work, with a written record of what your review caught.</div>
+      <div class="note">Calendar shape: <span class="amber">3 hours learning + teardown</span> · <span class="cyan">4 hours build</span> · <span class="cyan">2 hours observe + reflect</span>. Preserve the sequence even when the sessions move.</div>
     </div>
+  </div>
+</section>
+
+<!-- ================= PRAGMATIC PROGRAMMER ================= -->
+<section class="section" id="pragmatic">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">Year-long companion · 52 applied lessons</span>
+      <h2 class="sec-title"><span class="amber">The Pragmatic Programmer</span>, practiced weekly</h2>
+      <p class="sec-sub">The book runs beside every phase. Do not read for page-count completion: extract one relevant idea, change the week's work with it, and keep it only when the evidence supports it.</p>
+    </div>
+
+    <div class="grid risks">
+      <div class="risk"><div class="rn">01 · Read · 45 min</div><h4>Find one useful idea</h4><p>Read only enough to identify a principle relevant to the current artifact.</p></div>
+      <div class="risk"><div class="rn">02 · Distill · 15 min</div><h4>Make it operational</h4><p>Write the principle, the trigger for using it, and the behavior you will change.</p></div>
+      <div class="risk"><div class="rn">03 · Apply · +45 build</div><h4>Change the artifact</h4><p>Use it in code, architecture, tooling, testing, product work, or collaboration.</p></div>
+      <div class="risk"><div class="rn">04 · Verify · +15 log</div><h4>Keep or reject it</h4><p>Record the result, tradeoff, and whether the practice deserves reuse.</p></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:1rem">
+      <div class="card" style="--acc:var(--amber)">
+        <div class="tranche-k now"><span class="n">Part I · Weeks 1–26</span><h4>Product judgment through pragmatic habits</h4></div>
+        <ul class="learn">
+          <li><b>Craft &amp; feedback:</b> care about the work, resist broken windows, maintain a knowledge portfolio, communicate deliberately.</li>
+          <li><b>Design for change:</b> ETC, DRY, orthogonality, reversibility, and decisions whose consequences remain visible.</li>
+          <li><b>Discover &amp; deliver:</b> tracer bullets, prototypes, estimation, requirements as learned constraints, and tight feedback loops.</li>
+        </ul>
+      </div>
+      <div class="card" style="--acc:var(--cyan)">
+        <div class="tranche-k later"><span class="n">Part II · Weeks 27–52</span><h4>Technical leverage through pragmatic discipline</h4></div>
+        <ul class="learn">
+          <li><b>Reliability:</b> contracts, assertions, loud failures, resource balancing, defensive boundaries, and reversible architecture.</li>
+          <li><b>Tools &amp; verification:</b> debugging, automation, testing, property-based thinking, security, and disciplined tool design.</li>
+          <li><b>Ownership:</b> continuous refactoring, pragmatic teams, user delight, pride in the result, and responsibility for outcomes.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">Completion rule: one decision-log entry per week must show where a pragmatic principle was applied, adapted, or consciously rejected. Re-reading is valid; passive completion is not.</div>
   </div>
 </section>
 
@@ -454,14 +497,14 @@
     <div class="part-head i">
       <span class="pk">Part I</span>
       <h3>Human &amp; product foundations</h3>
-      <span class="pw">Weeks 1–26 · 182 hrs</span>
+      <span class="pw">Weeks 1–26 · 234 hrs</span>
     </div>
 
     <details class="phase i" open>
       <summary>
         <div class="pnum">01</div>
         <div class="pmid"><h4>UX, usability &amp; accessibility</h4><div class="foc">Watch someone struggle without rescuing them — then fix the workflow and prove it helped.</div></div>
-        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 1–8</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 1–8</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -501,7 +544,7 @@
       <summary>
         <div class="pnum">02</div>
         <div class="pmid"><h4>Consumer feel &amp; visual execution</h4><div class="foc">Make an interface feel intentional — and justify every decision in hierarchy, not "it looks cleaner."</div></div>
-        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 9–16</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 9–16</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -545,7 +588,7 @@
       <summary>
         <div class="pnum">03</div>
         <div class="pmid"><h4>Discovery, shaping, strategy &amp; measurement</h4><div class="foc">Move from "receives requirements" to "helps decide what deserves to be built."</div></div>
-        <div class="pmeta"><span class="hrs">70 hrs</span><span>Weeks 17–26</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">90 hrs</span><span>Weeks 17–26</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -591,14 +634,14 @@
     <div class="part-head ii">
       <span class="pk">Part II</span>
       <h3>Technical judgment &amp; AI-native leverage</h3>
-      <span class="pw">Weeks 27–52 · 182 hrs</span>
+      <span class="pw">Weeks 27–52 · 234 hrs</span>
     </div>
 
     <details class="phase ii">
       <summary>
         <div class="pnum">04</div>
         <div class="pmid"><h4>Architecture, reliability, security &amp; evolution</h4><div class="foc">Decide under uncertainty while keeping a viable path for change. A diagram without arguments isn't architecture.</div></div>
-        <div class="pmeta"><span class="hrs">70 hrs</span><span>Weeks 27–36</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">90 hrs</span><span>Weeks 27–36</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -640,7 +683,7 @@
       <summary>
         <div class="pnum">05</div>
         <div class="pmid"><h4>AI-native &amp; agentic product engineering</h4><div class="foc">Learn the full lifecycle, not prompt tricks. "More autonomous" is not itself a success criterion.</div></div>
-        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 37–44</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 37–44</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -683,7 +726,7 @@
       <summary>
         <div class="pnum">06</div>
         <div class="pmid"><h4>Integrated capstone</h4><div class="foc">One real product on a recurring problem. No generic task manager, habit tracker, or chat wrapper.</div></div>
-        <div class="pmeta"><span class="hrs">56 hrs</span><span>Weeks 45–52</span><span class="chevd"></span></div>
+        <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 45–52</span><span class="chevd"></span></div>
       </summary>
       <div class="pbody">
         <div class="pcols">
@@ -722,7 +765,16 @@
     <div class="sec-head">
       <span class="eyebrow">Reading order</span>
       <h2 class="sec-title">Buy in tranches, not all at once</h2>
-      <p class="sec-sub">Finish the first five while producing the matching artifacts. Everything else stays online until a phase — or a real project — asks for it.</p>
+      <p class="sec-sub">Read the year-long companion beside the first five while producing the matching artifacts. Everything else stays online until a phase — or a real project — asks for it.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:1rem">
+      <div class="tranche-k now"><span class="n">All 52 weeks</span><h4>Year-long companion</h4></div>
+      <div class="book">
+        <a class="bt" href="#pragmatic">The Pragmatic Programmer, 20th Anniversary Edition</a>
+        <span class="ba">David Thomas &amp; Andrew Hunt</span>
+      </div>
+      <p style="margin-top:.8rem;color:var(--fg-2)">Use 45 minutes to read and 15 minutes to formulate one concrete experiment. Apply it during the build block, then evaluate the result in the decision log.</p>
     </div>
 
     <div class="grid g2">
@@ -789,14 +841,14 @@
     <div class="sec-head">
       <span class="eyebrow">Start here · first 30 days</span>
       <h2 class="sec-title">One full evidence-to-iteration cycle</h2>
-      <p class="sec-sub">Not accumulated vocabulary — a complete loop, run once, end to end. Four weeks, four outputs.</p>
+      <p class="sec-sub">Not accumulated vocabulary — a complete loop, run once, end to end. Four weeks, four outputs, and four applied pragmatic lessons.</p>
     </div>
 
     <div class="grid weeks30">
       <div class="wk">
         <div class="wn">Week 1 · Baseline</div>
         <h4>Read &amp; tear down</h4>
-        <p>7 hrs: first half of DMMT, pick one workflow, complete a heuristic teardown.</p>
+        <p>9 hrs: first half of DMMT, pick one workflow, complete a heuristic teardown, and begin the pragmatic companion.</p>
         <span class="out">teardowns/001-baseline.md</span>
         <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w1"><span>Done</span></label></li></ul>
       </div>
@@ -821,6 +873,11 @@
         <span class="out">visible win: the full cycle, closed</span>
         <ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w4"><span>Done</span></label></li></ul>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:1rem">
+      <span class="eyebrow">Pragmatic companion · month one</span>
+      <p style="margin-top:.7rem;color:var(--fg-2)"><b style="color:var(--fg)">Week 1:</b> craft, responsibility, and the knowledge portfolio · <b style="color:var(--fg)">Week 2:</b> ETC, DRY, and orthogonality · <b style="color:var(--fg)">Week 3:</b> engineering daybook and debugging discipline · <b style="color:var(--fg)">Week 4:</b> tracer-bullet delivery and a written keep/change/reject review.</p>
     </div>
   </div>
 </section>
@@ -889,11 +946,11 @@
       </div>
       <div>
         <div class="cmd" id="cmd"><button class="copy" onclick="copyCmd()">copy</button><span class="p">$</span> mkdir -p product-engineer-lab/{research,teardowns,product,architecture,agents}</div>
-        <p class="setup-cta">Then block <b>a two-hour study slot and a five-hour build slot</b> on this week's calendar — and start with <b>teardowns/001-baseline.md</b>. Progress you check on this page saves in your browser.</p>
+        <p class="setup-cta">Then block <b>a three-hour learning + teardown slot, a four-hour build slot, and a two-hour evidence + reflection slot</b> on this week's calendar — and start with <b>teardowns/001-baseline.md</b>. Progress you check on this page saves in your browser.</p>
       </div>
     </div>
     <div class="foot-meta">
-      <span>product-engineer-lab · 7 hrs/wk · Jul 2026 → Jul 2027 · ≈364 hrs</span>
+      <span>product-engineer-lab · 9 hrs/wk · Jul 2026 → Jul 2027 · ≈468 hrs</span>
       <button class="reset" onclick="resetProgress()">Reset progress</button>
     </div>
   </div>
@@ -968,7 +1025,7 @@
         }
       });
     },{rootMargin:'-45% 0px -50% 0px'});
-    ['target','market','weekly','track','reading','start','position','cautions'].forEach(function(id){
+    ['target','market','weekly','pragmatic','track','reading','start','position','cautions'].forEach(function(id){
       var el=document.getElementById(id); if(el) io.observe(el);
     });
   }

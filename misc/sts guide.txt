@@ -1,0 +1,64 @@
+Best answer: at **A20H**, the strongest play is usually **not** “force a named archetype.” The durable high-level rule is to solve four things at once: **frontload, damage scaling, block scaling, and consistency**. The best “builds” are the shells that solve those reliably on each character. ([Reddit][1])
+
+**Ironclad**
+The strongest default shell is usually **Exhaust/value Ironclad**. The core idea is that **Corruption** turns skills into tempo, **Dark Embrace** turns exhaust into draw, and **Feel No Pain** turns it into block; community discussion regularly treats that package as the class’s premium endgame engine, and card evaluations also place **Corruption**, **Offering**, **Feed**, **Immolate**, **Demon Form**, and **Reaper** very highly. In practice, the best A20H Ironclad decks often look like “good-stuff exhaust” rather than a cute synergy pile. ([maybelatergames.co.uk][2])
+
+What that means in run terms:
+
+* **Best macro plan:** Exhaust engine with strong hallway support.
+* **Most reliable kill package:** Strength scaling into **Reaper** sustain, **Fiend Fire**, **Whirlwind**, or just efficient attacks.
+* **Best Act 4 shape:** lots of draw, cheap block, artifact strip/weak/vuln, and a way to heal or overblock.
+* **Common mistake:** forcing **Barricade/Body Slam** too early. It can win, but it is less generically reliable than the Corruption-based shell unless the run is already handing you the pieces. ([maybelatergames.co.uk][2])
+
+**Silent**
+The strongest Silent plan is usually **control/combo Silent**, not “pure poison” or “pure shivs.” High-level Silent discussion repeatedly points to **draw + discard + retain** as her most frequent win condition, with **Wraith Form**, **Well-Laid Plans**, **Adrenaline**, and then efficient cycling/control pieces enabling whatever kill package the run offers. ([Reddit][3])
+
+For A20H, the best Silent decks are usually:
+
+* **Control shell first:** retain, draw, discard, weak, dex, potions.
+* **Compact finisher second:** often **Poison + Catalyst**, or a shiv/damage package with **Terror** / **After Image** / Accuracy-style scaling when supported.
+* **Important nuance:** poison is often strongest as a **small finisher package**, not as a deck that does nothing but stack poison; similarly, shiv decks need more Act 4 preparation because of Beat of Death unless they have enough mitigation. ([Reddit][4])
+
+So if I had to name the single strongest Silent “build,” it would be: **deck-control Silent with Wraith Form/Well-Laid Plans, then finish with either compact poison or efficient physical damage**. That is stronger and more flexible than trying to hard-force a dedicated poison-only or shiv-only deck every run. ([Reddit][3])
+
+**Defect**
+The strongest default A20H Defect plan is **Frost/Focus control**, then kill however the run allows. Multiple high-level Defect discussions frame Frost as the most important repeating defensive engine, with Focus plus extra orb triggers/slots letting you full-block many late fights. Card evaluations also put **Seek**, **Echo Form**, **Biased Cognition**, **Coolheaded**, **Glacier**, and other consistency/focus tools near the top. ([Reddit][5])
+
+In practice:
+
+* **Best macro plan:** survive with Frost and card quality, then scale.
+* **Most reliable scaling:** **Focus**, orb slots, repeated orb triggers, and premium consistency tools.
+* **Most common kill packages:** Lightning with scaling, a Dark orb finisher, Echo Form value, Electrodynamics in multi-target fights, or just generic orb inevitability.
+* **Important nuance:** you do **not** need Focus every run; strong players also win through Dark-orb lines, Recycle/energy lines, or power/value engines. But if you ask for the most consistent shell, it is Frost/Focus control. ([Reddit][6])
+
+The trap answer for Defect is “Claw” or “0-cost combo” as the default best build. Those can win, but the broadly strongest A20H plan is still **stable orb defense plus scalable output**. ([maybelatergames.co.uk][7])
+
+**Watcher**
+Watcher is the outlier. Her strongest A20H plan is usually some form of **stance-dance combo**, often an **infinite or pseudo-infinite**, built around cheap Wrath/Calm transitions, draw, and removals. Community discussion around Watcher repeatedly centers on the classic shell of **Rushdown + a 1-cost Wrath entry + a 1-cost Calm entry + card removes**, but high-level Watcher commentary also explicitly warns that top players do **not** blindly force a pure infinite every run. ([Steam Community][8])
+
+So the strong Watcher hierarchy is roughly:
+
+* **Best ceiling / most “broken” shell:** stance infinite or near-infinite.
+* **Best practical plan:** small efficient stance deck that can repeatedly enter/exit stances, generate block with cards like **Talk to the Hand** / **Mental Fortress**, and use **Scrawl**, **Vault**, and other premium setup tools.
+* **Common mistake:** forcing thin-deck infinite too hard and dying before the pieces arrive. Even strong Watcher guidance says pseudo-infinite or just “excellent stance deck” is often enough. ([maybelatergames.co.uk][9])
+
+If you want the blunt ranking of “most reliable default A20H shells” by character:
+
+1. **Watcher:** stance combo / infinite / pseudo-infinite
+2. **Ironclad:** exhaust engine
+3. **Silent:** deck-control shell with compact finisher
+4. **Defect:** frost/focus control
+
+That is not an official tier list, but it is the cleanest synthesis of current high-level community guidance and card evaluations. ([Reddit][1])
+
+If you want the more useful version, I can turn this into **“what to draft in Act 1/2/3 for each character at A20H”** instead of archetype labels.
+
+[1]: https://www.reddit.com/r/slaythespire/comments/1n1drkv/buildsstrategies_that_are_a20h_viable/ "Builds/strategies that are A20H viable? : r/slaythespire"
+[2]: https://maybelatergames.co.uk/tools/slaythespire/tierlist/cards/ironclad/?utm_source=chatgpt.com "The Ironclad Card Tier List | SpireSpy"
+[3]: https://www.reddit.com/r/slaythespire/comments/1603pro/xecnar_beats_silent_a20h_streak_record_with_20/?utm_source=chatgpt.com "Xecnar beats Silent A20H Streak Record, With 20 Wins in a ..."
+[4]: https://www.reddit.com/r/slaythespire/comments/1ilvwns/finally_hit_every_goal_i_wanted_so_heres_my_a20h/?utm_source=chatgpt.com "Finally hit every goal I wanted so here's my A20H Silent tier ..."
+[5]: https://www.reddit.com/r/slaythespire/comments/16s63rz/data_analysis_how_i_took_my_a20h_defect_winrate/?utm_source=chatgpt.com "How I took my A20H Defect winrate from around 10% to ..."
+[6]: https://www.reddit.com/r/slaythespire/comments/1g9f996/how_do_you_recommend_winning_with_a20_defect_if/?utm_source=chatgpt.com "How do you recommend winning with A20 defect if ..."
+[7]: https://maybelatergames.co.uk/tools/slaythespire/tierlist/cards/defect/ "The Defect Card Tier List | SpireSpy"
+[8]: https://steamcommunity.com/app/646570/discussions/0/1752400247421283056/?ctp=2&l=tchinese&utm_source=chatgpt.com "Is the watcher intended to go infinite this easily?"
+[9]: https://maybelatergames.co.uk/tools/slaythespire/tierlist/cards/watcher/ "The Watcher Card Tier List | SpireSpy"
