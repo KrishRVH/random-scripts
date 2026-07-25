@@ -211,7 +211,8 @@
   /* ---- footer / setup ---- */
   footer{border-top:1px solid var(--line); background:var(--bg-2); padding-block:clamp(3rem,7vw,4.5rem)}
   .setup-grid{display:grid; grid-template-columns:1fr 1fr; gap:2.4rem; align-items:start}
-  .tree{font-family:var(--mono); font-size:.82rem; line-height:1.85; color:var(--fg-2)}
+  .setup-grid>*{min-width:0}
+  .tree{font-family:var(--mono); font-size:.82rem; line-height:1.85; color:var(--fg-2); white-space:pre; overflow-x:auto}
   .tree .root{color:var(--fg); font-weight:700}
   .tree .d{color:var(--cyan)}
   .tree .c{color:var(--fg-3)}
@@ -597,6 +598,7 @@
             <ul class="learn">
               <li>Outcomes, continuous customer contact, opportunity solution trees</li>
               <li>Assumption identification &amp; testing; interviewing without leading</li>
+              <li>Stocks, flows, reinforcing and balancing loops, delays, boundaries, leverage points</li>
               <li>Appetites, shaping, breadboards, rabbit holes, fixed-time / variable-scope</li>
               <li>Hypotheses, guardrails, novelty effects, sample-ratio mismatch</li>
               <li>Trustworthy numbers &gt; easy numbers</li>
@@ -606,23 +608,30 @@
               <li>"Walk me through the last time this happened."</li>
               <li>"What did that cost you? What did you try?"</li>
             </ul>
+            <div class="col-h" style="margin-top:1.1rem">System-model discipline</div>
+            <ul class="learn">
+              <li>Tag every relationship: observed · measured · inferred · speculative</li>
+              <li>State the boundary, material delays, likely compensation, and what would falsify the model</li>
+            </ul>
           </div>
           <div>
             <div class="col-h">Produce</div>
             <ul class="tasks" data-phase>
               <li><label class="task"><input type="checkbox" data-k="p3a"><span>10 problem interviews on one workflow</span></label></li>
               <li><label class="task"><input type="checkbox" data-k="p3b"><span>Opportunity solution tree tied to an outcome</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p3c"><span>Test 3 riskiest assumptions (prototype / concierge)</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p3d"><span>Shape Up pitch: appetite, boundaries, no-gos</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p3e"><span>Instrument a funnel + one real experiment / rollout</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3c"><span>System model: stocks, flows, loops, delays, boundary, leverage points</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3d"><span>Test 3 riskiest assumptions (prototype / concierge)</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3e"><span>Shape Up pitch: appetite, boundaries, no-gos</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p3f"><span>Instrument a funnel + one real experiment / rollout</span></label></li>
             </ul>
-            <div class="subnote">Metrics: 1 primary · 1 activation · 1 retention · 2 guardrails · defined population + window.</div>
+            <div class="subnote">Metrics: 1 primary · 1 activation · 1 retention · 2 guardrails · 1 measure for a predicted second-order effect · defined population + window.</div>
           </div>
         </div>
-        <div class="pass"><div class="col-h">Pass condition</div><p>You reject or reshape one of your own ideas on evidence, and can state what behavior you're changing, why it matters, and how you'll know.</p></div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You reject or reshape one of your own ideas on evidence; explain why the current behavior persists, where an intervention has leverage, what delayed or compensating response could defeat it, what behavior should change, and what evidence would prove your model wrong.</p></div>
         <div class="sources"><div class="col-h">Sources, in order</div><ol>
           <li><a href="https://www.producttalk.org/getting-started-with-discovery/">Continuous Discovery Habits</a> <span class="au">— Torres</span></li>
           <li><a href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/">Interviewing Users, 2e</a> <span class="au">— Portigal</span></li>
+          <li>Thinking in Systems <span class="au">— Meadows</span></li>
           <li><a href="https://www.svpg.com/four-big-risks/">SVPG — Four Big Risks + Operating Model</a></li>
           <li><a href="https://basecamp.com/shapeup">Shape Up</a> <span class="au">— Singer</span></li>
           <li><a href="https://www.cambridge.org/core/books/trustworthy-online-controlled-experiments/D97B26382EB0EB2DC2019A7A7B518F59">Trustworthy Online Controlled Experiments</a> <span class="au">— Kohavi et al.</span></li>
@@ -652,6 +661,7 @@
               <li>Quality attributes and their conflicts</li>
               <li>Data models, transactions, consistency, replication, partitioning, streams</li>
               <li>Timeouts, retries, idempotency, backpressure, overload</li>
+              <li>Queues, feedback, cascading failure, local optimization, organizational coupling</li>
               <li>Operability, security, cost, migration, org constraints</li>
             </ul>
             <div class="col-h" style="margin-top:1.1rem">ADR template</div>
@@ -668,12 +678,11 @@
             </ul>
           </div>
         </div>
-        <div class="pass"><div class="col-h">Pass condition</div><p>You explain why the architecture fits the current product, team, scale, and failure tolerance — and name its breaking point and a credible migration path.</p></div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You explain why the architecture fits the current product, team, scale, and failure tolerance — and name its breaking point, likely cascading response, and a credible migration path.</p></div>
         <div class="sources"><div class="col-h">Sources, in order</div><ol>
           <li>A Philosophy of Software Design, 2e <span class="au">— Ousterhout</span></li>
           <li>Fundamentals of Software Architecture, 2e <span class="au">— Richards &amp; Ford</span></li>
           <li><a href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781098119058/">Designing Data-Intensive Applications, 2e</a> <span class="au">— Kleppmann &amp; Riccomini</span></li>
-          <li><a href="https://www.oreilly.com/library/view/software-architecture-the/9781492086888/">Software Architecture: The Hard Parts</a> <span class="au">— Ford et al.</span></li>
           <li><a href="https://sre.google/books/">Google SRE</a> + <a href="https://aws.amazon.com/builders-library/">AWS Builders' Library</a></li>
         </ol></div>
       </div>
@@ -697,21 +706,25 @@
               <li>⑤ Multi-agent — <span class="cyan">most projects stop before here</span></li>
             </ul>
             <div class="col-h" style="margin-top:1.1rem">Evaluation stack</div>
-            <ul class="learn"><li>Deterministic checks · representative cases · behavioral graders · operational measures · production feedback</li></ul>
+            <ul class="learn">
+              <li>Deterministic checks · representative cases · behavioral graders · operational measures · production feedback</li>
+              <li>Human reliance · approval behavior · displaced work · feedback quality · compounding failure</li>
+            </ul>
           </div>
           <div>
             <div class="col-h">Produce</div>
             <ul class="tasks" data-phase>
               <li><label class="task"><input type="checkbox" data-k="p5a"><span>Deterministic baseline for one useful task</span></label></li>
               <li><label class="task"><input type="checkbox" data-k="p5b"><span>Bounded agent with ≤5 well-defined tools</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p5c"><span>50–100 version-controlled eval cases</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5c"><span>50–100 curated eval cases in the repository</span></label></li>
               <li><label class="task"><input type="checkbox" data-k="p5d"><span>Failure taxonomy from traces, not anecdotes</span></label></li>
               <li><label class="task"><input type="checkbox" data-k="p5e"><span>Least-privilege perms, stopping conditions, approval gates</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p5f"><span>Measure one system effect: reliance, displaced work, feedback quality, or compounding error</span></label></li>
             </ul>
-            <div class="subnote">Tools: narrow purpose, typed I/O, explicit side effects + authz, idempotency, machine-readable errors.</div>
+            <div class="subnote">Tools: narrow purpose, typed I/O, explicit side effects + authz, idempotency, machine-readable errors. Evaluate the whole workflow, not only model output.</div>
           </div>
         </div>
-        <div class="pass"><div class="col-h">Pass condition</div><p>You show the agentic version beats the simpler baseline on a defined outcome while staying acceptable on cost, latency, reliability, and risk.</p></div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>You show the agentic approach beats the simpler baseline on a defined outcome without unacceptable cost, latency, reliability, risk, displaced work, or harmful feedback effects.</p></div>
         <div class="sources"><div class="col-h">Sources, in order</div><ol>
           <li><a href="https://www.anthropic.com/research/building-effective-agents">Anthropic — Building Effective Agents</a></li>
           <li><a href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic — Effective Context Engineering</a></li>
@@ -739,21 +752,22 @@
               <li>One bounded agentic capability may materially help</li>
             </ul>
             <div class="col-h" style="margin-top:1.1rem">Case study arc</div>
-            <ul class="learn"><li>Problem → evidence → rejected ideas → chosen behavior → design → architecture → agent boundary → evaluation → measured result → remaining uncertainty</li></ul>
+            <ul class="learn"><li>Problem → evidence → system model → rejected ideas → chosen behavior → design → architecture → agent boundary → evaluation → measured result → remaining uncertainty</li></ul>
           </div>
           <div>
-            <div class="col-h">Ship all five</div>
+            <div class="col-h">Ship the full evidence package</div>
             <ul class="tasks" data-phase>
               <li><label class="task"><input type="checkbox" data-k="p6a"><span>Human evidence: ≥10 users or 8 recorded sessions</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p6b"><span>One polished, accessible end-to-end flow, all states</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p6c"><span>Instrumented funnel + guardrails + 1 controlled test</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p6d"><span>C4, 5 ADRs, SLOs, threat model, cost model, runbook</span></label></li>
-              <li><label class="task"><input type="checkbox" data-k="p6e"><span>Baseline, eval dataset, traces, perms, measured comparison</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6b"><span>System model: boundary, stocks, flows, loops, delays, leverage point</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6c"><span>One polished, accessible end-to-end flow, all states</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6d"><span>Instrumented funnel + guardrails + controlled test + second-order measure</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6e"><span>C4, 5 ADRs, SLOs, threat model, cost model, runbook</span></label></li>
+              <li><label class="task"><input type="checkbox" data-k="p6f"><span>Baseline, eval dataset, traces, perms, measured comparison</span></label></li>
             </ul>
-            <div class="subnote">Include failures and reversals. A case study that hides mistakes is marketing, not judgment.</div>
+            <div class="subnote">Include failures and reversals. Tag model claims as observed, measured, inferred, or speculative. A case study that hides mistakes is marketing, not judgment.</div>
           </div>
         </div>
-        <div class="pass"><div class="col-h">Pass condition</div><p>A senior engineer, designer, and PM can independently inspect your evidence and understand why the problem mattered, why this design and architecture, how you controlled the agent, and whether the product improved anything.</p></div>
+        <div class="pass"><div class="col-h">Pass condition</div><p>A senior engineer, designer, and PM can independently inspect your evidence and understand why the problem persisted, why this intervention had leverage, why this design and architecture fit, how you controlled the agent, and whether the product improved the system rather than shifting cost or failure elsewhere.</p></div>
       </div>
     </details>
   </div>
@@ -791,11 +805,11 @@
       <div class="card">
         <div class="tranche-k later"><span class="n">When the phase begins</span><h4>The next five</h4></div>
         <ul class="books">
-          <li class="book"><a class="bt" href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/">Interviewing Users, 2e</a><span class="ba">Steve Portigal</span></li>
           <li class="book"><span class="bt">Thinking with Type, 3e</span><span class="ba">Ellen Lupton</span></li>
+          <li class="book"><a class="bt" href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/">Interviewing Users, 2e</a><span class="ba">Steve Portigal</span></li>
+          <li class="book"><span class="bt">Thinking in Systems</span><span class="ba">Donella H. Meadows</span></li>
           <li class="book"><a class="bt" href="https://www.cambridge.org/core/books/trustworthy-online-controlled-experiments/D97B26382EB0EB2DC2019A7A7B518F59">Trustworthy Online Controlled Experiments</a><span class="ba">Kohavi, Tang &amp; Xu</span></li>
           <li class="book"><a class="bt" href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781098119058/">Designing Data-Intensive Applications, 2e</a><span class="ba">Kleppmann &amp; Riccomini</span></li>
-          <li class="book"><a class="bt" href="https://www.oreilly.com/library/view/software-architecture-the/9781492086888/">Software Architecture: The Hard Parts</a><span class="ba">Ford, Richards et al.</span></li>
         </ul>
       </div>
     </div>
@@ -827,7 +841,7 @@
       <div class="more-body">
         <div class="shelf-row"><span class="sk">Business &amp; positioning</span><span class="sv">Good Strategy/Bad Strategy · <a href="https://7powers.com/" style="color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)">7 Powers</a> · Obviously Awesome</span></div>
         <div class="shelf-row"><span class="sk">Team &amp; org</span><span class="sv">Team Topologies · Software Engineering at Google</span></div>
-        <div class="shelf-row"><span class="sk">Architectural evolution</span><span class="sv">Building Evolutionary Architectures · DDD Distilled · Patterns of Enterprise Application Architecture</span></div>
+        <div class="shelf-row"><span class="sk">Architectural evolution</span><span class="sv"><a href="https://www.oreilly.com/library/view/software-architecture-the/9781492086888/" style="color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)">Software Architecture: The Hard Parts</a> · Building Evolutionary Architectures · DDD Distilled · Patterns of Enterprise Application Architecture</span></div>
         <div class="shelf-row"><span class="sk">Design systems</span><span class="sv">Material Design 3 · Apple HIG · GOV.UK Design System</span></div>
         <div class="shelf-row"><span class="sk">Deeper interaction</span><span class="sv">About Face · Information Architecture for the Web and Beyond · Microinteractions</span></div>
       </div>
@@ -939,7 +953,7 @@
 <span class="root">product-engineer-lab/</span>
 ├── <span class="d">research/</span>      <span class="c"># sessions, interviews, findings</span>
 ├── <span class="d">teardowns/</span>     <span class="c"># shipped-workflow analyses</span>
-├── <span class="d">product/</span>       <span class="c"># pitches, trees, metrics</span>
+├── <span class="d">product/</span>       <span class="c"># pitches, trees, system models, metrics</span>
 ├── <span class="d">architecture/</span>  <span class="c"># C4, ADRs, SLOs, threat models</span>
 └── <span class="d">agents/</span>        <span class="c"># tools, evals, traces, perms</span>
         </div>
@@ -958,7 +972,7 @@
 
 <script>
 (function(){
-  var KEY="pel-progress-v1";
+  var KEY="pel-progress";
   var boxes=Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][data-k]'));
 
   function load(){ try{ return JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){ return {}; } }
