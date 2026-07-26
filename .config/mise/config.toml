@@ -1,5 +1,6 @@
+min_version = "2026.6.12"
+
 [settings]
-experimental = true
 lockfile = true
 
 [tools]

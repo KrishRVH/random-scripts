@@ -1,1239 +1,1867 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agent-Friendly Stack Playbook</title>
-  <style>
-    :root {
-      --bg: #f4f7fb;
-      --panel: #ffffff;
-      --panel-2: #f8fbff;
-      --ink: #102033;
-      --muted: #5b6b80;
-      --line: #d8e1ee;
-      --line-2: #c7d4e7;
-      --blue: #2b6fff;
-      --blue-2: #e8f0ff;
-      --teal: #0f8f9d;
-      --teal-2: #e5fafc;
-      --green: #18855b;
-      --green-2: #e6f8ef;
-      --amber: #bb7a0a;
-      --amber-2: #fff4de;
-      --violet: #5a56d6;
-      --violet-2: #eeedff;
-      --rose: #d24b6c;
-      --rose-2: #fff0f4;
-      --shadow: 0 24px 60px rgba(29, 53, 87, 0.10);
-      --radius-xl: 28px;
-      --radius-lg: 20px;
-      --radius-md: 14px;
-      --radius-sm: 10px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    }
-
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at top right, rgba(43,111,255,0.08), transparent 28%),
-        radial-gradient(circle at top left, rgba(15,143,157,0.07), transparent 24%),
-        var(--bg);
-      color: var(--ink);
-      font: 15px/1.6 var(--sans);
-    }
-    a { color: var(--blue); text-decoration-thickness: 1px; text-underline-offset: 2px; }
-    code, .mono {
-      font-family: var(--mono);
-      background: #f0f4fa;
-      border: 1px solid var(--line);
-      border-radius: 7px;
-      padding: 2px 6px;
-      font-size: 0.92em;
-    }
-    .app-shell {
-      display: grid;
-      grid-template-columns: 280px minmax(0, 1fr);
-      gap: 28px;
-      max-width: 1600px;
-      margin: 0 auto;
-      padding: 24px;
-    }
-    .toc {
-      position: sticky;
-      top: 18px;
-      align-self: start;
-      max-height: calc(100vh - 36px);
-      overflow: auto;
-      background: rgba(255,255,255,0.74);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(216,225,238,0.9);
-      box-shadow: var(--shadow);
-      border-radius: 24px;
-      padding: 18px;
-    }
-    .toc h2 {
-      margin: 0 0 10px;
-      font-size: 12px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .toc .stack-name {
-      margin: 0 0 14px;
-      font-size: 20px;
-      line-height: 1.1;
-      letter-spacing: -0.04em;
-    }
-    .toc nav a {
-      display: block;
-      color: var(--ink);
-      text-decoration: none;
-      font-size: 14px;
-      padding: 9px 11px;
-      border-radius: 12px;
-      transition: 150ms ease;
-    }
-    .toc nav a:hover, .toc nav a.active { background: var(--blue-2); color: var(--blue); }
-    .toc .aside-card {
-      margin-top: 16px;
-      padding: 14px;
-      background: linear-gradient(180deg, #f9fbff, #f0f6ff);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-    .toc .aside-card h3 {
-      margin: 0 0 8px;
-      font-size: 14px;
-    }
-    .toc .aside-card p { margin: 0; font-size: 13px; color: var(--muted); }
-
-    main { min-width: 0; }
-    section, header.hero {
-      background: rgba(255,255,255,0.86);
-      border: 1px solid rgba(216,225,238,0.95);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow);
-      margin-bottom: 24px;
-      overflow: hidden;
-    }
-    section { padding: 28px; }
-    header.hero {
-      padding: 34px;
-      background:
-        linear-gradient(135deg, #0f1f34 0%, #183a62 48%, #2354bf 100%);
-      color: white;
-      border-color: rgba(255,255,255,0.08);
-    }
-    .eyebrow {
-      font: 700 12px/1 var(--mono);
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: #b8d7ff;
-    }
-    h1 {
-      margin: 14px 0 12px;
-      font-size: clamp(38px, 6vw, 68px);
-      line-height: 0.95;
-      letter-spacing: -0.055em;
-      max-width: 980px;
-    }
-    .hero p.lede {
-      max-width: 980px;
-      font-size: 18px;
-      color: #dce6f7;
-      margin: 0;
-    }
-    .hero-badges, .pill-row, .stack-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .hero-badges { margin-top: 18px; }
-    .badge, .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border-radius: 999px;
-      padding: 8px 11px;
-      border: 1px solid rgba(255,255,255,0.22);
-      background: rgba(255,255,255,0.10);
-      color: #eff5ff;
-      font-size: 12px;
-      font-weight: 700;
-    }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 22px;
-    }
-    .metric {
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.16);
-      border-radius: 18px;
-      padding: 16px;
-    }
-    .metric .value {
-      font-size: 34px;
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-    }
-    .metric .label {
-      font-size: 12px;
-      color: #dce6f7;
-      margin-top: 8px;
-    }
-
-    h2 {
-      margin: 0 0 10px;
-      font-size: 31px;
-      letter-spacing: -0.04em;
-      line-height: 1;
-    }
-    h3 {
-      margin: 0 0 6px;
-      font-size: 18px;
-      letter-spacing: -0.02em;
-    }
-    .section-kicker {
-      font: 700 12px/1 var(--mono);
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
-    .lede {
-      font-size: 17px;
-      color: #334258;
-      max-width: 980px;
-    }
-    .small { font-size: 13px; color: var(--muted); }
-    .muted { color: var(--muted); }
-
-    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-    }
-    .card.soft { background: linear-gradient(180deg, #fbfdff, #f6faff); }
-
-    .stack-strip {
-      display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 20px;
-      align-items: center;
-    }
-    .stack-box {
-      position: relative;
-      background: linear-gradient(180deg, #fff, #f6fbff);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 14px;
-      min-height: 112px;
-    }
-    .stack-box:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      right: -13px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 24px;
-      height: 24px;
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      color: var(--blue);
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      box-shadow: 0 8px 18px rgba(43,111,255,0.12);
-      z-index: 2;
-    }
-    .stack-box .cap {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      margin-bottom: 8px;
-      font-weight: 700;
-    }
-    .stack-box .title { font-size: 16px; font-weight: 800; line-height: 1.15; }
-    .stack-box .desc { font-size: 13px; color: var(--muted); margin-top: 6px; }
-    .stack-box.blue { background: linear-gradient(180deg, #f8fbff, #eff5ff); }
-    .stack-box.teal { background: linear-gradient(180deg, #f8feff, #ecfdff); }
-    .stack-box.green { background: linear-gradient(180deg, #f8fff9, #ecfff2); }
-    .stack-box.amber { background: linear-gradient(180deg, #fffdf7, #fff6e5); }
-
-    .explorer {
-      display: grid;
-      grid-template-columns: 420px minmax(0, 1fr);
-      gap: 18px;
-      margin-top: 22px;
-    }
-    .layer-list { display: grid; gap: 12px; }
-    .layer-btn {
-      border: 1px solid var(--line);
-      background: linear-gradient(180deg, #ffffff, #f9fbff);
-      border-radius: 18px;
-      padding: 16px;
-      text-align: left;
-      cursor: pointer;
-      transition: 160ms ease;
-      box-shadow: 0 8px 22px rgba(16,32,51,0.04);
-    }
-    .layer-btn:hover { transform: translateY(-1px); border-color: var(--line-2); }
-    .layer-btn.active {
-      border-color: rgba(43,111,255,0.38);
-      background: linear-gradient(180deg, #eef5ff, #ffffff);
-      box-shadow: 0 12px 28px rgba(43,111,255,0.12);
-    }
-    .layer-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 8px;
-    }
-    .layer-tag {
-      font: 700 11px/1 var(--mono);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-    }
-    .layer-title { font-size: 17px; font-weight: 800; }
-    .layer-btn p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
-
-    .detail-panel {
-      background: linear-gradient(180deg, #fbfdff, #f6fbff);
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 22px;
-      min-height: 420px;
-    }
-    .detail-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 18px;
-    }
-    .detail-box {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .detail-box h4 {
-      margin: 0 0 8px;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-    }
-    .detail-box ul { margin: 0; padding-left: 18px; }
-    .detail-box li { margin: 6px 0; }
-
-    .controls-wrap {
-      display: grid;
-      grid-template-columns: 360px minmax(0, 1fr);
-      gap: 18px;
-      margin-top: 20px;
-    }
-    .control-panel, .summary-panel {
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: linear-gradient(180deg, #fbfdff, #f7fbff);
-      padding: 20px;
-    }
-    .check-grid { display: grid; gap: 10px; margin-top: 12px; }
-    .check {
-      display: grid;
-      grid-template-columns: 20px minmax(0, 1fr);
-      gap: 12px;
-      align-items: start;
-      padding: 12px;
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      background: white;
-      cursor: pointer;
-    }
-    .check:hover { border-color: var(--line-2); }
-    .check input { margin-top: 2px; }
-    .check b { display: block; font-size: 14px; }
-    .check span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-    .summary-top {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-    .mini-metric {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-    }
-    .mini-metric .num { font-size: 28px; font-weight: 800; line-height: 1; }
-    .mini-metric .txt { font-size: 12px; color: var(--muted); margin-top: 6px; }
-    .stack-pills { margin-top: 14px; }
-    .stack-pills .pill {
-      background: white;
-      border: 1px solid var(--line);
-      color: var(--ink);
-      font-weight: 700;
-    }
-    .pill.default { background: var(--green-2); border-color: #cfe8d9; }
-    .pill.added { background: var(--amber-2); border-color: #f0ddae; }
-    .pill.warning { background: var(--rose-2); border-color: #f3cad4; }
-    .notes-list { margin: 16px 0 0; padding-left: 18px; }
-    .notes-list li { margin: 8px 0; }
-
-    .budget-wrap {
-      margin-top: 18px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-    }
-    .budget-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: end;
-      margin-bottom: 10px;
-    }
-    .budget-track {
-      position: relative;
-      height: 12px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, #dcf6e7, #e9f2ff, #fff0d6, #ffe1e1);
-      overflow: hidden;
-    }
-    .budget-fill {
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 0%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #16a34a, #2563eb, #f59e0b, #ef4444);
-      opacity: 0.32;
-    }
-
-    .chart-wrap {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 18px;
-      align-items: start;
-      margin-top: 18px;
-    }
-    .chart-card {
-      background: linear-gradient(180deg, #fbfdff, #f6faff);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 18px;
-    }
-    .chart-card svg {
-      width: 100%;
-      height: 500px;
-      display: block;
-      overflow: visible;
-    }
-    .chart-detail {
-      background: linear-gradient(180deg, #fbfdff, #f6fbff);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 18px;
-      min-height: 500px;
-    }
-    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; }
-    .legend .item { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: var(--muted); }
-    .swatch { width: 10px; height: 10px; border-radius: 999px; }
-
-    .flow-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-    .flow-tab {
-      border: 1px solid var(--line);
-      background: white;
-      padding: 10px 13px;
-      border-radius: 999px;
-      cursor: pointer;
-      font-weight: 700;
-      color: var(--ink);
-    }
-    .flow-tab.active { background: var(--blue); border-color: var(--blue); color: white; }
-    .flow-card {
-      margin-top: 16px;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 18px;
-      background: linear-gradient(180deg, #fbfdff, #f7fbff);
-    }
-    .flow-strip {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 10px;
-      margin-top: 12px;
-    }
-    .flow-node {
-      position: relative;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px;
-      min-height: 108px;
-    }
-    .flow-node:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      right: -12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: #fff;
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      color: var(--blue);
-      font-weight: 800;
-    }
-    .flow-node .step { font: 700 11px/1 var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
-    .flow-node .name { margin-top: 7px; font-weight: 800; }
-    .flow-node p { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
-
-    .scenario-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-    .scenario-tab {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      padding: 10px 13px;
-      cursor: pointer;
-      font-weight: 700;
-    }
-    .scenario-tab.active { background: var(--teal); border-color: var(--teal); color: white; }
-    .fit-card {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
-      gap: 18px;
-      align-items: start;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      background: linear-gradient(180deg, #fbfdff, #f6fbff);
-      padding: 20px;
-    }
-    .score-ring {
-      display: grid;
-      place-items: center;
-      width: 190px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: conic-gradient(var(--green) calc(var(--score) * 1%), #e4edf7 0);
-      margin: 0 auto;
-      padding: 14px;
-    }
-    .score-ring .inner {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      background: white;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      border: 1px solid var(--line);
-    }
-    .score-ring .big { font-size: 42px; font-weight: 800; line-height: 1; }
-    .score-ring .small { font-size: 12px; }
-    .fit-detail ul { margin: 10px 0 0; padding-left: 18px; }
-    .fit-detail li { margin: 7px 0; }
-
-    .tree {
-      font-family: var(--mono);
-      font-size: 13px;
-      background: #0e1c2f;
-      color: #d6e4ff;
-      padding: 18px;
-      border-radius: 18px;
-      overflow: auto;
-      line-height: 1.8;
-      border: 1px solid #24344d;
-    }
-    .rule-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-    .rule {
-      padding: 16px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: linear-gradient(180deg, #fff, #f8fbff);
-    }
-    .rule .tag {
-      font: 700 11px/1 var(--mono);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .stage-grid {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .stage-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 16px;
-      background: linear-gradient(180deg, #fff, #f8fbff);
-      transition: 160ms ease;
-      opacity: 0.66;
-    }
-    .stage-card.active {
-      opacity: 1;
-      transform: translateY(-2px);
-      box-shadow: 0 14px 32px rgba(43,111,255,0.12);
-      border-color: rgba(43,111,255,0.35);
-    }
-    .stage-num {
-      font: 700 11px/1 var(--mono);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .stage-card ul { margin: 10px 0 0; padding-left: 18px; }
-    .stage-card li { margin: 5px 0; font-size: 13px; }
-
-    .takeaway-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
-    .takeaway {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      background: linear-gradient(180deg, #ffffff, #f7fbff);
-    }
-
-    details {
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 14px 16px;
-      background: white;
-    }
-    details + details { margin-top: 10px; }
-    summary { cursor: pointer; font-weight: 800; }
-    summary::marker { color: var(--blue); }
-
-    footer {
-      padding: 0 4px 20px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    @media (max-width: 1280px) {
-      .app-shell { grid-template-columns: 1fr; }
-      .toc { position: static; max-height: none; }
-      .stack-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .stack-box::after { display: none; }
-      .explorer, .controls-wrap, .chart-wrap, .fit-card { grid-template-columns: 1fr; }
-    }
-    @media (max-width: 980px) {
-      .metrics, .summary-top, .grid-4, .grid-3, .grid-2, .stage-grid, .rule-list, .takeaway-grid, .detail-grid, .flow-strip {
-        grid-template-columns: 1fr;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Agent-Friendly Stack Playbook</title>
+    <style>
+      :root {
+        --bg: #f4f7fb;
+        --panel: #ffffff;
+        --panel-2: #f8fbff;
+        --ink: #102033;
+        --muted: #5b6b80;
+        --line: #d8e1ee;
+        --line-2: #c7d4e7;
+        --blue: #2b6fff;
+        --blue-2: #e8f0ff;
+        --teal: #0f8f9d;
+        --teal-2: #e5fafc;
+        --green: #18855b;
+        --green-2: #e6f8ef;
+        --amber: #bb7a0a;
+        --amber-2: #fff4de;
+        --violet: #5a56d6;
+        --violet-2: #eeedff;
+        --rose: #d24b6c;
+        --rose-2: #fff0f4;
+        --shadow: 0 24px 60px rgba(29, 53, 87, 0.1);
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+        --radius-sm: 10px;
+        --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        --sans:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
       }
-      .stack-strip { grid-template-columns: 1fr; }
-      .flow-node::after { display: none; }
-      section, header.hero { padding: 22px; }
-      .fit-card { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <div class="app-shell">
-    <aside class="toc">
-      <h2>Playbook</h2>
-      <p class="stack-name">Widest coverage, least complexity, agent-friendly stack</p>
-      <nav>
-        <a href="#answer">1. Recommendation</a>
-        <a href="#explorer">2. Architecture explorer</a>
-        <a href="#configurator">3. Requirement configurator</a>
-        <a href="#tradeoffs">4. Coverage vs complexity</a>
-        <a href="#flows">5. Operational flows</a>
-        <a href="#fit">6. Use-case fit</a>
-        <a href="#repo">7. Repo contract</a>
-        <a href="#stages">8. Graduation stages</a>
-        <a href="#faq">9. Decision notes</a>
-        <a href="#takeaways">10. Final takeaways</a>
-      </nav>
-      <div class="aside-card">
-        <h3>Default paved road</h3>
-        <p><b>Python 3.14</b> · <b>Django 5.2 LTS</b> · <b>HTML + HTMX</b> · <b>PostgreSQL</b> · <b>S3</b> · <b>Postgres-backed jobs</b> · <b>managed container runtime</b></p>
-      </div>
-      <div class="aside-card">
-        <h3>Primary rule</h3>
-        <p>Do not add a boundary, service, or language until a measured requirement clearly pays for it.</p>
-      </div>
-    </aside>
 
-    <main>
-      <header class="hero">
-        <div class="eyebrow">Recommended default stack</div>
-        <h1>The broadest practical stack with the least accidental complexity</h1>
-        <p class="lede">For most applications — especially CRUD-heavy products, internal tools, operational systems, portals, and AI-assisted business software — the sweet spot is a modular Django monolith with server-rendered HTML, HTMX, PostgreSQL, S3-compatible storage, Postgres-backed background work, and one deployment image. Agent-friendliness comes mostly from reducing boundaries and making the repository deterministic.</p>
-        <div class="hero-badges">
-          <span class="badge">1 primary language</span>
-          <span class="badge">2 default stateful services</span>
-          <span class="badge">1 source of truth</span>
-          <span class="badge">SSE first, WebSockets later</span>
-          <span class="badge">API only when another client exists</span>
-          <span class="badge">Kubernetes is not the default</span>
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top right, rgba(43, 111, 255, 0.08), transparent 28%),
+          radial-gradient(circle at top left, rgba(15, 143, 157, 0.07), transparent 24%), var(--bg);
+        color: var(--ink);
+        font: 15px/1.6 var(--sans);
+      }
+      a {
+        color: var(--blue);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 2px;
+      }
+      code,
+      .mono {
+        font-family: var(--mono);
+        background: #f0f4fa;
+        border: 1px solid var(--line);
+        border-radius: 7px;
+        padding: 2px 6px;
+        font-size: 0.92em;
+      }
+      .app-shell {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        gap: 28px;
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 24px;
+      }
+      .toc {
+        position: sticky;
+        top: 18px;
+        align-self: start;
+        max-height: calc(100vh - 36px);
+        overflow: auto;
+        background: rgba(255, 255, 255, 0.74);
+        backdrop-filter: blur(14px);
+        border: 1px solid rgba(216, 225, 238, 0.9);
+        box-shadow: var(--shadow);
+        border-radius: 24px;
+        padding: 18px;
+      }
+      .toc h2 {
+        margin: 0 0 10px;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .toc .stack-name {
+        margin: 0 0 14px;
+        font-size: 20px;
+        line-height: 1.1;
+        letter-spacing: -0.04em;
+      }
+      .toc nav a {
+        display: block;
+        color: var(--ink);
+        text-decoration: none;
+        font-size: 14px;
+        padding: 9px 11px;
+        border-radius: 12px;
+        transition: 150ms ease;
+      }
+      .toc nav a:hover,
+      .toc nav a.active {
+        background: var(--blue-2);
+        color: var(--blue);
+      }
+      .toc .aside-card {
+        margin-top: 16px;
+        padding: 14px;
+        background: linear-gradient(180deg, #f9fbff, #f0f6ff);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .toc .aside-card h3 {
+        margin: 0 0 8px;
+        font-size: 14px;
+      }
+      .toc .aside-card p {
+        margin: 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      main {
+        min-width: 0;
+      }
+      section,
+      header.hero {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(216, 225, 238, 0.95);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        margin-bottom: 24px;
+        overflow: hidden;
+      }
+      section {
+        padding: 28px;
+      }
+      header.hero {
+        padding: 34px;
+        background: linear-gradient(135deg, #0f1f34 0%, #183a62 48%, #2354bf 100%);
+        color: white;
+        border-color: rgba(255, 255, 255, 0.08);
+      }
+      .eyebrow {
+        font: 700 12px/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.16em;
+        color: #b8d7ff;
+      }
+      h1 {
+        margin: 14px 0 12px;
+        font-size: clamp(38px, 6vw, 68px);
+        line-height: 0.95;
+        letter-spacing: -0.055em;
+        max-width: 980px;
+      }
+      .hero p.lede {
+        max-width: 980px;
+        font-size: 18px;
+        color: #dce6f7;
+        margin: 0;
+      }
+      .hero-badges,
+      .pill-row,
+      .stack-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .hero-badges {
+        margin-top: 18px;
+      }
+      .badge,
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 8px 11px;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        background: rgba(255, 255, 255, 0.1);
+        color: #eff5ff;
+        font-size: 12px;
+        font-weight: 700;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 22px;
+      }
+      .metric {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        border-radius: 18px;
+        padding: 16px;
+      }
+      .metric .value {
+        font-size: 34px;
+        line-height: 1;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+      }
+      .metric .label {
+        font-size: 12px;
+        color: #dce6f7;
+        margin-top: 8px;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 31px;
+        letter-spacing: -0.04em;
+        line-height: 1;
+      }
+      h3 {
+        margin: 0 0 6px;
+        font-size: 18px;
+        letter-spacing: -0.02em;
+      }
+      .section-kicker {
+        font: 700 12px/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--muted);
+        margin-bottom: 10px;
+      }
+      .lede {
+        font-size: 17px;
+        color: #334258;
+        max-width: 980px;
+      }
+      .small {
+        font-size: 13px;
+        color: var(--muted);
+      }
+      .muted {
+        color: var(--muted);
+      }
+
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+      }
+      .card.soft {
+        background: linear-gradient(180deg, #fbfdff, #f6faff);
+      }
+
+      .stack-strip {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+        align-items: center;
+      }
+      .stack-box {
+        position: relative;
+        background: linear-gradient(180deg, #fff, #f6fbff);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 14px;
+        min-height: 112px;
+      }
+      .stack-box:not(:last-child)::after {
+        content: '→';
+        position: absolute;
+        right: -13px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        color: var(--blue);
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        box-shadow: 0 8px 18px rgba(43, 111, 255, 0.12);
+        z-index: 2;
+      }
+      .stack-box .cap {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 8px;
+        font-weight: 700;
+      }
+      .stack-box .title {
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1.15;
+      }
+      .stack-box .desc {
+        font-size: 13px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .stack-box.blue {
+        background: linear-gradient(180deg, #f8fbff, #eff5ff);
+      }
+      .stack-box.teal {
+        background: linear-gradient(180deg, #f8feff, #ecfdff);
+      }
+      .stack-box.green {
+        background: linear-gradient(180deg, #f8fff9, #ecfff2);
+      }
+      .stack-box.amber {
+        background: linear-gradient(180deg, #fffdf7, #fff6e5);
+      }
+
+      .explorer {
+        display: grid;
+        grid-template-columns: 420px minmax(0, 1fr);
+        gap: 18px;
+        margin-top: 22px;
+      }
+      .layer-list {
+        display: grid;
+        gap: 12px;
+      }
+      .layer-btn {
+        border: 1px solid var(--line);
+        background: linear-gradient(180deg, #ffffff, #f9fbff);
+        border-radius: 18px;
+        padding: 16px;
+        text-align: left;
+        cursor: pointer;
+        transition: 160ms ease;
+        box-shadow: 0 8px 22px rgba(16, 32, 51, 0.04);
+      }
+      .layer-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--line-2);
+      }
+      .layer-btn.active {
+        border-color: rgba(43, 111, 255, 0.38);
+        background: linear-gradient(180deg, #eef5ff, #ffffff);
+        box-shadow: 0 12px 28px rgba(43, 111, 255, 0.12);
+      }
+      .layer-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+      .layer-tag {
+        font: 700 11px/1 var(--mono);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .layer-title {
+        font-size: 17px;
+        font-weight: 800;
+      }
+      .layer-btn p {
+        margin: 8px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .detail-panel {
+        background: linear-gradient(180deg, #fbfdff, #f6fbff);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 22px;
+        min-height: 420px;
+      }
+      .detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .detail-box {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .detail-box h4 {
+        margin: 0 0 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+      }
+      .detail-box ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+      .detail-box li {
+        margin: 6px 0;
+      }
+
+      .controls-wrap {
+        display: grid;
+        grid-template-columns: 360px minmax(0, 1fr);
+        gap: 18px;
+        margin-top: 20px;
+      }
+      .control-panel,
+      .summary-panel {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: linear-gradient(180deg, #fbfdff, #f7fbff);
+        padding: 20px;
+      }
+      .check-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .check {
+        display: grid;
+        grid-template-columns: 20px minmax(0, 1fr);
+        gap: 12px;
+        align-items: start;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: white;
+        cursor: pointer;
+      }
+      .check:hover {
+        border-color: var(--line-2);
+      }
+      .check input {
+        margin-top: 2px;
+      }
+      .check b {
+        display: block;
+        font-size: 14px;
+      }
+      .check span {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 2px;
+      }
+      .summary-top {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px;
+      }
+      .mini-metric {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+      }
+      .mini-metric .num {
+        font-size: 28px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .mini-metric .txt {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 6px;
+      }
+      .stack-pills {
+        margin-top: 14px;
+      }
+      .stack-pills .pill {
+        background: white;
+        border: 1px solid var(--line);
+        color: var(--ink);
+        font-weight: 700;
+      }
+      .pill.default {
+        background: var(--green-2);
+        border-color: #cfe8d9;
+      }
+      .pill.added {
+        background: var(--amber-2);
+        border-color: #f0ddae;
+      }
+      .pill.warning {
+        background: var(--rose-2);
+        border-color: #f3cad4;
+      }
+      .notes-list {
+        margin: 16px 0 0;
+        padding-left: 18px;
+      }
+      .notes-list li {
+        margin: 8px 0;
+      }
+
+      .budget-wrap {
+        margin-top: 18px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+      }
+      .budget-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: end;
+        margin-bottom: 10px;
+      }
+      .budget-track {
+        position: relative;
+        height: 12px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, #dcf6e7, #e9f2ff, #fff0d6, #ffe1e1);
+        overflow: hidden;
+      }
+      .budget-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #16a34a, #2563eb, #f59e0b, #ef4444);
+        opacity: 0.32;
+      }
+
+      .chart-wrap {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 18px;
+        align-items: start;
+        margin-top: 18px;
+      }
+      .chart-card {
+        background: linear-gradient(180deg, #fbfdff, #f6faff);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px;
+      }
+      .chart-card svg {
+        width: 100%;
+        height: 500px;
+        display: block;
+        overflow: visible;
+      }
+      .chart-detail {
+        background: linear-gradient(180deg, #fbfdff, #f6fbff);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px;
+        min-height: 500px;
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .legend .item {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      .swatch {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+      }
+
+      .flow-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .flow-tab {
+        border: 1px solid var(--line);
+        background: white;
+        padding: 10px 13px;
+        border-radius: 999px;
+        cursor: pointer;
+        font-weight: 700;
+        color: var(--ink);
+      }
+      .flow-tab.active {
+        background: var(--blue);
+        border-color: var(--blue);
+        color: white;
+      }
+      .flow-card {
+        margin-top: 16px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 18px;
+        background: linear-gradient(180deg, #fbfdff, #f7fbff);
+      }
+      .flow-strip {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 10px;
+        margin-top: 12px;
+      }
+      .flow-node {
+        position: relative;
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px;
+        min-height: 108px;
+      }
+      .flow-node:not(:last-child)::after {
+        content: '→';
+        position: absolute;
+        right: -12px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #fff;
+        width: 22px;
+        height: 22px;
+        display: grid;
+        place-items: center;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--blue);
+        font-weight: 800;
+      }
+      .flow-node .step {
+        font: 700 11px/1 var(--mono);
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .flow-node .name {
+        margin-top: 7px;
+        font-weight: 800;
+      }
+      .flow-node p {
+        margin: 6px 0 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .scenario-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      .scenario-tab {
+        background: white;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 10px 13px;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .scenario-tab.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: white;
+      }
+      .fit-card {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 240px minmax(0, 1fr);
+        gap: 18px;
+        align-items: start;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: linear-gradient(180deg, #fbfdff, #f6fbff);
+        padding: 20px;
+      }
+      .score-ring {
+        display: grid;
+        place-items: center;
+        width: 190px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(var(--green) calc(var(--score) * 1%), #e4edf7 0);
+        margin: 0 auto;
+        padding: 14px;
+      }
+      .score-ring .inner {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: white;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        border: 1px solid var(--line);
+      }
+      .score-ring .big {
+        font-size: 42px;
+        font-weight: 800;
+        line-height: 1;
+      }
+      .score-ring .small {
+        font-size: 12px;
+      }
+      .fit-detail ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+      .fit-detail li {
+        margin: 7px 0;
+      }
+
+      .tree {
+        font-family: var(--mono);
+        font-size: 13px;
+        background: #0e1c2f;
+        color: #d6e4ff;
+        padding: 18px;
+        border-radius: 18px;
+        overflow: auto;
+        line-height: 1.8;
+        border: 1px solid #24344d;
+      }
+      .rule-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .rule {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        background: linear-gradient(180deg, #fff, #f8fbff);
+      }
+      .rule .tag {
+        font: 700 11px/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+
+      .stage-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+      .stage-card {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 16px;
+        background: linear-gradient(180deg, #fff, #f8fbff);
+        transition: 160ms ease;
+        opacity: 0.66;
+      }
+      .stage-card.active {
+        opacity: 1;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(43, 111, 255, 0.12);
+        border-color: rgba(43, 111, 255, 0.35);
+      }
+      .stage-num {
+        font: 700 11px/1 var(--mono);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--muted);
+        margin-bottom: 8px;
+      }
+      .stage-card ul {
+        margin: 10px 0 0;
+        padding-left: 18px;
+      }
+      .stage-card li {
+        margin: 5px 0;
+        font-size: 13px;
+      }
+
+      .takeaway-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .takeaway {
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 18px;
+        background: linear-gradient(180deg, #ffffff, #f7fbff);
+      }
+
+      details {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 14px 16px;
+        background: white;
+      }
+      details + details {
+        margin-top: 10px;
+      }
+      summary {
+        cursor: pointer;
+        font-weight: 800;
+      }
+      summary::marker {
+        color: var(--blue);
+      }
+
+      footer {
+        padding: 0 4px 20px;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      @media (max-width: 1280px) {
+        .app-shell {
+          grid-template-columns: 1fr;
+        }
+        .toc {
+          position: static;
+          max-height: none;
+        }
+        .stack-strip {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .stack-box::after {
+          display: none;
+        }
+        .explorer,
+        .controls-wrap,
+        .chart-wrap,
+        .fit-card {
+          grid-template-columns: 1fr;
+        }
+      }
+      @media (max-width: 980px) {
+        .metrics,
+        .summary-top,
+        .grid-4,
+        .grid-3,
+        .grid-2,
+        .stage-grid,
+        .rule-list,
+        .takeaway-grid,
+        .detail-grid,
+        .flow-strip {
+          grid-template-columns: 1fr;
+        }
+        .stack-strip {
+          grid-template-columns: 1fr;
+        }
+        .flow-node::after {
+          display: none;
+        }
+        section,
+        header.hero {
+          padding: 22px;
+        }
+        .fit-card {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="toc">
+        <h2>Playbook</h2>
+        <p class="stack-name">Widest coverage, least complexity, agent-friendly stack</p>
+        <nav>
+          <a href="#answer">1. Recommendation</a>
+          <a href="#explorer">2. Architecture explorer</a>
+          <a href="#configurator">3. Requirement configurator</a>
+          <a href="#tradeoffs">4. Coverage vs complexity</a>
+          <a href="#flows">5. Operational flows</a>
+          <a href="#fit">6. Use-case fit</a>
+          <a href="#repo">7. Repo contract</a>
+          <a href="#stages">8. Graduation stages</a>
+          <a href="#faq">9. Decision notes</a>
+          <a href="#takeaways">10. Final takeaways</a>
+        </nav>
+        <div class="aside-card">
+          <h3>Default paved road</h3>
+          <p>
+            <b>Python 3.14</b> · <b>Django 5.2 LTS</b> · <b>HTML + HTMX</b> · <b>PostgreSQL</b> · <b>S3</b> ·
+            <b>Postgres-backed jobs</b> · <b>managed container runtime</b>
+          </p>
         </div>
-        <div class="metrics">
-          <div class="metric"><div class="value">High</div><div class="label">Use-case coverage for typical business software</div></div>
-          <div class="metric"><div class="value">Low</div><div class="label">Default operational complexity</div></div>
-          <div class="metric"><div class="value">Strong</div><div class="label">Agent ergonomics through fewer boundaries</div></div>
-          <div class="metric"><div class="value">Fast</div><div class="label">Path from idea → implementation → review</div></div>
+        <div class="aside-card">
+          <h3>Primary rule</h3>
+          <p>Do not add a boundary, service, or language until a measured requirement clearly pays for it.</p>
         </div>
-      </header>
+      </aside>
 
-      <section id="answer">
-        <div class="section-kicker">Recommendation</div>
-        <h2>The stack in one view</h2>
-        <p class="lede">This is the actual default, intentionally stripped down. Each box is there because it adds broad coverage without forcing a new operational problem too early.</p>
+      <main>
+        <header class="hero">
+          <div class="eyebrow">Recommended default stack</div>
+          <h1>The broadest practical stack with the least accidental complexity</h1>
+          <p class="lede">
+            For most applications — especially CRUD-heavy products, internal tools, operational systems, portals, and
+            AI-assisted business software — the sweet spot is a modular Django monolith with server-rendered HTML, HTMX,
+            PostgreSQL, S3-compatible storage, Postgres-backed background work, and one deployment image.
+            Agent-friendliness comes mostly from reducing boundaries and making the repository deterministic.
+          </p>
+          <div class="hero-badges">
+            <span class="badge">1 primary language</span>
+            <span class="badge">2 default stateful services</span>
+            <span class="badge">1 source of truth</span>
+            <span class="badge">SSE first, WebSockets later</span>
+            <span class="badge">API only when another client exists</span>
+            <span class="badge">Kubernetes is not the default</span>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <div class="value">High</div>
+              <div class="label">Use-case coverage for typical business software</div>
+            </div>
+            <div class="metric">
+              <div class="value">Low</div>
+              <div class="label">Default operational complexity</div>
+            </div>
+            <div class="metric">
+              <div class="value">Strong</div>
+              <div class="label">Agent ergonomics through fewer boundaries</div>
+            </div>
+            <div class="metric">
+              <div class="value">Fast</div>
+              <div class="label">Path from idea → implementation → review</div>
+            </div>
+          </div>
+        </header>
 
-        <div class="stack-strip">
-          <div class="stack-box blue">
-            <div class="cap">Language</div>
-            <div class="title">Python 3.14</div>
-            <div class="desc">Broadest coverage across product code, automation, AI integration, scripting, and data work.</div>
-          </div>
-          <div class="stack-box blue">
-            <div class="cap">App framework</div>
-            <div class="title">Django 5.2 LTS</div>
-            <div class="desc">Modular monolith, batteries included, stable conventions, admin, auth, forms, ORM, migrations.</div>
-          </div>
-          <div class="stack-box teal">
-            <div class="cap">Product UI</div>
-            <div class="title">HTML + HTMX + minimal JS</div>
-            <div class="desc">Server-authoritative UI with no mandatory SPA or client cache architecture.</div>
-          </div>
-          <div class="stack-box green">
-            <div class="cap">Data</div>
-            <div class="title">PostgreSQL</div>
-            <div class="desc">OLTP, JSONB, full-text search, queueing, audit/outbox, and pgvector when needed.</div>
-          </div>
-          <div class="stack-box green">
-            <div class="cap">Files</div>
-            <div class="title">S3-compatible storage</div>
-            <div class="desc">Simple, universal object storage boundary; keep blobs out of the primary database.</div>
-          </div>
-          <div class="stack-box amber">
-            <div class="cap">Async</div>
-            <div class="title">Postgres-backed jobs</div>
-            <div class="desc">Start with database-backed work queues before introducing a separate broker.</div>
-          </div>
-          <div class="stack-box amber">
-            <div class="cap">Deployment</div>
-            <div class="title">One OCI image on a managed container runtime</div>
-            <div class="desc">One repo, one image, web + worker processes, CI-managed deploys, no default Kubernetes tax.</div>
-          </div>
-        </div>
+        <section id="answer">
+          <div class="section-kicker">Recommendation</div>
+          <h2>The stack in one view</h2>
+          <p class="lede">
+            This is the actual default, intentionally stripped down. Each box is there because it adds broad coverage
+            without forcing a new operational problem too early.
+          </p>
 
-        <div class="grid-3" style="margin-top:20px;">
-          <div class="card soft">
-            <h3>Why this wins</h3>
-            <p class="muted">It maximizes <b>coverage per unit of complexity</b>. The default stack solves a very wide class of products without introducing a second application language, a frontend build system, multiple stateful stores, or a microservice topology.</p>
+          <div class="stack-strip">
+            <div class="stack-box blue">
+              <div class="cap">Language</div>
+              <div class="title">Python 3.14</div>
+              <div class="desc">
+                Broadest coverage across product code, automation, AI integration, scripting, and data work.
+              </div>
+            </div>
+            <div class="stack-box blue">
+              <div class="cap">App framework</div>
+              <div class="title">Django 5.2 LTS</div>
+              <div class="desc">
+                Modular monolith, batteries included, stable conventions, admin, auth, forms, ORM, migrations.
+              </div>
+            </div>
+            <div class="stack-box teal">
+              <div class="cap">Product UI</div>
+              <div class="title">HTML + HTMX + minimal JS</div>
+              <div class="desc">Server-authoritative UI with no mandatory SPA or client cache architecture.</div>
+            </div>
+            <div class="stack-box green">
+              <div class="cap">Data</div>
+              <div class="title">PostgreSQL</div>
+              <div class="desc">OLTP, JSONB, full-text search, queueing, audit/outbox, and pgvector when needed.</div>
+            </div>
+            <div class="stack-box green">
+              <div class="cap">Files</div>
+              <div class="title">S3-compatible storage</div>
+              <div class="desc">Simple, universal object storage boundary; keep blobs out of the primary database.</div>
+            </div>
+            <div class="stack-box amber">
+              <div class="cap">Async</div>
+              <div class="title">Postgres-backed jobs</div>
+              <div class="desc">Start with database-backed work queues before introducing a separate broker.</div>
+            </div>
+            <div class="stack-box amber">
+              <div class="cap">Deployment</div>
+              <div class="title">One OCI image on a managed container runtime</div>
+              <div class="desc">
+                One repo, one image, web + worker processes, CI-managed deploys, no default Kubernetes tax.
+              </div>
+            </div>
           </div>
-          <div class="card soft">
-            <h3>What it excludes on purpose</h3>
-            <p class="muted">React SPA, Redis, Kafka, OpenSearch, ClickHouse, Kubernetes, service mesh, and dedicated vector infrastructure are all <b>graduation options</b>, not default commitments.</p>
-          </div>
-          <div class="card soft">
-            <h3>Where agent-friendliness comes from</h3>
-            <p class="muted">Predictable structure, one canonical check command, real integration tests, obvious domain entry points, and fewer boundaries to load into context.</p>
-          </div>
-        </div>
-      </section>
 
-      <section id="explorer">
-        <div class="section-kicker">Architecture explorer</div>
-        <h2>Click through the default architecture</h2>
-        <p class="lede">Each layer explains what it includes, why it is on the paved road, and what triggers an expansion. This is the core visual model: small default surface area, explicit graduation rules.</p>
-        <div class="explorer">
-          <div class="layer-list" id="layerList"></div>
-          <div class="detail-panel" id="layerDetail"></div>
-        </div>
-      </section>
-
-      <section id="configurator">
-        <div class="section-kicker">Requirement configurator</div>
-        <h2>Turn real requirements into a justified stack</h2>
-        <p class="lede">Select the traits your application actually has. The recommendation updates to show what should stay in the default and what should be added only because the requirement demands it.</p>
-        <div class="controls-wrap">
-          <div class="control-panel">
-            <h3>Requirements</h3>
-            <p class="small">Choose only what is materially true. Most unnecessary complexity enters the system because speculative requirements are treated as current ones.</p>
-            <div class="check-grid" id="requirementGrid"></div>
+          <div class="grid-3" style="margin-top: 20px">
+            <div class="card soft">
+              <h3>Why this wins</h3>
+              <p class="muted">
+                It maximizes <b>coverage per unit of complexity</b>. The default stack solves a very wide class of
+                products without introducing a second application language, a frontend build system, multiple stateful
+                stores, or a microservice topology.
+              </p>
+            </div>
+            <div class="card soft">
+              <h3>What it excludes on purpose</h3>
+              <p class="muted">
+                React SPA, Redis, Kafka, OpenSearch, ClickHouse, Kubernetes, service mesh, and dedicated vector
+                infrastructure are all <b>graduation options</b>, not default commitments.
+              </p>
+            </div>
+            <div class="card soft">
+              <h3>Where agent-friendliness comes from</h3>
+              <p class="muted">
+                Predictable structure, one canonical check command, real integration tests, obvious domain entry points,
+                and fewer boundaries to load into context.
+              </p>
+            </div>
           </div>
-          <div class="summary-panel">
-            <h3>Recommended stack</h3>
-            <div class="summary-top" id="summaryMetrics"></div>
-            <div class="stack-pills" id="stackPills"></div>
-            <ul class="notes-list" id="recommendationNotes"></ul>
-            <div class="budget-wrap">
-              <div class="budget-head">
-                <div>
-                  <div class="small">Complexity budget</div>
-                  <div id="budgetLabel"><b>Lean default</b> · very low platform overhead</div>
+        </section>
+
+        <section id="explorer">
+          <div class="section-kicker">Architecture explorer</div>
+          <h2>Click through the default architecture</h2>
+          <p class="lede">
+            Each layer explains what it includes, why it is on the paved road, and what triggers an expansion. This is
+            the core visual model: small default surface area, explicit graduation rules.
+          </p>
+          <div class="explorer">
+            <div class="layer-list" id="layerList"></div>
+            <div class="detail-panel" id="layerDetail"></div>
+          </div>
+        </section>
+
+        <section id="configurator">
+          <div class="section-kicker">Requirement configurator</div>
+          <h2>Turn real requirements into a justified stack</h2>
+          <p class="lede">
+            Select the traits your application actually has. The recommendation updates to show what should stay in the
+            default and what should be added only because the requirement demands it.
+          </p>
+          <div class="controls-wrap">
+            <div class="control-panel">
+              <h3>Requirements</h3>
+              <p class="small">
+                Choose only what is materially true. Most unnecessary complexity enters the system because speculative
+                requirements are treated as current ones.
+              </p>
+              <div class="check-grid" id="requirementGrid"></div>
+            </div>
+            <div class="summary-panel">
+              <h3>Recommended stack</h3>
+              <div class="summary-top" id="summaryMetrics"></div>
+              <div class="stack-pills" id="stackPills"></div>
+              <ul class="notes-list" id="recommendationNotes"></ul>
+              <div class="budget-wrap">
+                <div class="budget-head">
+                  <div>
+                    <div class="small">Complexity budget</div>
+                    <div id="budgetLabel"><b>Lean default</b> · very low platform overhead</div>
+                  </div>
+                  <div class="mono" id="budgetScore">0 / 12</div>
                 </div>
-                <div class="mono" id="budgetScore">0 / 12</div>
-              </div>
-              <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="tradeoffs">
-        <div class="section-kicker">Decision visual</div>
-        <h2>Coverage gain vs complexity cost</h2>
-        <p class="lede">This chart shows why the default is small. Components in the upper-left add a lot of practical coverage for little operational cost. Components drifting rightward may still be correct — but only when they pay rent.</p>
-        <div class="chart-wrap">
-          <div class="chart-card">
-            <svg id="tradeoffChart" viewBox="0 0 760 500" aria-label="Coverage gain vs complexity cost chart"></svg>
-            <div class="legend">
-              <span class="item"><span class="swatch" style="background: var(--green);"></span> Default stack</span>
-              <span class="item"><span class="swatch" style="background: var(--amber);"></span> Conditional additions</span>
-              <span class="item"><span class="swatch" style="background: var(--rose);"></span> High-cost platform additions</span>
-            </div>
-          </div>
-          <div class="chart-detail" id="chartDetail"></div>
-        </div>
-      </section>
-
-      <section id="flows">
-        <div class="section-kicker">Operational flows</div>
-        <h2>Three flows that matter</h2>
-        <p class="lede">The stack stays understandable because the important flows are short. The same few components keep showing up; that is a feature, not a limitation.</p>
-        <div class="flow-tabs" id="flowTabs"></div>
-        <div class="flow-card" id="flowDetail"></div>
-      </section>
-
-      <section id="fit">
-        <div class="section-kicker">Use-case fit</div>
-        <h2>Where this default stack is strongest</h2>
-        <p class="lede">The key question is not “can this stack do it?” but “how much of the product can it do before forcing a second architecture?”</p>
-        <div class="scenario-tabs" id="scenarioTabs"></div>
-        <div class="fit-card" id="fitCard"></div>
-      </section>
-
-      <section id="repo">
-        <div class="section-kicker">Agent-friendly development</div>
-        <h2>The repository contract matters as much as the tech stack</h2>
-        <p class="lede">Agents work best when the codebase has one obvious shape, strong machine feedback, and no hidden write path. This is the operating contract that makes the stack actually agent-friendly.</p>
-        <div class="grid-2" style="margin-top:18px; align-items:start;">
-          <div>
-            <div class="tree">/
-├── AGENTS.md
-├── pyproject.toml
-├── uv.lock
-├── justfile
-├── Dockerfile
-├── docs/
-│   ├── architecture.md
-│   ├── adr/
-│   ├── runbooks/
-│   └── product-rules/
-├── app/
-│   ├── accounts/
-│   │   ├── AGENTS.md
-│   │   ├── models.py
-│   │   ├── services.py
-│   │   ├── queries.py
-│   │   ├── views.py
-│   │   ├── urls.py
-│   │   └── tests/
-│   ├── orders/
-│   ├── billing/
-│   └── ...
-├── templates/
-├── static/
-├── scripts/
-├── tests/
-└── deploy/</div>
-          </div>
-          <div>
-            <div class="rule-list">
-              <div class="rule">
-                <div class="tag">One write path</div>
-                <h3>Git is the control plane</h3>
-                <p class="muted">Agents propose changes as diffs. Production changes happen through reviewed commits, typed operational tools, or both.</p>
-              </div>
-              <div class="rule">
-                <div class="tag">One check command</div>
-                <h3><code>just check</code></h3>
-                <p class="muted">Formatting, linting, type checks, migrations, tests, security checks, and integration tests should be reachable through one canonical command.</p>
-              </div>
-              <div class="rule">
-                <div class="tag">Obvious domain entry points</div>
-                <h3>No invisible behavior</h3>
-                <p class="muted">Prefer explicit service functions over behavior dispersed across signals, hooks, middleware, and import-time side effects.</p>
-              </div>
-              <div class="rule">
-                <div class="tag">Real feedback loops</div>
-                <h3>Use actual PostgreSQL in integration tests</h3>
-                <p class="muted">Do not let mocks declare success for behavior the real system rejects. Deterministic feedback is part of the product.</p>
-              </div>
-              <div class="rule">
-                <div class="tag">Boundary discipline</div>
-                <h3>Only add contracts where boundaries exist</h3>
-                <p class="muted">Use OpenAPI for mobile, external, or independently deployed clients — not as an unnecessary boundary between Django templates and the same server.</p>
-              </div>
-              <div class="rule">
-                <div class="tag">Scoped autonomy</div>
-                <h3>Agents get narrow powers first</h3>
-                <p class="muted">Allow repository edits, analysis, test execution, and pull requests first. Grant wider operational powers only after proven eval history.</p>
+                <div class="budget-track"><div class="budget-fill" id="budgetFill"></div></div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section id="stages">
-        <div class="section-kicker">Graduation stages</div>
-        <h2>What maturity should look like</h2>
-        <p class="lede">The stack should grow in distinct stages rather than accrete tools ad hoc. Each stage below is coherent. You should be able to stop at any of them and still have a good system.</p>
-        <div class="stage-grid" id="stageGrid"></div>
-      </section>
-
-      <section id="faq">
-        <div class="section-kicker">Decision notes</div>
-        <h2>Frequently argued tradeoffs</h2>
-        <details open>
-          <summary>Why Django instead of FastAPI as the center of the stack?</summary>
-          <p class="muted">FastAPI is excellent at typed API edges, but the objective here is widest total coverage with least complexity. Django gives you auth, admin, forms, ORM, migrations, sessions, templating, and a mature project shape. FastAPI is a good addition for narrowly justified API edges, not the best default center for a broad application stack.</p>
-        </details>
-        <details>
-          <summary>Why HTML + HTMX instead of React by default?</summary>
-          <p class="muted">Because most business software does not need a client-side state architecture. The SPA path forces a second language, a build pipeline, an API boundary, client caching behavior, and more failure modes. Add React only when the product really needs rich client-owned interaction.</p>
-        </details>
-        <details>
-          <summary>Why PostgreSQL for so many jobs?</summary>
-          <p class="muted">Using PostgreSQL for relational data, JSONB, full-text search, queues, audit trails, outbox tables, and moderate vector workloads minimizes stateful sprawl. Specialized stores can be added later, but broad default coverage comes from consolidating around one strong primary system first.</p>
-        </details>
-        <details>
-          <summary>Why not Kubernetes as the default runtime?</summary>
-          <p class="muted">Because “containerized” and “needs Kubernetes” are not the same thing. A managed container runtime gives most teams a much better complexity/benefit tradeoff until they actually have many independently scaled workloads or a platform team that can justify the control plane.</p>
-        </details>
-        <details>
-          <summary>Where do Go and TypeScript still belong?</summary>
-          <p class="muted">TypeScript is the justified second language for rich browser and mobile clients. Go is a justified additional language for hot paths, infrastructure-heavy services, or tools that genuinely benefit from its runtime profile. Neither should be mandatory in the default paved road.</p>
-        </details>
-      </section>
-
-      <section id="takeaways">
-        <div class="section-kicker">Bottom line</div>
-        <h2>The actual thesis</h2>
-        <div class="takeaway-grid">
-          <div class="takeaway">
-            <h3>Optimize for coverage per unit complexity</h3>
-            <p class="muted">Do not confuse a capability catalog with a good default stack. The default should solve the widest common case before any expansion.</p>
+        <section id="tradeoffs">
+          <div class="section-kicker">Decision visual</div>
+          <h2>Coverage gain vs complexity cost</h2>
+          <p class="lede">
+            This chart shows why the default is small. Components in the upper-left add a lot of practical coverage for
+            little operational cost. Components drifting rightward may still be correct — but only when they pay rent.
+          </p>
+          <div class="chart-wrap">
+            <div class="chart-card">
+              <svg id="tradeoffChart" viewBox="0 0 760 500" aria-label="Coverage gain vs complexity cost chart"></svg>
+              <div class="legend">
+                <span class="item"><span class="swatch" style="background: var(--green)"></span> Default stack</span>
+                <span class="item"
+                  ><span class="swatch" style="background: var(--amber)"></span> Conditional additions</span
+                >
+                <span class="item"
+                  ><span class="swatch" style="background: var(--rose)"></span> High-cost platform additions</span
+                >
+              </div>
+            </div>
+            <div class="chart-detail" id="chartDetail"></div>
           </div>
-          <div class="takeaway">
-            <h3>Agent-friendliness is mostly about boundaries</h3>
-            <p class="muted">The best agent stack is usually the one with fewer services, fewer languages, fewer write paths, and stronger machine-readable feedback.</p>
+        </section>
+
+        <section id="flows">
+          <div class="section-kicker">Operational flows</div>
+          <h2>Three flows that matter</h2>
+          <p class="lede">
+            The stack stays understandable because the important flows are short. The same few components keep showing
+            up; that is a feature, not a limitation.
+          </p>
+          <div class="flow-tabs" id="flowTabs"></div>
+          <div class="flow-card" id="flowDetail"></div>
+        </section>
+
+        <section id="fit">
+          <div class="section-kicker">Use-case fit</div>
+          <h2>Where this default stack is strongest</h2>
+          <p class="lede">
+            The key question is not “can this stack do it?” but “how much of the product can it do before forcing a
+            second architecture?”
+          </p>
+          <div class="scenario-tabs" id="scenarioTabs"></div>
+          <div class="fit-card" id="fitCard"></div>
+        </section>
+
+        <section id="repo">
+          <div class="section-kicker">Agent-friendly development</div>
+          <h2>The repository contract matters as much as the tech stack</h2>
+          <p class="lede">
+            Agents work best when the codebase has one obvious shape, strong machine feedback, and no hidden write path.
+            This is the operating contract that makes the stack actually agent-friendly.
+          </p>
+          <div class="grid-2" style="margin-top: 18px; align-items: start">
+            <div>
+              <div class="tree">
+                / ├── AGENTS.md ├── pyproject.toml ├── uv.lock ├── justfile ├── Dockerfile ├── docs/ │ ├──
+                architecture.md │ ├── adr/ │ ├── runbooks/ │ └── product-rules/ ├── app/ │ ├── accounts/ │ │ ├──
+                AGENTS.md │ │ ├── models.py │ │ ├── services.py │ │ ├── queries.py │ │ ├── views.py │ │ ├── urls.py │ │
+                └── tests/ │ ├── orders/ │ ├── billing/ │ └── ... ├── templates/ ├── static/ ├── scripts/ ├── tests/ └──
+                deploy/
+              </div>
+            </div>
+            <div>
+              <div class="rule-list">
+                <div class="rule">
+                  <div class="tag">One write path</div>
+                  <h3>Git is the control plane</h3>
+                  <p class="muted">
+                    Agents propose changes as diffs. Production changes happen through reviewed commits, typed
+                    operational tools, or both.
+                  </p>
+                </div>
+                <div class="rule">
+                  <div class="tag">One check command</div>
+                  <h3><code>just check</code></h3>
+                  <p class="muted">
+                    Formatting, linting, type checks, migrations, tests, security checks, and integration tests should
+                    be reachable through one canonical command.
+                  </p>
+                </div>
+                <div class="rule">
+                  <div class="tag">Obvious domain entry points</div>
+                  <h3>No invisible behavior</h3>
+                  <p class="muted">
+                    Prefer explicit service functions over behavior dispersed across signals, hooks, middleware, and
+                    import-time side effects.
+                  </p>
+                </div>
+                <div class="rule">
+                  <div class="tag">Real feedback loops</div>
+                  <h3>Use actual PostgreSQL in integration tests</h3>
+                  <p class="muted">
+                    Do not let mocks declare success for behavior the real system rejects. Deterministic feedback is
+                    part of the product.
+                  </p>
+                </div>
+                <div class="rule">
+                  <div class="tag">Boundary discipline</div>
+                  <h3>Only add contracts where boundaries exist</h3>
+                  <p class="muted">
+                    Use OpenAPI for mobile, external, or independently deployed clients — not as an unnecessary boundary
+                    between Django templates and the same server.
+                  </p>
+                </div>
+                <div class="rule">
+                  <div class="tag">Scoped autonomy</div>
+                  <h3>Agents get narrow powers first</h3>
+                  <p class="muted">
+                    Allow repository edits, analysis, test execution, and pull requests first. Grant wider operational
+                    powers only after proven eval history.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="takeaway">
-            <h3>Expand only on evidence</h3>
-            <p class="muted">React, Redis, Kafka, OpenSearch, ClickHouse, Kubernetes, and dedicated vector stores are all legitimate — just not before the workload proves they are needed.</p>
+        </section>
+
+        <section id="stages">
+          <div class="section-kicker">Graduation stages</div>
+          <h2>What maturity should look like</h2>
+          <p class="lede">
+            The stack should grow in distinct stages rather than accrete tools ad hoc. Each stage below is coherent. You
+            should be able to stop at any of them and still have a good system.
+          </p>
+          <div class="stage-grid" id="stageGrid"></div>
+        </section>
+
+        <section id="faq">
+          <div class="section-kicker">Decision notes</div>
+          <h2>Frequently argued tradeoffs</h2>
+          <details open>
+            <summary>Why Django instead of FastAPI as the center of the stack?</summary>
+            <p class="muted">
+              FastAPI is excellent at typed API edges, but the objective here is widest total coverage with least
+              complexity. Django gives you auth, admin, forms, ORM, migrations, sessions, templating, and a mature
+              project shape. FastAPI is a good addition for narrowly justified API edges, not the best default center
+              for a broad application stack.
+            </p>
+          </details>
+          <details>
+            <summary>Why HTML + HTMX instead of React by default?</summary>
+            <p class="muted">
+              Because most business software does not need a client-side state architecture. The SPA path forces a
+              second language, a build pipeline, an API boundary, client caching behavior, and more failure modes. Add
+              React only when the product really needs rich client-owned interaction.
+            </p>
+          </details>
+          <details>
+            <summary>Why PostgreSQL for so many jobs?</summary>
+            <p class="muted">
+              Using PostgreSQL for relational data, JSONB, full-text search, queues, audit trails, outbox tables, and
+              moderate vector workloads minimizes stateful sprawl. Specialized stores can be added later, but broad
+              default coverage comes from consolidating around one strong primary system first.
+            </p>
+          </details>
+          <details>
+            <summary>Why not Kubernetes as the default runtime?</summary>
+            <p class="muted">
+              Because “containerized” and “needs Kubernetes” are not the same thing. A managed container runtime gives
+              most teams a much better complexity/benefit tradeoff until they actually have many independently scaled
+              workloads or a platform team that can justify the control plane.
+            </p>
+          </details>
+          <details>
+            <summary>Where do Go and TypeScript still belong?</summary>
+            <p class="muted">
+              TypeScript is the justified second language for rich browser and mobile clients. Go is a justified
+              additional language for hot paths, infrastructure-heavy services, or tools that genuinely benefit from its
+              runtime profile. Neither should be mandatory in the default paved road.
+            </p>
+          </details>
+        </section>
+
+        <section id="takeaways">
+          <div class="section-kicker">Bottom line</div>
+          <h2>The actual thesis</h2>
+          <div class="takeaway-grid">
+            <div class="takeaway">
+              <h3>Optimize for coverage per unit complexity</h3>
+              <p class="muted">
+                Do not confuse a capability catalog with a good default stack. The default should solve the widest
+                common case before any expansion.
+              </p>
+            </div>
+            <div class="takeaway">
+              <h3>Agent-friendliness is mostly about boundaries</h3>
+              <p class="muted">
+                The best agent stack is usually the one with fewer services, fewer languages, fewer write paths, and
+                stronger machine-readable feedback.
+              </p>
+            </div>
+            <div class="takeaway">
+              <h3>Expand only on evidence</h3>
+              <p class="muted">
+                React, Redis, Kafka, OpenSearch, ClickHouse, Kubernetes, and dedicated vector stores are all legitimate
+                — just not before the workload proves they are needed.
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <footer>
-        Standalone interactive HTML document. No external assets required.
-      </footer>
-    </main>
-  </div>
+        <footer>Standalone interactive HTML document. No external assets required.</footer>
+      </main>
+    </div>
 
-  <script>
-    const layers = [
-      {
-        id: 'language',
-        tag: 'Layer 1',
-        title: 'Language foundation',
-        blurb: 'One primary language keeps context tight and change velocity high.',
-        default: 'Python 3.14 as the primary language.',
-        why: [
-          'Covers product code, AI integration, automation, scripting, and data-oriented work.',
-          'Ecosystem depth means broad library support and abundant prior examples.',
-          'One language across app, jobs, scripts, and tooling reduces cross-context load.'
-        ],
-        notDefault: ['Go as a co-equal default application language', 'Node backend by default'],
-        expand: ['Add Go only for measured hot paths or infra-shaped services.', 'Add TypeScript as a second language only when a rich client or mobile app genuinely exists.']
-      },
-      {
-        id: 'app',
-        tag: 'Layer 2',
-        title: 'Application core',
-        blurb: 'A modular monolith is the best default center for broad business software.',
-        default: 'Django 5.2 LTS modular monolith.',
-        why: [
-          'Built-in auth, sessions, forms, admin, ORM, migrations, templating, and security middleware.',
-          'Predictable project conventions are easy for both humans and agents to navigate.',
-          'Most product behavior belongs close to the transactional core, not split across services.'
-        ],
-        notDefault: ['Separate FastAPI service', 'Microservice decomposition', 'Event-driven topology as a default posture'],
-        expand: ['Use FastAPI inside the same repo or as a narrow edge only when a typed API surface needs to move faster than the rest of the app.', 'Extract a service only for a real scaling, ownership, or compliance boundary.']
-      },
-      {
-        id: 'ui',
-        tag: 'Layer 3',
-        title: 'Product UI',
-        blurb: 'Server-rendered HTML avoids unnecessary frontend architecture.',
-        default: 'Django templates + HTMX + minimal JavaScript modules.',
-        why: [
-          'Keeps validation, authorization, mutation, and rendering in one request path.',
-          'Eliminates a mandatory SPA build pipeline and client-state architecture for ordinary workflows.',
-          'Works extremely well for forms, tables, workflows, portals, and administrative interfaces.'
-        ],
-        notDefault: ['React SPA', 'Global client cache and generated API client as required architecture'],
-        expand: ['Add React + TypeScript when the product truly requires rich client-owned state, offline behavior, or canvas/editor interactions.', 'Use SSE first for simple server push; graduate to WebSockets only for low-latency bidirectional interaction.']
-      },
-      {
-        id: 'data',
-        tag: 'Layer 4',
-        title: 'Data and state',
-        blurb: 'One strong primary data system buys more than a bag of specialized stores.',
-        default: 'PostgreSQL + S3-compatible object storage.',
-        why: [
-          'PostgreSQL handles OLTP, JSONB, FTS, moderate vector workloads, queue tables, audit trails, and outbox patterns.',
-          'S3-style object storage is universal, cheap, and easy to reason about.',
-          'Consolidating stateful responsibilities reduces operational cardinality and consistency seams.'
-        ],
-        notDefault: ['Redis/Valkey', 'OpenSearch', 'ClickHouse', 'Dedicated vector DB'],
-        expand: ['Add Redis for demonstrated hot ephemeral data or cache pressure.', 'Add OpenSearch for advanced relevance/faceting/index-scale needs.', 'Add ClickHouse or a warehouse when analytical workloads materially disturb OLTP.', 'Add a dedicated vector store only when pgvector clearly stops being enough.']
-      },
-      {
-        id: 'async',
-        tag: 'Layer 5',
-        title: 'Background work and realtime',
-        blurb: 'Asynchrony should start simple and stay close to the core.',
-        default: 'Postgres-backed jobs and SSE-first realtime.',
-        why: [
-          'Using the primary database for queues keeps transactional and operational concerns aligned early on.',
-          'SSE is sufficient for many dashboards, progress updates, and notification-style server push use cases.',
-          'The mental model stays simple: write data, enqueue work, stream updates when needed.'
-        ],
-        notDefault: ['Dedicated message broker', 'WebSockets everywhere', 'Kafka as default'],
-        expand: ['Add SQS-class queues when throughput or cloud buffering needs outgrow DB-backed jobs.', 'Add WebSockets for collaborative or bidirectional interactive sessions.', 'Add Kafka only when event replay, many consumers, or stream processing are first-class needs.']
-      },
-      {
-        id: 'runtime',
-        tag: 'Layer 6',
-        title: 'Deployment and operations',
-        blurb: 'One image on a managed runtime is the best first platform.',
-        default: 'Single OCI image, web + worker processes, managed container runtime, CI-managed deploys.',
-        why: [
-          'Avoids the control-plane and operability tax of Kubernetes by default.',
-          'Keeps deployment topology aligned with application topology: still mostly one system.',
-          'Simple runtime choices improve debuggability and make runbooks shorter.'
-        ],
-        notDefault: ['Kubernetes', 'GitOps control plane', 'service mesh', 'microVM sandboxing inside every app'],
-        expand: ['Add Kubernetes only when you have many independently scaled workloads or an actual platform team need.', 'Keep secrets, identity, logging, and metrics managed, but do not force every application to own the whole enterprise platform.']
-      }
-    ];
+    <script>
+      const layers = [
+        {
+          id: 'language',
+          tag: 'Layer 1',
+          title: 'Language foundation',
+          blurb: 'One primary language keeps context tight and change velocity high.',
+          default: 'Python 3.14 as the primary language.',
+          why: [
+            'Covers product code, AI integration, automation, scripting, and data-oriented work.',
+            'Ecosystem depth means broad library support and abundant prior examples.',
+            'One language across app, jobs, scripts, and tooling reduces cross-context load.',
+          ],
+          notDefault: ['Go as a co-equal default application language', 'Node backend by default'],
+          expand: [
+            'Add Go only for measured hot paths or infra-shaped services.',
+            'Add TypeScript as a second language only when a rich client or mobile app genuinely exists.',
+          ],
+        },
+        {
+          id: 'app',
+          tag: 'Layer 2',
+          title: 'Application core',
+          blurb: 'A modular monolith is the best default center for broad business software.',
+          default: 'Django 5.2 LTS modular monolith.',
+          why: [
+            'Built-in auth, sessions, forms, admin, ORM, migrations, templating, and security middleware.',
+            'Predictable project conventions are easy for both humans and agents to navigate.',
+            'Most product behavior belongs close to the transactional core, not split across services.',
+          ],
+          notDefault: [
+            'Separate FastAPI service',
+            'Microservice decomposition',
+            'Event-driven topology as a default posture',
+          ],
+          expand: [
+            'Use FastAPI inside the same repo or as a narrow edge only when a typed API surface needs to move faster than the rest of the app.',
+            'Extract a service only for a real scaling, ownership, or compliance boundary.',
+          ],
+        },
+        {
+          id: 'ui',
+          tag: 'Layer 3',
+          title: 'Product UI',
+          blurb: 'Server-rendered HTML avoids unnecessary frontend architecture.',
+          default: 'Django templates + HTMX + minimal JavaScript modules.',
+          why: [
+            'Keeps validation, authorization, mutation, and rendering in one request path.',
+            'Eliminates a mandatory SPA build pipeline and client-state architecture for ordinary workflows.',
+            'Works extremely well for forms, tables, workflows, portals, and administrative interfaces.',
+          ],
+          notDefault: ['React SPA', 'Global client cache and generated API client as required architecture'],
+          expand: [
+            'Add React + TypeScript when the product truly requires rich client-owned state, offline behavior, or canvas/editor interactions.',
+            'Use SSE first for simple server push; graduate to WebSockets only for low-latency bidirectional interaction.',
+          ],
+        },
+        {
+          id: 'data',
+          tag: 'Layer 4',
+          title: 'Data and state',
+          blurb: 'One strong primary data system buys more than a bag of specialized stores.',
+          default: 'PostgreSQL + S3-compatible object storage.',
+          why: [
+            'PostgreSQL handles OLTP, JSONB, FTS, moderate vector workloads, queue tables, audit trails, and outbox patterns.',
+            'S3-style object storage is universal, cheap, and easy to reason about.',
+            'Consolidating stateful responsibilities reduces operational cardinality and consistency seams.',
+          ],
+          notDefault: ['Redis/Valkey', 'OpenSearch', 'ClickHouse', 'Dedicated vector DB'],
+          expand: [
+            'Add Redis for demonstrated hot ephemeral data or cache pressure.',
+            'Add OpenSearch for advanced relevance/faceting/index-scale needs.',
+            'Add ClickHouse or a warehouse when analytical workloads materially disturb OLTP.',
+            'Add a dedicated vector store only when pgvector clearly stops being enough.',
+          ],
+        },
+        {
+          id: 'async',
+          tag: 'Layer 5',
+          title: 'Background work and realtime',
+          blurb: 'Asynchrony should start simple and stay close to the core.',
+          default: 'Postgres-backed jobs and SSE-first realtime.',
+          why: [
+            'Using the primary database for queues keeps transactional and operational concerns aligned early on.',
+            'SSE is sufficient for many dashboards, progress updates, and notification-style server push use cases.',
+            'The mental model stays simple: write data, enqueue work, stream updates when needed.',
+          ],
+          notDefault: ['Dedicated message broker', 'WebSockets everywhere', 'Kafka as default'],
+          expand: [
+            'Add SQS-class queues when throughput or cloud buffering needs outgrow DB-backed jobs.',
+            'Add WebSockets for collaborative or bidirectional interactive sessions.',
+            'Add Kafka only when event replay, many consumers, or stream processing are first-class needs.',
+          ],
+        },
+        {
+          id: 'runtime',
+          tag: 'Layer 6',
+          title: 'Deployment and operations',
+          blurb: 'One image on a managed runtime is the best first platform.',
+          default: 'Single OCI image, web + worker processes, managed container runtime, CI-managed deploys.',
+          why: [
+            'Avoids the control-plane and operability tax of Kubernetes by default.',
+            'Keeps deployment topology aligned with application topology: still mostly one system.',
+            'Simple runtime choices improve debuggability and make runbooks shorter.',
+          ],
+          notDefault: ['Kubernetes', 'GitOps control plane', 'service mesh', 'microVM sandboxing inside every app'],
+          expand: [
+            'Add Kubernetes only when you have many independently scaled workloads or an actual platform team need.',
+            'Keep secrets, identity, logging, and metrics managed, but do not force every application to own the whole enterprise platform.',
+          ],
+        },
+      ];
 
-    const requirements = [
-      { id: 'public_api', label: 'Public or partner API', hint: 'The system serves external API consumers, not just its own UI.', adds: ['OpenAPI endpoints'], complexity: 1, notes: ['Expose typed OpenAPI endpoints inside the monolith or as a narrow edge.', 'Keep the browser UI server-rendered unless it separately needs rich client behavior.'] },
-      { id: 'mobile', label: 'Mobile app', hint: 'A native or React Native client is a first-class consumer.', adds: ['OpenAPI endpoints'], complexity: 1, notes: ['Treat the API as a real product surface.', 'Still keep the core transactional logic in the monolith.'] },
-      { id: 'rich_ui', label: 'Rich client-owned UI state', hint: 'Heavy drag-and-drop, canvas/editor interactions, offline-ish behavior, or intense client-side state.', adds: ['React + TypeScript'], complexity: 3, notes: ['This is the strongest justification for a SPA or rich client frontend.', 'Do not upgrade to a SPA just because the app has forms and tables.'] },
-      { id: 'realtime', label: 'Realtime collaboration or bidirectional sessions', hint: 'Chat, shared editing, live presence, or very low-latency multi-user interaction.', adds: ['WebSockets'], complexity: 2, notes: ['WebSockets are justified here; SSE is usually not enough for collaborative sessions.'] },
-      { id: 'heavy_jobs', label: 'High async throughput', hint: 'Large or bursty job volume; DB-backed jobs may stop being the best queue.', adds: ['Cloud queue (SQS-class)'], complexity: 2, notes: ['Move queueing to an SQS-class service before jumping straight to Kafka.'] },
-      { id: 'cache', label: 'Hot ephemeral data or serious cache pressure', hint: 'Low-latency cache or temporary state clearly reduces load or improves UX.', adds: ['Redis / Valkey'], complexity: 2, notes: ['Add a cache only after measuring real pressure.'] },
-      { id: 'search', label: 'Advanced search / relevance / faceting', hint: 'Built-in PostgreSQL full-text search no longer covers the product need.', adds: ['OpenSearch'], complexity: 3, notes: ['Promote a dedicated search engine only when search becomes a differentiated feature.'] },
-      { id: 'analytics', label: 'Heavy analytics or warehouse workloads', hint: 'Analytical scans materially disturb OLTP or need dedicated modeling.', adds: ['ClickHouse / warehouse'], complexity: 3, notes: ['Separate analytics from transactional workload only when the evidence appears.'] },
-      { id: 'scale', label: 'Many independently operated workloads / teams', hint: 'Multiple deployables, heterogeneous scaling, or a real platform team.', adds: ['Kubernetes + GitOps'], complexity: 4, notes: ['Kubernetes is often correct here, but rarely before this point.'] },
-      { id: 'vectors', label: 'Large-scale vector retrieval', hint: 'Embedding search exceeds what pgvector comfortably handles.', adds: ['Dedicated vector DB'], complexity: 3, notes: ['pgvector should be the first stop; dedicate a vector stack only when its limits are real.'] },
-      { id: 'compliance', label: 'High governance / regulated posture', hint: 'Extra audit, identity, secrets, and policy controls are first-class.', adds: ['Stronger identity, secrets, and policy controls'], complexity: 2, notes: ['Treat this as a platform concern where possible rather than application-specific scaffolding.'] }
-    ];
+      const requirements = [
+        {
+          id: 'public_api',
+          label: 'Public or partner API',
+          hint: 'The system serves external API consumers, not just its own UI.',
+          adds: ['OpenAPI endpoints'],
+          complexity: 1,
+          notes: [
+            'Expose typed OpenAPI endpoints inside the monolith or as a narrow edge.',
+            'Keep the browser UI server-rendered unless it separately needs rich client behavior.',
+          ],
+        },
+        {
+          id: 'mobile',
+          label: 'Mobile app',
+          hint: 'A native or React Native client is a first-class consumer.',
+          adds: ['OpenAPI endpoints'],
+          complexity: 1,
+          notes: [
+            'Treat the API as a real product surface.',
+            'Still keep the core transactional logic in the monolith.',
+          ],
+        },
+        {
+          id: 'rich_ui',
+          label: 'Rich client-owned UI state',
+          hint: 'Heavy drag-and-drop, canvas/editor interactions, offline-ish behavior, or intense client-side state.',
+          adds: ['React + TypeScript'],
+          complexity: 3,
+          notes: [
+            'This is the strongest justification for a SPA or rich client frontend.',
+            'Do not upgrade to a SPA just because the app has forms and tables.',
+          ],
+        },
+        {
+          id: 'realtime',
+          label: 'Realtime collaboration or bidirectional sessions',
+          hint: 'Chat, shared editing, live presence, or very low-latency multi-user interaction.',
+          adds: ['WebSockets'],
+          complexity: 2,
+          notes: ['WebSockets are justified here; SSE is usually not enough for collaborative sessions.'],
+        },
+        {
+          id: 'heavy_jobs',
+          label: 'High async throughput',
+          hint: 'Large or bursty job volume; DB-backed jobs may stop being the best queue.',
+          adds: ['Cloud queue (SQS-class)'],
+          complexity: 2,
+          notes: ['Move queueing to an SQS-class service before jumping straight to Kafka.'],
+        },
+        {
+          id: 'cache',
+          label: 'Hot ephemeral data or serious cache pressure',
+          hint: 'Low-latency cache or temporary state clearly reduces load or improves UX.',
+          adds: ['Redis / Valkey'],
+          complexity: 2,
+          notes: ['Add a cache only after measuring real pressure.'],
+        },
+        {
+          id: 'search',
+          label: 'Advanced search / relevance / faceting',
+          hint: 'Built-in PostgreSQL full-text search no longer covers the product need.',
+          adds: ['OpenSearch'],
+          complexity: 3,
+          notes: ['Promote a dedicated search engine only when search becomes a differentiated feature.'],
+        },
+        {
+          id: 'analytics',
+          label: 'Heavy analytics or warehouse workloads',
+          hint: 'Analytical scans materially disturb OLTP or need dedicated modeling.',
+          adds: ['ClickHouse / warehouse'],
+          complexity: 3,
+          notes: ['Separate analytics from transactional workload only when the evidence appears.'],
+        },
+        {
+          id: 'scale',
+          label: 'Many independently operated workloads / teams',
+          hint: 'Multiple deployables, heterogeneous scaling, or a real platform team.',
+          adds: ['Kubernetes + GitOps'],
+          complexity: 4,
+          notes: ['Kubernetes is often correct here, but rarely before this point.'],
+        },
+        {
+          id: 'vectors',
+          label: 'Large-scale vector retrieval',
+          hint: 'Embedding search exceeds what pgvector comfortably handles.',
+          adds: ['Dedicated vector DB'],
+          complexity: 3,
+          notes: ['pgvector should be the first stop; dedicate a vector stack only when its limits are real.'],
+        },
+        {
+          id: 'compliance',
+          label: 'High governance / regulated posture',
+          hint: 'Extra audit, identity, secrets, and policy controls are first-class.',
+          adds: ['Stronger identity, secrets, and policy controls'],
+          complexity: 2,
+          notes: ['Treat this as a platform concern where possible rather than application-specific scaffolding.'],
+        },
+      ];
 
-    const baseStack = [
-      'Python 3.14',
-      'Django 5.2 LTS',
-      'HTML + HTMX + minimal JS',
-      'PostgreSQL',
-      'S3-compatible object storage',
-      'Postgres-backed jobs',
-      'Managed container runtime',
-      'SSE-first realtime',
-      'uv + Ruff + one type checker + pytest + Playwright + just'
-    ];
+      const baseStack = [
+        'Python 3.14',
+        'Django 5.2 LTS',
+        'HTML + HTMX + minimal JS',
+        'PostgreSQL',
+        'S3-compatible object storage',
+        'Postgres-backed jobs',
+        'Managed container runtime',
+        'SSE-first realtime',
+        'uv + Ruff + one type checker + pytest + Playwright + just',
+      ];
 
-    const chartData = [
-      { name: 'Django monolith', x: 1.5, y: 4.8, kind: 'default', size: 9, detail: 'Huge coverage jump with relatively little complexity: auth, admin, ORM, forms, sessions, migrations, templates, stable conventions.' },
-      { name: 'HTML + HTMX', x: 1.2, y: 4.5, kind: 'default', size: 8, detail: 'Avoids a second architecture for most web applications. Excellent value unless the UI truly needs client-owned state.' },
-      { name: 'PostgreSQL', x: 1.8, y: 5.0, kind: 'default', size: 10, detail: 'The core coverage engine of the stack: OLTP, JSONB, FTS, queues, audit tables, moderate vector use.' },
-      { name: 'S3 object storage', x: 1.0, y: 3.8, kind: 'default', size: 7, detail: 'Universally useful, low-overhead, and keeps blobs out of the primary DB.' },
-      { name: 'Managed container runtime', x: 1.5, y: 4.2, kind: 'default', size: 8, detail: 'A high-value operational default without the control-plane burden of Kubernetes.' },
-      { name: 'OpenAPI endpoints', x: 2.0, y: 3.5, kind: 'conditional', size: 7, detail: 'Worth it when another client actually exists: mobile, partner, public, or independently deployed consumer.' },
-      { name: 'Redis / Valkey', x: 2.4, y: 2.7, kind: 'conditional', size: 6, detail: 'Helpful for cache pressure or ephemeral data, but pure speculative caching is negative value.' },
-      { name: 'React + Vite', x: 3.9, y: 3.4, kind: 'conditional', size: 8, detail: 'Can be the right tool for rich interaction, but it imposes a substantial second architecture.' },
-      { name: 'WebSockets', x: 3.2, y: 3.1, kind: 'conditional', size: 6, detail: 'Justified for collaborative or bidirectional low-latency workflows; unnecessary for many realtime cases.' },
-      { name: 'OpenSearch', x: 3.8, y: 2.9, kind: 'conditional', size: 7, detail: 'Correct only when search is a serious product capability or index-scale requirement.' },
-      { name: 'Cloud queue', x: 3.0, y: 3.0, kind: 'conditional', size: 6, detail: 'A better next step than Kafka when queue throughput outgrows DB-backed jobs.' },
-      { name: 'ClickHouse / warehouse', x: 4.3, y: 2.6, kind: 'platform', size: 6, detail: 'Good for true analytical separation. Overkill until analytics materially stress OLTP or product needs demand it.' },
-      { name: 'Dedicated vector DB', x: 4.1, y: 2.3, kind: 'platform', size: 6, detail: 'Only justified when pgvector measurably stops being good enough.' },
-      { name: 'Kafka', x: 4.9, y: 2.8, kind: 'platform', size: 7, detail: 'Powerful, but one of the easiest ways to buy distributed-systems complexity before you need it.' },
-      { name: 'Kubernetes', x: 5.0, y: 3.3, kind: 'platform', size: 8, detail: 'Appropriate for platform-scale environments, not for the median application starting point.' }
-    ];
+      const chartData = [
+        {
+          name: 'Django monolith',
+          x: 1.5,
+          y: 4.8,
+          kind: 'default',
+          size: 9,
+          detail:
+            'Huge coverage jump with relatively little complexity: auth, admin, ORM, forms, sessions, migrations, templates, stable conventions.',
+        },
+        {
+          name: 'HTML + HTMX',
+          x: 1.2,
+          y: 4.5,
+          kind: 'default',
+          size: 8,
+          detail:
+            'Avoids a second architecture for most web applications. Excellent value unless the UI truly needs client-owned state.',
+        },
+        {
+          name: 'PostgreSQL',
+          x: 1.8,
+          y: 5.0,
+          kind: 'default',
+          size: 10,
+          detail: 'The core coverage engine of the stack: OLTP, JSONB, FTS, queues, audit tables, moderate vector use.',
+        },
+        {
+          name: 'S3 object storage',
+          x: 1.0,
+          y: 3.8,
+          kind: 'default',
+          size: 7,
+          detail: 'Universally useful, low-overhead, and keeps blobs out of the primary DB.',
+        },
+        {
+          name: 'Managed container runtime',
+          x: 1.5,
+          y: 4.2,
+          kind: 'default',
+          size: 8,
+          detail: 'A high-value operational default without the control-plane burden of Kubernetes.',
+        },
+        {
+          name: 'OpenAPI endpoints',
+          x: 2.0,
+          y: 3.5,
+          kind: 'conditional',
+          size: 7,
+          detail:
+            'Worth it when another client actually exists: mobile, partner, public, or independently deployed consumer.',
+        },
+        {
+          name: 'Redis / Valkey',
+          x: 2.4,
+          y: 2.7,
+          kind: 'conditional',
+          size: 6,
+          detail: 'Helpful for cache pressure or ephemeral data, but pure speculative caching is negative value.',
+        },
+        {
+          name: 'React + Vite',
+          x: 3.9,
+          y: 3.4,
+          kind: 'conditional',
+          size: 8,
+          detail: 'Can be the right tool for rich interaction, but it imposes a substantial second architecture.',
+        },
+        {
+          name: 'WebSockets',
+          x: 3.2,
+          y: 3.1,
+          kind: 'conditional',
+          size: 6,
+          detail:
+            'Justified for collaborative or bidirectional low-latency workflows; unnecessary for many realtime cases.',
+        },
+        {
+          name: 'OpenSearch',
+          x: 3.8,
+          y: 2.9,
+          kind: 'conditional',
+          size: 7,
+          detail: 'Correct only when search is a serious product capability or index-scale requirement.',
+        },
+        {
+          name: 'Cloud queue',
+          x: 3.0,
+          y: 3.0,
+          kind: 'conditional',
+          size: 6,
+          detail: 'A better next step than Kafka when queue throughput outgrows DB-backed jobs.',
+        },
+        {
+          name: 'ClickHouse / warehouse',
+          x: 4.3,
+          y: 2.6,
+          kind: 'platform',
+          size: 6,
+          detail:
+            'Good for true analytical separation. Overkill until analytics materially stress OLTP or product needs demand it.',
+        },
+        {
+          name: 'Dedicated vector DB',
+          x: 4.1,
+          y: 2.3,
+          kind: 'platform',
+          size: 6,
+          detail: 'Only justified when pgvector measurably stops being good enough.',
+        },
+        {
+          name: 'Kafka',
+          x: 4.9,
+          y: 2.8,
+          kind: 'platform',
+          size: 7,
+          detail: 'Powerful, but one of the easiest ways to buy distributed-systems complexity before you need it.',
+        },
+        {
+          name: 'Kubernetes',
+          x: 5.0,
+          y: 3.3,
+          kind: 'platform',
+          size: 8,
+          detail: 'Appropriate for platform-scale environments, not for the median application starting point.',
+        },
+      ];
 
-    const flows = [
-      {
-        id: 'request',
-        title: 'Browser request path',
-        intro: 'The valuable property here is that most application behavior is still one short, traceable request path.',
-        steps: [
-          { step: '1', name: 'Browser', text: 'HTML form or HTMX action starts a request.' },
-          { step: '2', name: 'Django view', text: 'Authorize, validate, load state, and call explicit domain service.' },
-          { step: '3', name: 'Domain service', text: 'Perform the transaction and write audit/outbox rows as needed.' },
-          { step: '4', name: 'PostgreSQL', text: 'Commit the authoritative state change.' },
-          { step: '5', name: 'HTML response', text: 'Render the updated page or fragment, optionally triggering SSE updates.' }
-        ],
-        bullets: [
-          'No mandatory browser ↔ API ↔ service split for ordinary workflows.',
-          'Authorization, validation, mutation, and rendering stay in one context.',
-          'This is a major reason the stack is agent-friendly.'
-        ]
-      },
-      {
-        id: 'job',
-        title: 'Background job path',
-        intro: 'Asynchronous work should begin close to the transactional core and only separate when job characteristics force it.',
-        steps: [
-          { step: '1', name: 'User action', text: 'A command triggers work that should not block the request.' },
-          { step: '2', name: 'PostgreSQL', text: 'Transaction commits and enqueues a DB-backed job.' },
-          { step: '3', name: 'Worker process', text: 'Same codebase, different process, consumes the job.' },
-          { step: '4', name: 'Side effects', text: 'Send email, generate report, call external API, or process files.' },
-          { step: '5', name: 'Notify UI', text: 'Update state and surface progress through polling or SSE.' }
-        ],
-        bullets: [
-          'The same repository and domain model handle both foreground and background work.',
-          'Cloud queues are the next step when throughput outgrows the database queue.',
-          'Kafka is rarely the second step.'
-        ]
-      },
-      {
-        id: 'agent',
-        title: 'Agent change loop',
-        intro: 'The most important flow is how changes enter the system. Git, checks, and review are the real agent interface.',
-        steps: [
-          { step: '1', name: 'Task + context', text: 'Agent reads product rules, AGENTS.md, relevant modules, and tests.' },
-          { step: '2', name: 'Edit + local checks', text: 'Agent changes code and runs the canonical check command.' },
-          { step: '3', name: 'PR / review', text: 'Changes arrive as a diff with rationale and evidence.' },
-          { step: '4', name: 'CI gates', text: 'Linters, type checks, tests, migrations, and security checks verify the change.' },
-          { step: '5', name: 'Deploy', text: 'Only reviewed, machine-validated changes reach runtime.' }
-        ],
-        bullets: [
-          'Agent-friendliness is much more about repository discipline than AI-specific vendor tooling.',
-          'No hidden GUI-only write path should be required for normal operations.',
-          'Production credentials should remain narrow and time-bound.'
-        ]
-      }
-    ];
+      const flows = [
+        {
+          id: 'request',
+          title: 'Browser request path',
+          intro:
+            'The valuable property here is that most application behavior is still one short, traceable request path.',
+          steps: [
+            { step: '1', name: 'Browser', text: 'HTML form or HTMX action starts a request.' },
+            {
+              step: '2',
+              name: 'Django view',
+              text: 'Authorize, validate, load state, and call explicit domain service.',
+            },
+            {
+              step: '3',
+              name: 'Domain service',
+              text: 'Perform the transaction and write audit/outbox rows as needed.',
+            },
+            { step: '4', name: 'PostgreSQL', text: 'Commit the authoritative state change.' },
+            {
+              step: '5',
+              name: 'HTML response',
+              text: 'Render the updated page or fragment, optionally triggering SSE updates.',
+            },
+          ],
+          bullets: [
+            'No mandatory browser ↔ API ↔ service split for ordinary workflows.',
+            'Authorization, validation, mutation, and rendering stay in one context.',
+            'This is a major reason the stack is agent-friendly.',
+          ],
+        },
+        {
+          id: 'job',
+          title: 'Background job path',
+          intro:
+            'Asynchronous work should begin close to the transactional core and only separate when job characteristics force it.',
+          steps: [
+            { step: '1', name: 'User action', text: 'A command triggers work that should not block the request.' },
+            { step: '2', name: 'PostgreSQL', text: 'Transaction commits and enqueues a DB-backed job.' },
+            { step: '3', name: 'Worker process', text: 'Same codebase, different process, consumes the job.' },
+            {
+              step: '4',
+              name: 'Side effects',
+              text: 'Send email, generate report, call external API, or process files.',
+            },
+            { step: '5', name: 'Notify UI', text: 'Update state and surface progress through polling or SSE.' },
+          ],
+          bullets: [
+            'The same repository and domain model handle both foreground and background work.',
+            'Cloud queues are the next step when throughput outgrows the database queue.',
+            'Kafka is rarely the second step.',
+          ],
+        },
+        {
+          id: 'agent',
+          title: 'Agent change loop',
+          intro:
+            'The most important flow is how changes enter the system. Git, checks, and review are the real agent interface.',
+          steps: [
+            {
+              step: '1',
+              name: 'Task + context',
+              text: 'Agent reads product rules, AGENTS.md, relevant modules, and tests.',
+            },
+            {
+              step: '2',
+              name: 'Edit + local checks',
+              text: 'Agent changes code and runs the canonical check command.',
+            },
+            { step: '3', name: 'PR / review', text: 'Changes arrive as a diff with rationale and evidence.' },
+            {
+              step: '4',
+              name: 'CI gates',
+              text: 'Linters, type checks, tests, migrations, and security checks verify the change.',
+            },
+            { step: '5', name: 'Deploy', text: 'Only reviewed, machine-validated changes reach runtime.' },
+          ],
+          bullets: [
+            'Agent-friendliness is much more about repository discipline than AI-specific vendor tooling.',
+            'No hidden GUI-only write path should be required for normal operations.',
+            'Production credentials should remain narrow and time-bound.',
+          ],
+        },
+      ];
 
-    const scenarios = [
-      {
-        id: 'crud',
-        label: 'Internal CRUD / ops tool',
-        score: 96,
-        fit: 'Near-ideal fit',
-        summary: 'The default stack is extremely strong here. This is the archetype it should dominate.',
-        good: ['Forms, tables, workflows, approvals, reporting, basic notifications, auth, internal admin.', 'Very little reason to add a SPA or extra data systems early.', 'Excellent environment for both humans and coding agents.'],
-        add: ['Likely none beyond the default.']
-      },
-      {
-        id: 'portal',
-        label: 'Customer portal / B2B SaaS',
-        score: 88,
-        fit: 'Strong fit',
-        summary: 'Still a very good fit. Many customer-facing products remain comfortably within the default architecture for a long time.',
-        good: ['Account management, billing UI, customer workflows, documents, dashboards, notifications.', 'OpenAPI may become useful for partner integrations or mobile apps.', 'Redis may eventually help performance, but should not be assumed.'],
-        add: ['OpenAPI if external or mobile clients appear.', 'Redis only if measured need emerges.']
-      },
-      {
-        id: 'platform',
-        label: 'Public platform API',
-        score: 76,
-        fit: 'Good fit with clear additions',
-        summary: 'The center can still be the monolith, but typed API work becomes a first-class concern.',
-        good: ['Stable contracts, auth, rate limiting, docs, API testing, and lifecycle discipline.', 'The browser UI can still stay server-rendered if it is not itself a rich client.'],
-        add: ['OpenAPI endpoints.', 'Potentially a narrow FastAPI edge only if it materially improves API delivery.']
-      },
-      {
-        id: 'mobile',
-        label: 'Mobile-first product',
-        score: 69,
-        fit: 'Moderate fit',
-        summary: 'The core backend still fits, but the default web-UI assumptions are no longer the whole story.',
-        good: ['Backend, auth, data model, jobs, and file handling remain a strong fit.', 'A typed API becomes mandatory.'],
-        add: ['OpenAPI endpoints.', 'Likely TypeScript/React Native or native mobile clients.', 'Possibly WebSockets if realtime UX is strong.']
-      },
-      {
-        id: 'rich',
-        label: 'Rich collaborative app',
-        score: 44,
-        fit: 'Weak default fit',
-        summary: 'This is where the default stops being the natural front-end architecture. A richer client stack is justified.',
-        good: ['The backend and data choices can still be good.', 'The product UI likely needs React, richer client state, and possibly WebSockets.'],
-        add: ['React + TypeScript.', 'WebSockets.', 'Potentially Redis and more specialized realtime infrastructure.']
-      }
-    ];
+      const scenarios = [
+        {
+          id: 'crud',
+          label: 'Internal CRUD / ops tool',
+          score: 96,
+          fit: 'Near-ideal fit',
+          summary: 'The default stack is extremely strong here. This is the archetype it should dominate.',
+          good: [
+            'Forms, tables, workflows, approvals, reporting, basic notifications, auth, internal admin.',
+            'Very little reason to add a SPA or extra data systems early.',
+            'Excellent environment for both humans and coding agents.',
+          ],
+          add: ['Likely none beyond the default.'],
+        },
+        {
+          id: 'portal',
+          label: 'Customer portal / B2B SaaS',
+          score: 88,
+          fit: 'Strong fit',
+          summary:
+            'Still a very good fit. Many customer-facing products remain comfortably within the default architecture for a long time.',
+          good: [
+            'Account management, billing UI, customer workflows, documents, dashboards, notifications.',
+            'OpenAPI may become useful for partner integrations or mobile apps.',
+            'Redis may eventually help performance, but should not be assumed.',
+          ],
+          add: ['OpenAPI if external or mobile clients appear.', 'Redis only if measured need emerges.'],
+        },
+        {
+          id: 'platform',
+          label: 'Public platform API',
+          score: 76,
+          fit: 'Good fit with clear additions',
+          summary: 'The center can still be the monolith, but typed API work becomes a first-class concern.',
+          good: [
+            'Stable contracts, auth, rate limiting, docs, API testing, and lifecycle discipline.',
+            'The browser UI can still stay server-rendered if it is not itself a rich client.',
+          ],
+          add: ['OpenAPI endpoints.', 'Potentially a narrow FastAPI edge only if it materially improves API delivery.'],
+        },
+        {
+          id: 'mobile',
+          label: 'Mobile-first product',
+          score: 69,
+          fit: 'Moderate fit',
+          summary: 'The core backend still fits, but the default web-UI assumptions are no longer the whole story.',
+          good: [
+            'Backend, auth, data model, jobs, and file handling remain a strong fit.',
+            'A typed API becomes mandatory.',
+          ],
+          add: [
+            'OpenAPI endpoints.',
+            'Likely TypeScript/React Native or native mobile clients.',
+            'Possibly WebSockets if realtime UX is strong.',
+          ],
+        },
+        {
+          id: 'rich',
+          label: 'Rich collaborative app',
+          score: 44,
+          fit: 'Weak default fit',
+          summary:
+            'This is where the default stops being the natural front-end architecture. A richer client stack is justified.',
+          good: [
+            'The backend and data choices can still be good.',
+            'The product UI likely needs React, richer client state, and possibly WebSockets.',
+          ],
+          add: [
+            'React + TypeScript.',
+            'WebSockets.',
+            'Potentially Redis and more specialized realtime infrastructure.',
+          ],
+        },
+      ];
 
-    const stages = [
-      {
-        num: 'Stage 0',
-        title: 'Lean default',
-        desc: 'Best starting point for most products.',
-        items: ['Python + Django monolith', 'HTML + HTMX', 'PostgreSQL + S3', 'DB-backed jobs', 'Managed container runtime']
-      },
-      {
-        num: 'Stage 1',
-        title: 'Multi-client ready',
-        desc: 'Add only when another client exists.',
-        items: ['OpenAPI endpoints', 'Client auth hardening', 'Generated clients only if justified', 'SSE remains first push mechanism']
-      },
-      {
-        num: 'Stage 2',
-        title: 'Interactive product expansion',
-        desc: 'Rich UX or stronger realtime needs.',
-        items: ['React + TypeScript', 'WebSockets', 'Redis if cache pressure is real', 'Maintain one clear backend core']
-      },
-      {
-        num: 'Stage 3',
-        title: 'Data / search specialization',
-        desc: 'Promote specialized systems only by evidence.',
-        items: ['OpenSearch for advanced search', 'Warehouse / ClickHouse for analytics', 'Cloud queue for heavy async volume', 'Dedicated vector DB only if pgvector is not enough']
-      },
-      {
-        num: 'Stage 4',
-        title: 'Platform-scale estate',
-        desc: 'When operating many workloads becomes the real problem.',
-        items: ['Kubernetes + GitOps', 'Stronger policy/identity/secrets posture', 'Potential service extraction', 'Kafka only for genuine event-platform needs']
-      }
-    ];
+      const stages = [
+        {
+          num: 'Stage 0',
+          title: 'Lean default',
+          desc: 'Best starting point for most products.',
+          items: [
+            'Python + Django monolith',
+            'HTML + HTMX',
+            'PostgreSQL + S3',
+            'DB-backed jobs',
+            'Managed container runtime',
+          ],
+        },
+        {
+          num: 'Stage 1',
+          title: 'Multi-client ready',
+          desc: 'Add only when another client exists.',
+          items: [
+            'OpenAPI endpoints',
+            'Client auth hardening',
+            'Generated clients only if justified',
+            'SSE remains first push mechanism',
+          ],
+        },
+        {
+          num: 'Stage 2',
+          title: 'Interactive product expansion',
+          desc: 'Rich UX or stronger realtime needs.',
+          items: [
+            'React + TypeScript',
+            'WebSockets',
+            'Redis if cache pressure is real',
+            'Maintain one clear backend core',
+          ],
+        },
+        {
+          num: 'Stage 3',
+          title: 'Data / search specialization',
+          desc: 'Promote specialized systems only by evidence.',
+          items: [
+            'OpenSearch for advanced search',
+            'Warehouse / ClickHouse for analytics',
+            'Cloud queue for heavy async volume',
+            'Dedicated vector DB only if pgvector is not enough',
+          ],
+        },
+        {
+          num: 'Stage 4',
+          title: 'Platform-scale estate',
+          desc: 'When operating many workloads becomes the real problem.',
+          items: [
+            'Kubernetes + GitOps',
+            'Stronger policy/identity/secrets posture',
+            'Potential service extraction',
+            'Kafka only for genuine event-platform needs',
+          ],
+        },
+      ];
 
-    const layerList = document.getElementById('layerList');
-    const layerDetail = document.getElementById('layerDetail');
+      const layerList = document.getElementById('layerList');
+      const layerDetail = document.getElementById('layerDetail');
 
-    function renderLayers(activeId = layers[0].id) {
-      layerList.innerHTML = '';
-      layers.forEach(layer => {
-        const btn = document.createElement('button');
-        btn.className = 'layer-btn' + (layer.id === activeId ? ' active' : '');
-        btn.innerHTML = `
+      function renderLayers(activeId = layers[0].id) {
+        layerList.innerHTML = '';
+        layers.forEach((layer) => {
+          const btn = document.createElement('button');
+          btn.className = 'layer-btn' + (layer.id === activeId ? ' active' : '');
+          btn.innerHTML = `
           <div class="layer-top">
             <div>
               <div class="layer-tag">${layer.tag}</div>
@@ -1242,183 +1870,190 @@
           </div>
           <p>${layer.blurb}</p>
         `;
-        btn.addEventListener('click', () => renderLayers(layer.id));
-        layerList.appendChild(btn);
-      });
+          btn.addEventListener('click', () => renderLayers(layer.id));
+          layerList.appendChild(btn);
+        });
 
-      const layer = layers.find(l => l.id === activeId);
-      layerDetail.innerHTML = `
+        const layer = layers.find((l) => l.id === activeId);
+        layerDetail.innerHTML = `
         <div class="section-kicker">${layer.tag}</div>
         <h2 style="margin-bottom:12px;">${layer.title}</h2>
         <p class="lede" style="margin-top:0;">${layer.default}</p>
         <div class="detail-grid">
           <div class="detail-box">
             <h4>Why this is on the paved road</h4>
-            <ul>${layer.why.map(item => `<li>${item}</li>`).join('')}</ul>
+            <ul>${layer.why.map((item) => `<li>${item}</li>`).join('')}</ul>
           </div>
           <div class="detail-box">
             <h4>Not default</h4>
-            <ul>${layer.notDefault.map(item => `<li>${item}</li>`).join('')}</ul>
+            <ul>${layer.notDefault.map((item) => `<li>${item}</li>`).join('')}</ul>
           </div>
           <div class="detail-box" style="grid-column: 1 / -1;">
             <h4>Expansion triggers</h4>
-            <ul>${layer.expand.map(item => `<li>${item}</li>`).join('')}</ul>
+            <ul>${layer.expand.map((item) => `<li>${item}</li>`).join('')}</ul>
           </div>
         </div>
       `;
-    }
+      }
 
-    const requirementGrid = document.getElementById('requirementGrid');
-    const summaryMetrics = document.getElementById('summaryMetrics');
-    const stackPills = document.getElementById('stackPills');
-    const recommendationNotes = document.getElementById('recommendationNotes');
-    const budgetFill = document.getElementById('budgetFill');
-    const budgetLabel = document.getElementById('budgetLabel');
-    const budgetScore = document.getElementById('budgetScore');
+      const requirementGrid = document.getElementById('requirementGrid');
+      const summaryMetrics = document.getElementById('summaryMetrics');
+      const stackPills = document.getElementById('stackPills');
+      const recommendationNotes = document.getElementById('recommendationNotes');
+      const budgetFill = document.getElementById('budgetFill');
+      const budgetLabel = document.getElementById('budgetLabel');
+      const budgetScore = document.getElementById('budgetScore');
 
-    function renderRequirements() {
-      requirementGrid.innerHTML = '';
-      requirements.forEach(req => {
-        const label = document.createElement('label');
-        label.className = 'check';
-        label.innerHTML = `
+      function renderRequirements() {
+        requirementGrid.innerHTML = '';
+        requirements.forEach((req) => {
+          const label = document.createElement('label');
+          label.className = 'check';
+          label.innerHTML = `
           <input type="checkbox" data-id="${req.id}" />
           <div>
             <b>${req.label}</b>
             <span>${req.hint}</span>
           </div>
         `;
-        label.querySelector('input').addEventListener('change', updateConfigurator);
-        requirementGrid.appendChild(label);
-      });
-    }
+          label.querySelector('input').addEventListener('change', updateConfigurator);
+          requirementGrid.appendChild(label);
+        });
+      }
 
-    function updateConfigurator() {
-      const selected = requirements.filter(req => {
-        const input = requirementGrid.querySelector(`input[data-id="${req.id}"]`);
-        return input && input.checked;
-      });
+      function updateConfigurator() {
+        const selected = requirements.filter((req) => {
+          const input = requirementGrid.querySelector(`input[data-id="${req.id}"]`);
+          return input && input.checked;
+        });
 
-      const additions = [...new Set(selected.flatMap(req => req.adds))];
-      const notes = selected.flatMap(req => req.notes);
+        const additions = [...new Set(selected.flatMap((req) => req.adds))];
+        const notes = selected.flatMap((req) => req.notes);
 
-      let languages = 1;
-      if (additions.includes('React + TypeScript')) languages += 1;
+        let languages = 1;
+        if (additions.includes('React + TypeScript')) languages += 1;
 
-      let stateful = 2; // Postgres + S3
-      if (additions.includes('Redis / Valkey')) stateful += 1;
-      if (additions.includes('OpenSearch')) stateful += 1;
-      if (additions.includes('ClickHouse / warehouse')) stateful += 1;
-      if (additions.includes('Dedicated vector DB')) stateful += 1;
-      if (additions.includes('Cloud queue (SQS-class)')) stateful += 1;
+        let stateful = 2; // Postgres + S3
+        if (additions.includes('Redis / Valkey')) stateful += 1;
+        if (additions.includes('OpenSearch')) stateful += 1;
+        if (additions.includes('ClickHouse / warehouse')) stateful += 1;
+        if (additions.includes('Dedicated vector DB')) stateful += 1;
+        if (additions.includes('Cloud queue (SQS-class)')) stateful += 1;
 
-      let boundaries = 1; // browser to app
-      if (additions.includes('OpenAPI endpoints')) boundaries += 1;
-      if (additions.includes('React + TypeScript')) boundaries += 1;
-      if (additions.includes('Cloud queue (SQS-class)')) boundaries += 1;
-      if (additions.includes('Kubernetes + GitOps')) boundaries += 2;
+        let boundaries = 1; // browser to app
+        if (additions.includes('OpenAPI endpoints')) boundaries += 1;
+        if (additions.includes('React + TypeScript')) boundaries += 1;
+        if (additions.includes('Cloud queue (SQS-class)')) boundaries += 1;
+        if (additions.includes('Kubernetes + GitOps')) boundaries += 2;
 
-      const complexity = selected.reduce((sum, req) => sum + req.complexity, 0);
-      const capped = Math.min(complexity, 12);
-      budgetFill.style.width = `${(capped / 12) * 100}%`;
-      budgetScore.textContent = `${capped} / 12`;
+        const complexity = selected.reduce((sum, req) => sum + req.complexity, 0);
+        const capped = Math.min(complexity, 12);
+        budgetFill.style.width = `${(capped / 12) * 100}%`;
+        budgetScore.textContent = `${capped} / 12`;
 
-      let budgetText = '<b>Lean default</b> · very low platform overhead';
-      if (complexity >= 3 && complexity < 6) budgetText = '<b>Moderate expansion</b> · still a compact system';
-      if (complexity >= 6 && complexity < 9) budgetText = '<b>Serious complexity</b> · several new boundaries introduced';
-      if (complexity >= 9) budgetText = '<b>Platform-shaped stack</b> · only justify on evidence';
-      budgetLabel.innerHTML = budgetText;
+        let budgetText = '<b>Lean default</b> · very low platform overhead';
+        if (complexity >= 3 && complexity < 6) budgetText = '<b>Moderate expansion</b> · still a compact system';
+        if (complexity >= 6 && complexity < 9)
+          budgetText = '<b>Serious complexity</b> · several new boundaries introduced';
+        if (complexity >= 9) budgetText = '<b>Platform-shaped stack</b> · only justify on evidence';
+        budgetLabel.innerHTML = budgetText;
 
-      summaryMetrics.innerHTML = `
+        summaryMetrics.innerHTML = `
         <div class="mini-metric"><div class="num">${languages}</div><div class="txt">Primary application languages</div></div>
         <div class="mini-metric"><div class="num">${stateful}</div><div class="txt">Stateful systems</div></div>
         <div class="mini-metric"><div class="num">${boundaries}</div><div class="txt">Meaningful boundaries</div></div>
         <div class="mini-metric"><div class="num">${baseStack.length + additions.length}</div><div class="txt">Major stack decisions</div></div>
       `;
 
-      stackPills.innerHTML = '';
-      baseStack.forEach(item => {
-        const pill = document.createElement('span');
-        pill.className = 'pill default';
-        pill.textContent = item;
-        stackPills.appendChild(pill);
-      });
-      additions.forEach(item => {
-        const pill = document.createElement('span');
-        pill.className = 'pill added';
-        pill.textContent = item;
-        stackPills.appendChild(pill);
-      });
-      if (complexity >= 9) {
-        const pill = document.createElement('span');
-        pill.className = 'pill warning';
-        pill.textContent = 'Warning: you are no longer on the lean paved road';
-        stackPills.appendChild(pill);
+        stackPills.innerHTML = '';
+        baseStack.forEach((item) => {
+          const pill = document.createElement('span');
+          pill.className = 'pill default';
+          pill.textContent = item;
+          stackPills.appendChild(pill);
+        });
+        additions.forEach((item) => {
+          const pill = document.createElement('span');
+          pill.className = 'pill added';
+          pill.textContent = item;
+          stackPills.appendChild(pill);
+        });
+        if (complexity >= 9) {
+          const pill = document.createElement('span');
+          pill.className = 'pill warning';
+          pill.textContent = 'Warning: you are no longer on the lean paved road';
+          stackPills.appendChild(pill);
+        }
+
+        const finalNotes = selected.length
+          ? notes
+          : [
+              'No extra requirements selected. Stay with the minimal default until a real workload proves otherwise.',
+              'This is the point where the stack has its best coverage-to-complexity ratio.',
+            ];
+        recommendationNotes.innerHTML = finalNotes.map((item) => `<li>${item}</li>`).join('');
+
+        document.querySelectorAll('.stage-card').forEach((card, idx) => {
+          card.classList.toggle('active', idx <= Math.min(Math.floor(complexity / 3), 4));
+        });
       }
 
-      const finalNotes = selected.length
-        ? notes
-        : ['No extra requirements selected. Stay with the minimal default until a real workload proves otherwise.', 'This is the point where the stack has its best coverage-to-complexity ratio.'];
-      recommendationNotes.innerHTML = finalNotes.map(item => `<li>${item}</li>`).join('');
+      const chart = document.getElementById('tradeoffChart');
+      const chartDetail = document.getElementById('chartDetail');
 
-      document.querySelectorAll('.stage-card').forEach((card, idx) => {
-        card.classList.toggle('active', idx <= Math.min(Math.floor(complexity / 3), 4));
-      });
-    }
-
-    const chart = document.getElementById('tradeoffChart');
-    const chartDetail = document.getElementById('chartDetail');
-
-    function kindColor(kind) {
-      if (kind === 'default') return getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
-      if (kind === 'conditional') return getComputedStyle(document.documentElement).getPropertyValue('--amber').trim();
-      return getComputedStyle(document.documentElement).getPropertyValue('--rose').trim();
-    }
-
-    function renderChart(activeName = 'Django monolith') {
-      const w = 760, h = 500;
-      const m = { top: 22, right: 20, bottom: 56, left: 64 };
-      const plotW = w - m.left - m.right;
-      const plotH = h - m.top - m.bottom;
-      const xScale = x => m.left + ((x - 1) / 4) * plotW;
-      const yScale = y => m.top + plotH - ((y - 1) / 4) * plotH;
-      const active = chartData.find(d => d.name === activeName) || chartData[0];
-
-      let svg = '';
-      svg += `<rect x="0" y="0" width="${w}" height="${h}" rx="18" fill="transparent"></rect>`;
-
-      for (let i = 1; i <= 5; i++) {
-        const x = xScale(i);
-        const y = yScale(i);
-        svg += `<line x1="${m.left}" y1="${y}" x2="${w - m.right}" y2="${y}" stroke="#dbe4f0" stroke-width="1"></line>`;
-        svg += `<line x1="${x}" y1="${m.top}" x2="${x}" y2="${h - m.bottom}" stroke="#eef3f9" stroke-width="1"></line>`;
-        svg += `<text x="${x}" y="${h - 24}" text-anchor="middle" font-size="12" fill="#5b6b80">${i}</text>`;
-        svg += `<text x="36" y="${y + 4}" text-anchor="middle" font-size="12" fill="#5b6b80">${i}</text>`;
+      function kindColor(kind) {
+        if (kind === 'default') return getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
+        if (kind === 'conditional')
+          return getComputedStyle(document.documentElement).getPropertyValue('--amber').trim();
+        return getComputedStyle(document.documentElement).getPropertyValue('--rose').trim();
       }
-      svg += `<line x1="${m.left}" y1="${h - m.bottom}" x2="${w - m.right}" y2="${h - m.bottom}" stroke="#8ca0bc" stroke-width="1.4"></line>`;
-      svg += `<line x1="${m.left}" y1="${m.top}" x2="${m.left}" y2="${h - m.bottom}" stroke="#8ca0bc" stroke-width="1.4"></line>`;
-      svg += `<text x="${w / 2}" y="${h - 6}" text-anchor="middle" font-size="13" font-weight="700" fill="#334258">Complexity cost →</text>`;
-      svg += `<text transform="translate(16 ${h / 2}) rotate(-90)" text-anchor="middle" font-size="13" font-weight="700" fill="#334258">Coverage gain →</text>`;
-      svg += `<text x="${w - 160}" y="${m.top + 16}" font-size="12" fill="#5b6b80">Best region: high gain, low cost</text>`;
-      svg += `<rect x="${m.left}" y="${m.top}" width="${plotW * 0.36}" height="${plotH * 0.36}" fill="rgba(24,133,91,0.07)" stroke="rgba(24,133,91,0.18)" rx="14"></rect>`;
 
-      chartData.forEach(d => {
-        const x = xScale(d.x), y = yScale(d.y);
-        const r = d.size + (d.name === active.name ? 2 : 0);
-        const opacity = d.name === active.name ? 1 : 0.88;
-        const stroke = d.name === active.name ? '#102033' : '#ffffff';
-        svg += `<g class="chart-point" data-name="${d.name}" style="cursor:pointer">
+      function renderChart(activeName = 'Django monolith') {
+        const w = 760,
+          h = 500;
+        const m = { top: 22, right: 20, bottom: 56, left: 64 };
+        const plotW = w - m.left - m.right;
+        const plotH = h - m.top - m.bottom;
+        const xScale = (x) => m.left + ((x - 1) / 4) * plotW;
+        const yScale = (y) => m.top + plotH - ((y - 1) / 4) * plotH;
+        const active = chartData.find((d) => d.name === activeName) || chartData[0];
+
+        let svg = '';
+        svg += `<rect x="0" y="0" width="${w}" height="${h}" rx="18" fill="transparent"></rect>`;
+
+        for (let i = 1; i <= 5; i++) {
+          const x = xScale(i);
+          const y = yScale(i);
+          svg += `<line x1="${m.left}" y1="${y}" x2="${w - m.right}" y2="${y}" stroke="#dbe4f0" stroke-width="1"></line>`;
+          svg += `<line x1="${x}" y1="${m.top}" x2="${x}" y2="${h - m.bottom}" stroke="#eef3f9" stroke-width="1"></line>`;
+          svg += `<text x="${x}" y="${h - 24}" text-anchor="middle" font-size="12" fill="#5b6b80">${i}</text>`;
+          svg += `<text x="36" y="${y + 4}" text-anchor="middle" font-size="12" fill="#5b6b80">${i}</text>`;
+        }
+        svg += `<line x1="${m.left}" y1="${h - m.bottom}" x2="${w - m.right}" y2="${h - m.bottom}" stroke="#8ca0bc" stroke-width="1.4"></line>`;
+        svg += `<line x1="${m.left}" y1="${m.top}" x2="${m.left}" y2="${h - m.bottom}" stroke="#8ca0bc" stroke-width="1.4"></line>`;
+        svg += `<text x="${w / 2}" y="${h - 6}" text-anchor="middle" font-size="13" font-weight="700" fill="#334258">Complexity cost →</text>`;
+        svg += `<text transform="translate(16 ${h / 2}) rotate(-90)" text-anchor="middle" font-size="13" font-weight="700" fill="#334258">Coverage gain →</text>`;
+        svg += `<text x="${w - 160}" y="${m.top + 16}" font-size="12" fill="#5b6b80">Best region: high gain, low cost</text>`;
+        svg += `<rect x="${m.left}" y="${m.top}" width="${plotW * 0.36}" height="${plotH * 0.36}" fill="rgba(24,133,91,0.07)" stroke="rgba(24,133,91,0.18)" rx="14"></rect>`;
+
+        chartData.forEach((d) => {
+          const x = xScale(d.x),
+            y = yScale(d.y);
+          const r = d.size + (d.name === active.name ? 2 : 0);
+          const opacity = d.name === active.name ? 1 : 0.88;
+          const stroke = d.name === active.name ? '#102033' : '#ffffff';
+          svg += `<g class="chart-point" data-name="${d.name}" style="cursor:pointer">
           <circle cx="${x}" cy="${y}" r="${r}" fill="${kindColor(d.kind)}" opacity="${opacity}" stroke="${stroke}" stroke-width="${d.name === active.name ? 2.5 : 2}"></circle>
           <text x="${x + 12}" y="${y - 12}" font-size="12" fill="#334258">${d.name}</text>
         </g>`;
-      });
+        });
 
-      chart.innerHTML = svg;
-      chart.querySelectorAll('.chart-point').forEach(el => {
-        el.addEventListener('click', () => renderChart(el.dataset.name));
-      });
+        chart.innerHTML = svg;
+        chart.querySelectorAll('.chart-point').forEach((el) => {
+          el.addEventListener('click', () => renderChart(el.dataset.name));
+        });
 
-      chartDetail.innerHTML = `
+        chartDetail.innerHTML = `
         <div class="section-kicker">Selected component</div>
         <h2 style="margin-bottom:8px;">${active.name}</h2>
         <p class="lede" style="font-size:16px;">${active.detail}</p>
@@ -1435,56 +2070,60 @@
           <p class="muted" style="margin:0;">The farther a component moves right, the stronger the evidence needed to justify it. The stack stays elegant by spending most of its time in the upper-left of this chart.</p>
         </div>
       `;
-    }
+      }
 
-    const flowTabs = document.getElementById('flowTabs');
-    const flowDetail = document.getElementById('flowDetail');
+      const flowTabs = document.getElementById('flowTabs');
+      const flowDetail = document.getElementById('flowDetail');
 
-    function renderFlows(activeId = flows[0].id) {
-      flowTabs.innerHTML = '';
-      flows.forEach(flow => {
-        const btn = document.createElement('button');
-        btn.className = 'flow-tab' + (flow.id === activeId ? ' active' : '');
-        btn.textContent = flow.title;
-        btn.addEventListener('click', () => renderFlows(flow.id));
-        flowTabs.appendChild(btn);
-      });
+      function renderFlows(activeId = flows[0].id) {
+        flowTabs.innerHTML = '';
+        flows.forEach((flow) => {
+          const btn = document.createElement('button');
+          btn.className = 'flow-tab' + (flow.id === activeId ? ' active' : '');
+          btn.textContent = flow.title;
+          btn.addEventListener('click', () => renderFlows(flow.id));
+          flowTabs.appendChild(btn);
+        });
 
-      const flow = flows.find(f => f.id === activeId);
-      flowDetail.innerHTML = `
+        const flow = flows.find((f) => f.id === activeId);
+        flowDetail.innerHTML = `
         <h3>${flow.title}</h3>
         <p class="muted">${flow.intro}</p>
         <div class="flow-strip">
-          ${flow.steps.map(step => `
+          ${flow.steps
+            .map(
+              (step) => `
             <div class="flow-node">
               <div class="step">Step ${step.step}</div>
               <div class="name">${step.name}</div>
               <p>${step.text}</p>
             </div>
-          `).join('')}
+          `,
+            )
+            .join('')}
         </div>
         <div class="detail-box" style="margin-top:16px;">
           <h4>Key takeaways</h4>
-          <ul>${flow.bullets.map(item => `<li>${item}</li>`).join('')}</ul>
+          <ul>${flow.bullets.map((item) => `<li>${item}</li>`).join('')}</ul>
         </div>
       `;
-    }
+      }
 
-    const scenarioTabs = document.getElementById('scenarioTabs');
-    const fitCard = document.getElementById('fitCard');
+      const scenarioTabs = document.getElementById('scenarioTabs');
+      const fitCard = document.getElementById('fitCard');
 
-    function renderScenarios(activeId = scenarios[0].id) {
-      scenarioTabs.innerHTML = '';
-      scenarios.forEach(s => {
-        const btn = document.createElement('button');
-        btn.className = 'scenario-tab' + (s.id === activeId ? ' active' : '');
-        btn.textContent = s.label;
-        btn.addEventListener('click', () => renderScenarios(s.id));
-        scenarioTabs.appendChild(btn);
-      });
+      function renderScenarios(activeId = scenarios[0].id) {
+        scenarioTabs.innerHTML = '';
+        scenarios.forEach((s) => {
+          const btn = document.createElement('button');
+          btn.className = 'scenario-tab' + (s.id === activeId ? ' active' : '');
+          btn.textContent = s.label;
+          btn.addEventListener('click', () => renderScenarios(s.id));
+          scenarioTabs.appendChild(btn);
+        });
 
-      const s = scenarios.find(item => item.id === activeId);
-      fitCard.innerHTML = `
+        const s = scenarios.find((item) => item.id === activeId);
+        fitCard.innerHTML = `
         <div>
           <div class="score-ring" style="--score:${s.score};">
             <div class="inner">
@@ -1502,51 +2141,58 @@
           <div class="grid-2" style="margin-top:14px;">
             <div class="detail-box">
               <h4>What the default handles well</h4>
-              <ul>${s.good.map(item => `<li>${item}</li>`).join('')}</ul>
+              <ul>${s.good.map((item) => `<li>${item}</li>`).join('')}</ul>
             </div>
             <div class="detail-box">
               <h4>Likely additions</h4>
-              <ul>${s.add.map(item => `<li>${item}</li>`).join('')}</ul>
+              <ul>${s.add.map((item) => `<li>${item}</li>`).join('')}</ul>
             </div>
           </div>
         </div>
       `;
-    }
+      }
 
-    const stageGrid = document.getElementById('stageGrid');
-    function renderStages() {
-      stageGrid.innerHTML = stages.map((stage, idx) => `
+      const stageGrid = document.getElementById('stageGrid');
+      function renderStages() {
+        stageGrid.innerHTML = stages
+          .map(
+            (stage, idx) => `
         <div class="stage-card ${idx === 0 ? 'active' : ''}">
           <div class="stage-num">${stage.num}</div>
           <h3>${stage.title}</h3>
           <p class="muted">${stage.desc}</p>
-          <ul>${stage.items.map(item => `<li>${item}</li>`).join('')}</ul>
+          <ul>${stage.items.map((item) => `<li>${item}</li>`).join('')}</ul>
         </div>
-      `).join('');
-    }
+      `,
+          )
+          .join('');
+      }
 
-    function setActiveToc() {
-      const links = [...document.querySelectorAll('.toc nav a')];
-      const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
-      const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const id = '#' + entry.target.id;
-            links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === id));
-          }
-        });
-      }, { rootMargin: '-30% 0px -60% 0px', threshold: 0.01 });
-      sections.forEach(section => observer.observe(section));
-    }
+      function setActiveToc() {
+        const links = [...document.querySelectorAll('.toc nav a')];
+        const sections = links.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                const id = '#' + entry.target.id;
+                links.forEach((link) => link.classList.toggle('active', link.getAttribute('href') === id));
+              }
+            });
+          },
+          { rootMargin: '-30% 0px -60% 0px', threshold: 0.01 },
+        );
+        sections.forEach((section) => observer.observe(section));
+      }
 
-    renderLayers();
-    renderRequirements();
-    renderChart();
-    renderFlows();
-    renderScenarios();
-    renderStages();
-    updateConfigurator();
-    setActiveToc();
-  </script>
-</body>
+      renderLayers();
+      renderRequirements();
+      renderChart();
+      renderFlows();
+      renderScenarios();
+      renderStages();
+      updateConfigurator();
+      setActiveToc();
+    </script>
+  </body>
 </html>

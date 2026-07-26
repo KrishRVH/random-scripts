@@ -20,7 +20,7 @@ sorted_data = sorter.sort([1, 2, 3, 1000, 4, 5, -1000, 6, 7, 8])
 # Result: [-1000, 1, 2, 3, 4, 5, 6, 7, 8, 1000]
 
 # Compare with simple filtering approach:
-# sorted([x for x in data if -100 <= x <= 100] + 
+# sorted([x for x in data if -100 <= x <= 100] +
 #        [x for x in data if x < -100 or x > 100])
 ```
 
@@ -91,11 +91,11 @@ T = TypeVar('T')
 class AdaptiveOutlierSort:
     """
     Experimental sorting system that segregates outliers.
-    
+
     WARNING: Performance benefits are hypothetical and unvalidated.
     Use only for experimentation and benchmarking.
     """
-    
+
     def __init__(
         self,
         outlier_detector: Optional[Union[str, Callable]] = "iqr",
@@ -108,28 +108,28 @@ class AdaptiveOutlierSort:
         self.min_size_threshold = min_size_threshold
         self.iqr_sample_size = iqr_sample_size
         self.iqr_multiplier = iqr_multiplier
-        
+
         if callable(outlier_detector):
             self.outlier_detector = outlier_detector
         elif outlier_detector == "iqr":
             self.outlier_detector = self._default_iqr_detector
         else:
             raise ValueError("outlier_detector must be 'iqr' or a callable")
-    
+
     def _default_iqr_detector(self, arr: List[T]) -> Tuple[List[T], List[T]]:
         """
         IQR-based outlier detection with proper quantile calculation.
-        
+
         Note: This is still O(n) due to the partitioning pass.
         Whether this overhead is worth it depends on cache effects.
         """
         if not arr:
             return [], []
-        
+
         # Filter out NaN and infinity values first
         arr_clean = []
         arr_invalid = []
-        
+
         for x in arr:
             try:
                 if math.isnan(x) or math.isinf(x):
@@ -139,17 +139,17 @@ class AdaptiveOutlierSort:
             except (TypeError, ValueError):
                 # Not a numeric type, proceed normally
                 arr_clean.append(x)
-        
+
         if not arr_clean:
             return [], arr_invalid
-        
+
         # Sample for IQR calculation
         sample_size = min(len(arr_clean), self.iqr_sample_size)
         if len(arr_clean) <= sample_size:
             sample = sorted(arr_clean)
         else:
             sample = sorted(random.sample(arr_clean, sample_size))
-        
+
         # Proper quantile calculation
         def quantile(data, q):
             n = len(data)
@@ -158,18 +158,18 @@ class AdaptiveOutlierSort:
             upper = min(lower + 1, n - 1)
             weight = idx - lower
             return data[lower] * (1 - weight) + data[upper] * weight
-        
+
         q1 = quantile(sample, 0.25)
         q3 = quantile(sample, 0.75)
         iqr = q3 - q1
-        
+
         if iqr == 0:
             # All sampled values are identical
             return arr_clean, arr_invalid
-        
+
         lower_bound = q1 - self.iqr_multiplier * iqr
         upper_bound = q3 + self.iqr_multiplier * iqr
-        
+
         # Partition (O(n) pass - this is the overhead we're betting against)
         normal, outliers = [], []
         for x in arr_clean:
@@ -177,42 +177,42 @@ class AdaptiveOutlierSort:
                 normal.append(x)
             else:
                 outliers.append(x)
-        
+
         # Add invalid values to outliers
         outliers.extend(arr_invalid)
-        
+
         return normal, outliers
-    
+
     def sort(self, arr: List[T]) -> List[T]:
         """
         Sort using outlier segregation.
-        
+
         WARNING: May be SLOWER than standard sort due to overhead.
         Profile before using in production.
         """
         n = len(arr)
-        
+
         if n < self.min_size_threshold:
             return sorted(arr)
-        
+
         normal, outliers = self.outlier_detector(arr)
         outlier_ratio = len(outliers) / n if n > 0 else 0
-        
+
         if outlier_ratio > self.outlier_ratio_threshold:
             # Too many outliers - overhead not worth it
             return sorted(arr)
-        
+
         # The bet: these sorts are more cache-friendly than sorting mixed data
         sorted_normal = sorted(normal)
         sorted_outliers = sorted(outliers)
-        
+
         return self._merge(sorted_normal, sorted_outliers)
-    
+
     def _merge(self, arr1: List[T], arr2: List[T]) -> List[T]:
         """Standard merge - O(n) but with good cache behavior."""
         result = []
         i = j = 0
-        
+
         while i < len(arr1) and j < len(arr2):
             if arr1[i] <= arr2[j]:
                 result.append(arr1[i])
@@ -220,7 +220,7 @@ class AdaptiveOutlierSort:
             else:
                 result.append(arr2[j])
                 j += 1
-        
+
         result.extend(arr1[i:])
         result.extend(arr2[j:])
         return result
@@ -229,7 +229,7 @@ class AdaptiveOutlierSort:
 def simple_filter_sort(arr: List[float], bounds: Tuple[float, float]) -> List[float]:
     """
     Baseline: Simple filtering approach for comparison.
-    
+
     This might be just as fast and simpler!
     """
     lower, upper = bounds
@@ -245,16 +245,23 @@ Before claiming ANY performance benefits, the following validation is required:
 ### 5.1 Test Datasets Needed
 
 1. **Sensor Data**
+
 - Real temperature/pressure readings with equipment failures
 - At least 1M data points
 - Document outlier percentage and distribution
+
 1. **Financial Time Series**
+
 - Real tick data with flash crashes/spikes
 - Various time windows and volatility levels
+
 1. **System Logs**
+
 - Real timestamp data with clock skew issues
 - Different scales (seconds, milliseconds, microseconds)
+
 1. **Control Datasets**
+
 - Uniformly random data (should show no benefit)
 - Already sorted data (should show overhead only)
 - Reverse sorted data
@@ -317,12 +324,12 @@ To evaluate if outlier segregation might help, consider this simplified cost mod
 def estimate_benefit(n, outlier_ratio, cache_miss_reduction_factor=0.3):
     """
     Rough estimation of whether approach might provide benefit.
-    
+
     Args:
         n: Size of dataset
         outlier_ratio: Fraction of outliers (0.0 to 1.0)
         cache_miss_reduction_factor: Estimated reduction in cache misses
-    
+
     Returns:
         Dictionary with cost breakdown
     """
@@ -330,34 +337,34 @@ def estimate_benefit(n, outlier_ratio, cache_miss_reduction_factor=0.3):
     CACHE_MISS_COST = 200  # L3 miss to main memory
     COMPARISON_COST = 1    # Basic comparison
     BRANCH_MISS_COST = 15  # Mispredicted branch
-    
+
     # Standard sort costs (simplified model)
     comparisons_standard = n * math.log2(n)
     cache_misses_standard = n * 0.1  # Assume 10% miss rate with mixed data
-    standard_cost = (comparisons_standard * COMPARISON_COST + 
+    standard_cost = (comparisons_standard * COMPARISON_COST +
                     cache_misses_standard * CACHE_MISS_COST)
-    
+
     # Segregated sort costs
     detection_cost = n * 2  # O(n) partition pass
-    
+
     n_normal = n * (1 - outlier_ratio)
     n_outlier = n * outlier_ratio
-    
+
     # Assume better cache behavior for segregated data
     cache_misses_segregated = (n_normal * 0.05 +  # 5% miss rate for uniform data
                               n_outlier * 0.15)    # 15% for outliers
-    
-    comparisons_segregated = (n_normal * math.log2(max(n_normal, 1)) + 
+
+    comparisons_segregated = (n_normal * math.log2(max(n_normal, 1)) +
                              n_outlier * math.log2(max(n_outlier, 1)))
-    
+
     merge_cost = n * 2  # O(n) merge
-    
-    segregated_cost = (detection_cost + 
+
+    segregated_cost = (detection_cost +
                       comparisons_segregated * COMPARISON_COST +
-                      cache_misses_segregated * CACHE_MISS_COST * 
+                      cache_misses_segregated * CACHE_MISS_COST *
                       (1 - cache_miss_reduction_factor) +
                       merge_cost)
-    
+
     return {
         'standard_cost': standard_cost,
         'segregated_cost': segregated_cost,
@@ -384,44 +391,44 @@ print(f"Worth trying: {estimate['worth_trying']}")
 ```python
 def benchmark_sort_approaches(data, runs=10):
     """Compare different sorting approaches with proper methodology."""
-    
+
     results = {
         'standard_sort': [],
         'adaptive_sort': [],
         'simple_filter': [],
         'numpy_sort': []
     }
-    
+
     # Warm up caches
     _ = sorted(data[:1000])
-    
+
     for _ in range(runs):
         # Randomize order to avoid cache effects between runs
         random.shuffle(data)
         data_copy = data.copy()
-        
+
         # Standard sort
         start = time.perf_counter()
         result1 = sorted(data_copy)
         results['standard_sort'].append(time.perf_counter() - start)
-        
+
         # Adaptive sort
         data_copy = data.copy()
         sorter = AdaptiveOutlierSort()
         start = time.perf_counter()
         result2 = sorter.sort(data_copy)
         results['adaptive_sort'].append(time.perf_counter() - start)
-        
+
         # Verify correctness
         assert result1 == result2, "Results don't match!"
-        
+
         # Simple filter (if bounds are known)
         if known_bounds:
             data_copy = data.copy()
             start = time.perf_counter()
             result3 = simple_filter_sort(data_copy, known_bounds)
             results['simple_filter'].append(time.perf_counter() - start)
-    
+
     return results
 ```
 
