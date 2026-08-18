@@ -2,17 +2,23 @@
 #
 # Claude Code statusline — one line, Codex-CLI style.
 #
-#   [PT] Opus 5 med · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 5h 82% · weekly 93% · 12345 in · 678 out · 🪙  💰 $1.23
-#   \__/ \_________/  \____/   \__/  \____/   \____________/   \_____/   \________/   \_______________/   \_________/
-#   badge   model      dir    branch  dirty     context         5h left   week left      token counts       cost
+#   [PT] Opus 5 med · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 5h 82% · 7d 93% · 1.2M in · 45K out · $1.23
+#   \__/ \_________/  \____/   \__/  \____/   \____________/   \_____/   \_____/   \_______________/   \___/
+#   badge   model      dir    branch  dirty     context         5h left   7d left    session tokens     cost
 #
 # Claude Code pipes a JSON payload on stdin and renders whatever this prints.
 # Every segment is independent: any whose data is missing (fresh session,
 # non-git directory, plugin not installed) is simply omitted.
 #
-# Note: the 5h and weekly numbers are percent REMAINING; the context bar is
+# Note: the 5h and 7d numbers are percent REMAINING; the context bar is
 # percent USED. That asymmetry is deliberate — you want to know how much
 # budget is left, but how much context is spent.
+#
+# The token counts are SESSION CUMULATIVE, not the current context window.
+# The payload's .context_window.total_*_tokens describe only what is resident
+# in the window right now, which shrinks on compaction and never reflects what
+# the session as a whole has consumed. So they are summed out of the session's
+# own transcript instead — see session_tokens() below.
 #
 # ---------------------------------------------------------------------------
 # Install (per machine)
@@ -21,9 +27,9 @@
 #        "statusLine": { "type": "command", "command": "~/.claude/statusline.sh" }
 #   3. Restart Claude Code.
 #
-# Requires: POSIX sh, jq, awk. Optional: git (branch/dirty segment).
-# Also needs a UTF-8 terminal with a font covering U+2588/U+2591 and emoji;
-# without it the bar and coin render as tofu boxes. Set SL_ASCII=1 to
+# Requires: POSIX sh + core utilities, jq, awk. Optional: git (branch/dirty).
+# Also needs a UTF-8 terminal with a font covering U+2588/U+2591 and U+00B7;
+# without it the bar and separators render as tofu boxes. Set SL_ASCII=1 to
 # fall back to ASCII-only glyphs.
 #
 # Portability: written for /bin/sh (tested under dash), no bashisms, no GNU-only
@@ -36,8 +42,8 @@
 # and multi-profile setups keep working without editing this script.
 CONFIG_DIR="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
 
-# Scratch space for the coin's per-session frame counter. Kept out of
-# CONFIG_DIR so nothing here ever pollutes synced/versioned config.
+# Scratch space for the memoised session token totals. Kept out of CONFIG_DIR
+# so nothing here ever pollutes synced/versioned config.
 CACHE_DIR="${TMPDIR:-/tmp}/claude-statusline-${USER:-$LOGNAME}"
 
 BAR_WIDTH=10          # cells in the context meter
@@ -46,12 +52,8 @@ CTX_CRIT=90           # context % at which the bar turns red
 
 if [ "${SL_ASCII:-0}" = 1 ]; then
   GLYPH_FILL='#'; GLYPH_EMPTY='.'; GLYPH_SEP='|'
-  COIN_0='o   $'; COIN_1=' o  $'; COIN_2='  o $'; COIN_3='    $'
 else
   GLYPH_FILL='█'; GLYPH_EMPTY='░'; GLYPH_SEP='·'
-  # Coin drifts right into the money bag. All four frames are the same display
-  # width so the rest of the line never shifts as it animates.
-  COIN_0='🪙  💰'; COIN_1=' 🪙 💰'; COIN_2='  🪙💰'; COIN_3='    💰'
 fi
 
 # --- Theme -----------------------------------------------------------------
@@ -67,8 +69,8 @@ C_BRANCH=$(fg 74)              # steel blue
 C_ADD=$(fg 71)                 # sage green
 C_MOD=$(fg 143)                # olive amber
 C_DEL=$(fg 167)                # soft brick red
-C_5H=$(fg 181)                 # pale rose (paler sibling of C_WEEK)
-C_WEEK=$(fg 167)               # soft brick red
+C_5H=$(fg 181)                 # pale rose (paler sibling of C_7D)
+C_7D=$(fg 167)                 # soft brick red
 C_IN=$(fg 173)                 # soft orange
 C_OUT=$(sgr '1;38;5;216')      # bold light orange ("neon")
 C_COST=$(fg 108)               # dollar-bill green
@@ -97,6 +99,21 @@ round() { awk -v v="$1" 'BEGIN { printf "%.0f", v }'; }
 # Percentage remaining, given percentage used.
 pct_left() { awk -v u="$1" 'BEGIN { printf "%.0f", 100 - u }'; }
 
+# Abbreviate a token count: 812 · 4.2K · 45K · 1.2M · 3.4B.
+# One decimal only below 10 of a unit, which caps every result at four cells —
+# the segment must not keep resizing the line as a session grows. Thresholds
+# are the .5 rounding boundaries rather than flat powers of ten, so 999_600
+# reads "1.0M" instead of "1000K".
+human() {
+  awk -v n="$1" 'BEGIN {
+    if (n < 999.5)          { printf "%.0f", n; exit }
+    if      (n >= 999.5e6)  { v = n / 1e9; s = "B" }
+    else if (n >= 999.5e3)  { v = n / 1e6; s = "M" }
+    else                    { v = n / 1e3; s = "K" }
+    printf (v < 9.95 ? "%.1f%s" : "%.0f%s"), v, s
+  }'
+}
+
 # Threshold colour for a context percentage.
 ctx_color() {
   if   [ "$1" -ge "$CTX_CRIT" ]; then printf '%s' "$C_HI"
@@ -122,8 +139,93 @@ meter() {
 # $cwd, which the Payload section below resolves before any segment runs.
 git_ro() { git --no-optional-locks -C "$cwd" "$@" 2>/dev/null; }
 
+# Session-cumulative input/output tokens over the given transcript files,
+# printed as "<in> <out>".
+#
+# Input counts fresh, cache-write and cache-read tokens together: all three are
+# input to the model and all three are billed, so excluding cache reads would
+# make a long session look an order of magnitude cheaper than it was.
+#
+# jq emits one row per usage-bearing line and awk does the dedupe and the
+# arithmetic. Slurping instead (jq -s) would be shorter but holds every parsed
+# line in memory at once — 34MB peak on a 5MB transcript against 4MB streaming,
+# for a process that runs every few seconds.
+#
+# The dedupe matters: an assistant turn is written as several transcript lines
+# (one per content block) all carrying the same final usage object, so summing
+# every row double-counts each turn that emitted both thinking and text. Keying
+# on .message.id collapses them; the .uuid fallback keeps a row that somehow
+# lacks a message id counted once rather than merged with unrelated rows.
+#
+# Prints nothing at all when no usage row was seen. That is load-bearing: it
+# lets the caller tell "no turns yet, or unparseable" apart from a genuine
+# zero, and fall back to the payload rather than claiming 0 in / 0 out.
+sum_tokens() {
+  jq -r '
+    select(.message.usage)
+    | [ (.message.id // .uuid // "?"),
+        (.message.usage
+         | .input_tokens + (.cache_creation_input_tokens // 0)
+                         + (.cache_read_input_tokens    // 0)),
+        .message.usage.output_tokens ]
+    | @tsv' -- "$@" 2>/dev/null |
+  awk -F'\t' '
+    !seen[$1]++ { in_ += $2; out += $3; n++ }
+    END         { if (n) printf "%.0f %.0f", in_, out }'
+}
+
+# Memoised sum over every transcript file belonging to this session: the main
+# one, plus one per subagent (those live in a sibling <session-id>/subagents/
+# directory and their usage is billed to this session, so leaving them out
+# would under-report any session that fanned work out).
+#
+# A busy 5MB transcript costs ~50ms to re-parse and this script runs every
+# 1-6s, so the result is cached against a signature of the input files' sizes:
+# renders that produced no tokens (mode toggles, directory changes) reuse it
+# for ~5ms, and any appended byte busts it. Transcripts are append-only, so
+# size alone is a sound cache key.
+#
+# The file list is carried in the positional parameters rather than a
+# whitespace-joined string, so a config or project path containing spaces does
+# not silently split into bogus filenames.
+#
+# Locals are _st_-prefixed: POSIX sh has no `local`, and the caller happens to
+# use $totals for this function's own result.
+session_tokens() {
+  _st_cache="$CACHE_DIR/tokens-${2:-default}"
+  [ -f "$1" ] || return 1
+
+  set -- "$1"
+  for _st_f in "${1%.jsonl}"/subagents/*.jsonl; do
+    [ -f "$_st_f" ] && set -- "$@" "$_st_f"
+  done
+
+  # `--` matters: Claude Code's project directories are the cwd with slashes
+  # turned into dashes, so an absolute-path-less invocation would hand ls and
+  # jq a filename that starts with "-" and be parsed as options.
+  _st_sig=$(ls -Ldn -- "$@" 2>/dev/null | awk '{ printf "%s:", $5 }')
+  [ -n "$_st_sig" ] || return 1
+
+  _st_cached=$(cat "$_st_cache" 2>/dev/null)
+  case $_st_cached in
+    "$_st_sig "*) printf '%s' "${_st_cached#* }"; return 0 ;;
+  esac
+
+  _st_totals=$(sum_tokens "$@")
+  [ -n "$_st_totals" ] || return 1
+
+  if [ ! -d "$CACHE_DIR" ]; then
+    mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
+  fi
+  printf '%s %s' "$_st_sig" "$_st_totals" > "$_st_cache" 2>/dev/null
+  printf '%s' "$_st_totals"
+}
+
 # --- Payload ---------------------------------------------------------------
 
+# Read stdin unconditionally, before deciding whether jq is even available:
+# leaving the pipe undrained risks handing Claude Code an EPIPE on a machine
+# where this script degrades.
 input=$(cat)
 
 # One jq pass over the payload; absent fields become empty strings. Fields are
@@ -132,18 +234,14 @@ input=$(cat)
 # collapsing runs of them, so field positions stay aligned when some are absent.
 US=$(printf '\037')
 
-if command -v jq >/dev/null 2>&1; then
-  has_jq=1
-else
-  has_jq=0
-fi
+command -v jq >/dev/null 2>&1 && has_jq=1 || has_jq=0
 
 model=''; effort=''; cwd=''; ctx_used=''; tokens_in=''
-tokens_out=''; used_5h=''; used_7d=''; cost=''; session=''
+tokens_out=''; used_5h=''; used_7d=''; cost=''; session=''; transcript=''
 
 if [ "$has_jq" = 1 ]; then
   IFS=$US read -r model effort cwd ctx_used tokens_in tokens_out \
-                  used_5h used_7d cost session <<EOF
+                  used_5h used_7d cost session transcript <<EOF
 $(printf '%s' "$input" | jq -r 2>/dev/null '[
   (.model.display_name             // ""),
   (.effort.level                   // ""),
@@ -154,9 +252,18 @@ $(printf '%s' "$input" | jq -r 2>/dev/null '[
   (.rate_limits.five_hour.used_percentage // ""),
   (.rate_limits.seven_day.used_percentage // ""),
   (.cost.total_cost_usd            // ""),
-  (.session_id                     // "")
+  (.session_id                     // ""),
+  (.transcript_path                // "")
 ] | map(tostring) | join("")')
 EOF
+fi
+
+# Older Claude Code builds omit .transcript_path. Reconstruct it from the
+# session id and the project directory, whose name is the cwd with every
+# non-alphanumeric character replaced by a dash.
+if [ -z "$transcript" ] && [ -n "$session" ] && [ -n "$cwd" ]; then
+  slug=$(printf '%s' "$cwd" | sed 's/[^a-zA-Z0-9]/-/g')
+  transcript="$CONFIG_DIR/projects/$slug/$session.jsonl"
 fi
 
 # The payload carries no effort level until the first response of a session;
@@ -229,41 +336,26 @@ fi
 
 # Rate limits, shown as budget remaining.
 [ -n "$used_5h" ] && add "${C_5H}5h $(pct_left "$used_5h")%$RST"
-[ -n "$used_7d" ] && add "${C_WEEK}weekly $(pct_left "$used_7d")%$RST"
+[ -n "$used_7d" ] && add "${C_7D}7d $(pct_left "$used_7d")%$RST"
 
-# Token counts.
-if [ -n "$tokens_in" ] && [ -n "$tokens_out" ]; then
-  add "$C_IN$tokens_in in$RST"
-  add "$C_OUT$tokens_out out$RST"
-fi
-
-# Cost, with the coin animation.
-#
-# Claude Code re-runs this script on conversation state changes, not on a timer:
-# measured cadence is one render every 1-6s, with 60s+ gaps during long thinking.
-# So the frame index is advanced once per render rather than derived from the
-# wall clock — a clock-derived index gets sampled at random phases and reads as
-# jitter, whereas a counter steps 0,1,2,3 in order. The coin therefore doubles
-# as an activity indicator: it moves while work happens, and holds still when
-# nothing is going on.
-if [ -n "$cost" ]; then
-  if [ ! -d "$CACHE_DIR" ]; then
-    mkdir -p "$CACHE_DIR" 2>/dev/null && chmod 700 "$CACHE_DIR" 2>/dev/null
-  fi
-  frame_file="$CACHE_DIR/coin-${session:-default}"
-
-  frame=$(cat "$frame_file" 2>/dev/null)
-  case $frame in ''|*[!0-9]*) frame=0 ;; esac       # first render, or clobbered
-  printf '%s' $(( (frame + 1) % 4 )) > "$frame_file" 2>/dev/null
-
-  case $frame in
-    0) coin=$COIN_0 ;;
-    1) coin=$COIN_1 ;;
-    2) coin=$COIN_2 ;;
-    *) coin=$COIN_3 ;;
+# Session-cumulative token counts, summed from the transcript. If it cannot be
+# read — a session whose first turn has not landed yet, a relocated transcript
+# — the payload's context-window figures stand in; they describe only the
+# current window, but that beats showing nothing at all.
+if [ "$has_jq" = 1 ] && [ -n "$transcript" ]; then
+  totals=$(session_tokens "$transcript" "$session")
+  case $totals in
+    ?*' '?*) tokens_in=${totals% *}; tokens_out=${totals#* } ;;
   esac
-  add "$coin $C_COST$(awk -v c="$cost" 'BEGIN { printf "$%.2f", c }')$RST"
 fi
+
+if [ -n "$tokens_in" ] && [ -n "$tokens_out" ]; then
+  add "$C_IN$(human "$tokens_in") in$RST"
+  add "$C_OUT$(human "$tokens_out") out$RST"
+fi
+
+# Session cost.
+[ -n "$cost" ] && add "$C_COST$(awk -v c="$cost" 'BEGIN { printf "$%.2f", c }')$RST"
 
 # Degraded mode is loud rather than silent: without jq every payload-derived
 # segment vanishes, and a bare "Claude · dir" line looks like a config error
