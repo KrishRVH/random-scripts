@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stack Overflow, 2010–2026: questions per month</title>
+<style>
+:root{--paper:#F5F6F8;--ink:#1B222C;--mute:#6B7684;--rule:#D9DEE5;--fill:#BFD3EA;--line:#3A6EA8;--so:#F48024;--soft:#FFF1E3}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 "Inter",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:40px 28px 56px}
+header{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;margin-bottom:22px}
+h1{margin:0;font:600 34px/1.1 "Iowan Old Style","Palatino Linotype",Georgia,serif;letter-spacing:-.01em}
+h1 em{font-style:italic;color:var(--so)}
+.sub{margin:8px 0 0;color:var(--mute);max-width:64ch}
+.controls{display:flex;gap:6px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#fff}
+.seg button{border:0;background:transparent;padding:7px 14px;font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.06em;color:var(--mute);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--so);outline-offset:-2px}
+.stage{position:relative;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:18px 18px 8px}
+svg{width:100%;height:auto;display:block}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;padding:8px 10px;border-radius:6px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap;opacity:0;transform:translate(-50%,-115%);transition:opacity .08s}
+.tip b{color:#FFC48A}
+.ann-t{font:600 12px/1.25 "Inter",system-ui,sans-serif;fill:var(--ink)}
+.ann-s{font:11px/1.25 ui-monospace,Menlo,monospace;fill:var(--mute)}
+.ax{font:11px ui-monospace,Menlo,monospace;fill:var(--mute)}
+.grid{stroke:var(--rule);stroke-width:1}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.fact{background:#fff;border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.fact .k{font:11px/1 ui-monospace,Menlo,monospace;letter-spacing:.08em;color:var(--mute);text-transform:uppercase}
+.fact .v{font:600 28px/1.1 "Iowan Old Style","Palatino Linotype",Georgia,serif;margin:8px 0 4px}
+.fact .v small{font:500 14px "Inter",system-ui,sans-serif;color:var(--mute)}
+.fact p{margin:0;color:var(--mute);font-size:13px}
+.notes{margin-top:22px;border-top:1px solid var(--rule);padding-top:14px;color:var(--mute);font-size:12.5px}
+.notes ol{margin:6px 0 0;padding-left:18px}
+.notes li{margin:3px 0}
+@media (max-width:760px){header{grid-template-columns:1fr}.facts{grid-template-columns:1fr 1fr}h1{font-size:26px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body><div class="wrap">
+<header>
+ <div><h1>Questions asked on Stack Overflow, <em>2010 – 2026</em></h1>
+ <p class="sub">Monthly count of new questions, Jan 2010 through Aug 2026. Hover for values. The log scale shows what the linear view hides: the collapse after Nov 2022 is a straight line, i.e. a constant ~70%/yr decay.</p></div>
+ <div class="controls"><div class="seg" role="group" aria-label="Y axis scale"><button id="lin" aria-pressed="true">LINEAR</button><button id="log" aria-pressed="false">LOG</button></div></div>
+</header>
+<div class="stage"><svg id="c" viewBox="0 0 1140 690" role="img" aria-label="Line chart of Stack Overflow monthly questions"></svg><div class="tip" id="tip"></div></div>
+<div class="facts" id="facts"></div>
+<div class="notes"><b>Notes.</b>
+<ol>
+<li>Source: Stack Exchange API (<code>/questions</code>, <code>filter=total</code>), one call per calendar month, fetched 25 Aug 2026. Counts exclude questions that have since been deleted, so older months are slightly understated and the most recent months will shrink further as moderation removes posts.</li>
+<li>Aug 2026 is a partial month (25 of 31 days). Its dot is hollow; a full-month pace would be roughly 1,450.</li>
+<li>Decay rates are compound annual rates between the labelled months, not fitted trends.</li>
+</ol></div>
+</div>
+<script>
+const D=[["2010-01", 44923], ["2010-02", 44800], ["2010-03", 52224], ["2010-04", 50071], ["2010-05", 51986], ["2010-06", 55737], ["2010-07", 60834], ["2010-08", 63631], ["2010-09", 61206], ["2010-10", 63755], ["2010-11", 69677], ["2010-12", 69543], ["2011-01", 79889], ["2011-02", 82918], ["2011-03", 100934], ["2011-04", 95536], ["2011-05", 100210], ["2011-06", 98998], ["2011-07", 100424], ["2011-08", 106886], ["2011-09", 101698], ["2011-10", 101005], ["2011-11", 108428], ["2011-12", 103146], ["2012-01", 115407], ["2012-02", 123249], ["2012-03", 132946], ["2012-04", 128004], ["2012-05", 133478], ["2012-06", 130242], ["2012-07", 141820], ["2012-08", 141367], ["2012-09", 132099], ["2012-10", 149918], ["2012-11", 148116], ["2012-12", 135268], ["2013-01", 157664], ["2013-02", 153278], ["2013-03", 173606], ["2013-04", 171342], ["2013-05", 166243], ["2013-06", 158137], ["2013-07", 176402], ["2013-08", 170007], ["2013-09", 165114], ["2013-10", 183872], ["2013-11", 175732], ["2013-12", 164920], ["2014-01", 188520], ["2014-02", 187434], ["2014-03", 207189], ["2014-04", 193710], ["2014-05", 175546], ["2014-06", 161897], ["2014-07", 176606], ["2014-08", 163042], ["2014-09", 165524], ["2014-10", 172640], ["2014-11", 166400], ["2014-12", 155122], ["2015-01", 165742], ["2015-02", 168265], ["2015-03", 189485], ["2015-04", 189579], ["2015-05", 185540], ["2015-06", 187374], ["2015-07", 195156], ["2015-08", 181104], ["2015-09", 177587], ["2015-10", 186051], ["2015-11", 177854], ["2015-12", 172173], ["2016-01", 180940], ["2016-02", 188260], ["2016-03", 201410], ["2016-04", 196559], ["2016-05", 189376], ["2016-06", 184301], ["2016-07", 176667], ["2016-08", 181827], ["2016-09", 171575], ["2016-10", 175283], ["2016-11", 175221], ["2016-12", 162136], ["2017-01", 176875], ["2017-02", 175178], ["2017-03", 201417], ["2017-04", 178417], ["2017-05", 186407], ["2017-06", 178086], ["2017-07", 179758], ["2017-08", 177669], ["2017-09", 162270], ["2017-10", 169677], ["2017-11", 168713], ["2017-12", 145243], ["2018-01", 160454], ["2018-02", 153069], ["2018-03", 172891], ["2018-04", 162394], ["2018-05", 167445], ["2018-06", 154539], ["2018-07", 160009], ["2018-08", 158407], ["2018-09", 144474], ["2018-10", 160392], ["2018-11", 149705], ["2018-12", 132175], ["2019-01", 149537], ["2019-02", 146327], ["2019-03", 161055], ["2019-04", 153474], ["2019-05", 151302], ["2019-06", 135848], ["2019-07", 150976], ["2019-08", 137080], ["2019-09", 136860], ["2019-10", 152607], ["2019-11", 148221], ["2019-12", 132509], ["2020-01", 146601], ["2020-02", 145025], ["2020-03", 155906], ["2020-04", 182845], ["2020-05", 186402], ["2020-06", 171844], ["2020-07", 165996], ["2020-08", 148269], ["2020-09", 141738], ["2020-10", 141759], ["2020-11", 134903], ["2020-12", 133870], ["2021-01", 139834], ["2021-02", 131635], ["2021-03", 148714], ["2021-04", 135832], ["2021-05", 133751], ["2021-06", 128939], ["2021-07", 123939], ["2021-08", 122045], ["2021-09", 119743], ["2021-10", 118819], ["2021-11", 119052], ["2021-12", 112087], ["2022-01", 119250], ["2022-02", 113755], ["2022-03", 123349], ["2022-04", 114047], ["2022-05", 115946], ["2022-06", 111295], ["2022-07", 110715], ["2022-08", 112641], ["2022-09", 103573], ["2022-10", 105892], ["2022-11", 109245], ["2022-12", 96264], ["2023-01", 96685], ["2023-02", 85591], ["2023-03", 87176], ["2023-04", 68444], ["2023-05", 66349], ["2023-06", 63542], ["2023-07", 62607], ["2023-08", 59959], ["2023-09", 52699], ["2023-10", 52346], ["2023-11", 50294], ["2023-12", 42299], ["2024-01", 47581], ["2024-02", 45945], ["2024-03", 44727], ["2024-04", 42380], ["2024-05", 40033], ["2024-06", 31950], ["2024-07", 31452], ["2024-08", 27793], ["2024-09", 24741], ["2024-10", 23175], ["2024-11", 20816], ["2024-12", 17931], ["2025-01", 18193], ["2025-02", 15513], ["2025-03", 15086], ["2025-04", 11397], ["2025-05", 9653], ["2025-06", 7757], ["2025-07", 6624], ["2025-08", 5282], ["2025-09", 6037], ["2025-10", 5337], ["2025-11", 5394], ["2025-12", 4212], ["2026-01", 3711], ["2026-02", 3162], ["2026-03", 3230], ["2026-04", 2625], ["2026-05", 2252], ["2026-06", 1992], ["2026-07", 1346], ["2026-08", 1166]];
+const events=[
+ {m:'2014-03',t:'Peak',s:'207,189 in Mar 2014, weeks before SO overhauled moderator tooling and began closing questions faster',row:0,tx:398,w:30},
+ {m:'2020-04',t:'Lockdowns',s:'182,845 \u2014 devs at home Google instead of asking a colleague',row:0,tx:660,w:30},
+ {m:'2021-06',t:'Sold to Prosus for $1.8B',s:'18 months before the steep phase began',row:1,tx:830,w:30},
+ {m:'2022-11',t:'ChatGPT launches',s:'109,245 that month. Halves by Sep 2023, quarters by Sep 2024, a tenth by May 2025',row:2,tx:560,w:48},
+ {m:'2023-06',t:'Moderator strike',s:'over the AI-content policy; ends 2 Aug 2023',row:2,tx:955,w:26},
+ {m:'2025-12',t:'Leaves its datacenter',s:'\u201cThe Great Unracking\u201d \u2014 4,212 questions that month',row:3,tx:560,w:38}
+];
+const idx=Object.fromEntries(D.map((d,i)=>[d[0],i]));
+const W=1140,H=690,P={t:262,r:30,b:44,l:62};
+const svg=document.getElementById('c'),tip=document.getElementById('tip');
+const peak=Math.max(...D.map(d=>d[1]));
+let mode='lin';
+const x=i=>P.l+(i/(D.length-1))*(W-P.l-P.r);
+const y=v=>mode==='lin'?P.t+(1-v/220000)*(H-P.t-P.b):P.t+(1-(Math.log10(v)-3)/(Math.log10(250000)-3))*(H-P.t-P.b);
+const fmt=n=>n.toLocaleString('en-US');
+const mon=s=>{const[y,m]=s.split('-');return new Date(y,m-1).toLocaleString('en-US',{month:'short',year:'numeric'})};
+function draw(){
+ let g='';
+ const ticks=mode==='lin'?[0,50000,100000,150000,200000]:[1000,3000,10000,30000,100000,250000];
+ ticks.forEach(t=>{if(t===0&&mode==='log')return;const yy=y(t||1);g+=`<line class="grid" x1="${P.l}" x2="${W-P.r}" y1="${yy}" y2="${yy}"/><text class="ax" x="${P.l-8}" y="${yy+4}" text-anchor="end">${t>=1000?(t/1000)+'k':t}</text>`});
+ for(let yr=2010;yr<=2026;yr+=2){const i=idx[yr+'-01'];g+=`<text class="ax" x="${x(i)}" y="${H-P.b+22}" text-anchor="middle">${yr}</text><line class="grid" x1="${x(i)}" x2="${x(i)}" y1="${H-P.b}" y2="${H-P.b+5}"/>`}
+ const y0=mode==='lin'?y(0):y(1000);
+ let path=D.map((d,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(d[1]).toFixed(1)).join('');
+ g+=`<path d="${path}L${x(D.length-1)} ${y0}L${x(0)} ${y0}Z" fill="var(--fill)" opacity=".7"/><path d="${path}" fill="none" stroke="var(--line)" stroke-width="1.6" stroke-linejoin="round"/>`;
+ // decay-rate guide lines
+ const seg=(a,b,label,dy,dx=0)=>{const i=idx[a],j=idx[b];const xa=x(i),xb=x(j),ya=y(D[i][1]),yb=y(D[j][1]);
+   if(mode==='log')g+=`<line x1="${xa}" y1="${ya}" x2="${xb}" y2="${yb}" stroke="var(--so)" stroke-width="2" stroke-dasharray="5 4" opacity=".9"/>`;
+   g+=`<text class="ann-s" x="${(xa+xb)/2+dx}" y="${(ya+yb)/2+dy}" text-anchor="middle" fill="var(--so)" font-weight="600">${label}</text>`};
+ seg('2017-01','2022-10','−8.5% / yr',mode==='log'?-14:44,-70);
+ seg('2022-11','2026-07','−70% / yr',mode==='log'?28:-34);
+ // baseline: Jan 2010 level
+ const b0=D[0][1];g+=`<line x1="${P.l}" x2="${W-P.r}" y1="${y(b0)}" y2="${y(b0)}" stroke="var(--ink)" stroke-dasharray="3 5" opacity=".6"/><text class="ann-s" x="${W-P.r}" y="${y(b0)-6}" text-anchor="end">Jan 2010 level · ${fmt(b0)}/mo</text>`;
+ // events
+ events.forEach(e=>{const i=idx[e.m];const px=x(i),py=y(D[i][1]);const ty=26+e.row*56;const tx=e.tx;
+  const words=wrap(e.s,e.w);const wpx=Math.max(e.t.length*7.2,...words.map(w=>w.length*6.7));const base=ty+16+words.length*13-4;
+  const inside=px>=tx-4&&px<=tx+wpx+4;const ex=px<tx?tx-6:tx+wpx+6;
+  g+=`<polyline fill="none" stroke="var(--ink)" stroke-width="1" opacity=".4" points="${px},${py} ${px},${base} ${inside?px:ex},${base}"/>`;
+  g+=`<circle cx="${px}" cy="${py}" r="4.5" fill="${e.m==='2026-08'?'#fff':'var(--so)'}" stroke="var(--so)" stroke-width="2"/>`;
+  g+=`<text class="ann-t" x="${tx}" y="${ty}">${e.t}</text>`;
+  words.forEach((w,n)=>g+=`<text class="ann-s" x="${tx}" y="${ty+14+n*13}">${w}</text>`);
+ });
+ {const i=D.length-1;const px=x(i),py=y(D[i][1]);if(mode==='lin')g+=`<text class="ann-t" x="${px-10}" y="${py-(mode==='log'?78:36)}" text-anchor="end">Aug 2026 (partial)</text><text class="ann-s" x="${px-10}" y="${py-(mode==='log'?65:23)}" text-anchor="end">1,166 so far</text>`;g+=`<circle cx="${px}" cy="${py}" r="4.5" fill="#fff" stroke="var(--so)" stroke-width="2"/>`;}
+ g+=`<rect id="hit" x="${P.l}" y="${P.t}" width="${W-P.l-P.r}" height="${H-P.t-P.b}" fill="transparent"/><g id="cross"></g>`;
+ svg.innerHTML=g;
+ document.getElementById('hit').addEventListener('mousemove',hover);
+ document.getElementById('hit').addEventListener('mouseleave',()=>{tip.style.opacity=0;document.getElementById('cross').innerHTML=''});
+}
+function wrap(s,n){const o=[];let l='';s.split(' ').forEach(w=>{if((l+' '+w).trim().length>n){o.push(l.trim());l=w}else l+=' '+w});if(l.trim())o.push(l.trim());return o}
+function hover(ev){const r=svg.getBoundingClientRect();const mx=(ev.clientX-r.left)*W/r.width;const i=Math.max(0,Math.min(D.length-1,Math.round((mx-P.l)/(W-P.l-P.r)*(D.length-1))));
+ const d=D[i],px=x(i),py=y(d[1]);
+ document.getElementById('cross').innerHTML=`<line x1="${px}" x2="${px}" y1="${P.t}" y2="${H-P.b}" stroke="var(--ink)" opacity=".25"/><circle cx="${px}" cy="${py}" r="4" fill="var(--line)"/>`;
+ const yoy=i>=12?((d[1]/D[i-12][1]-1)*100).toFixed(0):null;
+ tip.innerHTML=`<b>${mon(d[0])}</b>${d[0]==='2026-08'?' (partial)':''}<br>${fmt(d[1])} questions<br>${(d[1]/peak*100).toFixed(1)}% of peak${yoy!==null?`<br>${yoy>0?'+':''}${yoy}% YoY`:''}`;
+ tip.style.left=(px*r.width/W)+'px';tip.style.top=(py*r.height/H+18)+'px';tip.style.opacity=1}
+document.getElementById('lin').onclick=()=>set('lin');document.getElementById('log').onclick=()=>set('log');
+function set(m){mode=m;document.getElementById('lin').setAttribute('aria-pressed',m==='lin');document.getElementById('log').setAttribute('aria-pressed',m==='log');draw()}
+const sum=yr=>D.filter(d=>d[0].startsWith(yr)).reduce((a,d)=>a+d[1],0);
+const facts=[
+ ['Peak month',`${fmt(peak)}`,'Mar 2014. It took 8½ years to fall to half of this (Sep 2022) and under 4 more to lose the rest.'],
+ ['Latest full month',`${fmt(D[idx['2026-07']][1])}`,`Jul 2026 — ${(D[idx['2026-07']][1]/peak*100).toFixed(1)}% of peak, and below the site's first full public month in 2008.`],
+ ['All of 2025',`${fmt(sum('2025'))}`,`Fewer questions in the year than in any single month of 2016 (2016 total: ${fmt(sum('2016'))}).`],
+ ['Half-life since ChatGPT','~10 <small>months</small>','Volume halved roughly every 10 months from Nov 2022; before that it took ~8 years to halve.']
+];
+document.getElementById('facts').innerHTML=facts.map(f=>`<div class="fact"><div class="k">${f[0]}</div><div class="v">${f[1]}</div><p>${f[2]}</p></div>`).join('');
+draw();
+</script></body></html>

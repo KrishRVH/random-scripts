@@ -1,0 +1,2238 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A 52-week, 468-hour plan for becoming an AI-native product engineer who owns product judgment, architecture, executable verification, agent orchestration, and measurable outcomes." />
+    <title>AI-Native Product Engineer Plan · 9 hrs/week · Sep 2026 → Sep 2027</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #0e141a;
+        --bg-2: #141c24;
+        --bg-3: #1c2731;
+        --line: #293743;
+        --line-soft: #1e2932;
+        --fg: #eaeef2;
+        --fg-2: #a9b6c1;
+        --fg-3: #6c7b88;
+        --amber: #e6ac5b;
+        --amber-d: #c6924a;
+        --amber-dd: #a67b3e;
+        --cyan: #57bacb;
+        --cyan-d: #469fb0;
+        --cyan-dd: #37808f;
+        --r: 14px;
+        --r-s: 9px;
+        --r-l: 22px;
+        --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+        --disp: 'Bricolage Grotesque', var(--sans);
+        --sans: 'Instrument Sans', system-ui, -apple-system, Segoe UI, sans-serif;
+        --wrap: 1080px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--sans);
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.028) 1px, transparent 1px);
+        background-size: 26px 26px;
+      }
+      a {
+        color: inherit;
+      }
+      h1,
+      h2,
+      h3,
+      h4 {
+        margin: 0;
+        font-family: var(--disp);
+        font-weight: 600;
+        line-height: 1.08;
+        letter-spacing: -0.015em;
+      }
+      p {
+        margin: 0;
+      }
+
+      /* ---- layout ---- */
+      .wrap {
+        max-width: var(--wrap);
+        margin: 0 auto;
+        padding-inline: clamp(1.15rem, 4vw, 2rem);
+      }
+      .section {
+        padding-block: clamp(3.4rem, 8vw, 5.8rem);
+        border-top: 1px solid var(--line-soft);
+      }
+      .eyebrow {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+      }
+      .sec-head {
+        margin-bottom: clamp(1.8rem, 4vw, 2.6rem);
+      }
+      .sec-head .eyebrow {
+        margin-bottom: 0.7rem;
+        display: block;
+      }
+      .sec-title {
+        font-size: clamp(1.7rem, 3.6vw, 2.5rem);
+        font-weight: 700;
+      }
+      .sec-sub {
+        color: var(--fg-2);
+        max-width: 60ch;
+        margin-top: 0.85rem;
+      }
+      .amber {
+        color: var(--amber);
+      }
+      .cyan {
+        color: var(--cyan);
+      }
+
+      /* ---- progress + nav ---- */
+      #scroll {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 2px;
+        width: 0;
+        background: linear-gradient(90deg, var(--amber), var(--cyan));
+        z-index: 60;
+        transition: width 0.1s linear;
+      }
+      nav {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(14, 20, 26, 0.82);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .nav-in {
+        max-width: var(--wrap);
+        margin: 0 auto;
+        padding: 0.65rem clamp(1.15rem, 4vw, 2rem);
+        display: flex;
+        align-items: center;
+        gap: 1.4rem;
+        justify-content: space-between;
+      }
+      .brand {
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .brand .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: conic-gradient(from 45deg, var(--amber), var(--cyan), var(--amber));
+      }
+      .nav-links {
+        display: flex;
+        gap: 0.35rem;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.04em;
+      }
+      .nav-links a {
+        color: var(--fg-3);
+        text-decoration: none;
+        padding: 0.35rem 0.55rem;
+        border-radius: 8px;
+        transition:
+          color 0.15s,
+          background 0.15s;
+      }
+      .nav-links a:hover {
+        color: var(--fg);
+      }
+      .nav-links a.active {
+        color: var(--fg);
+        background: var(--bg-3);
+      }
+
+      /* ---- hero ---- */
+      .hero {
+        padding-top: clamp(3rem, 7vw, 5rem);
+        padding-bottom: clamp(2.4rem, 6vw, 4rem);
+        border-top: none;
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: 1.05fr 0.95fr;
+        gap: clamp(2rem, 5vw, 3.5rem);
+        align-items: center;
+      }
+      .hero-eye {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem 0.9rem;
+        align-items: center;
+        margin-bottom: 1.3rem;
+      }
+      .tag {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.28rem 0.7rem;
+      }
+      .tag.live {
+        color: var(--cyan);
+        border-color: color-mix(in srgb, var(--cyan) 40%, var(--line));
+      }
+      h1.title {
+        font-size: clamp(2.35rem, 5.6vw, 4.1rem);
+        font-weight: 700;
+        letter-spacing: -0.025em;
+      }
+      h1.title .b {
+        background: linear-gradient(100deg, var(--amber), var(--cyan));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      .lede {
+        color: var(--fg-2);
+        font-size: clamp(1rem, 1.4vw, 1.12rem);
+        margin-top: 1.2rem;
+        max-width: 52ch;
+      }
+      .lede b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .stats {
+        display: flex;
+        gap: 1.6rem;
+        margin-top: 1.9rem;
+        flex-wrap: wrap;
+      }
+      .stat .n {
+        font-family: var(--mono);
+        font-size: 1.65rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .stat .l {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        margin-top: 0.4rem;
+      }
+
+      /* ---- loop svg ---- */
+      .loop {
+        width: 100%;
+        max-width: 460px;
+        margin-inline: auto;
+        display: block;
+        overflow: visible;
+      }
+      .ring {
+        fill: none;
+        stroke: url(#g-ring);
+        stroke-width: 2.5;
+        stroke-linecap: round;
+      }
+      .ring-anim {
+        stroke-dasharray: 100;
+        stroke-dashoffset: 100;
+        animation: draw 1.7s 0.2s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+      }
+      @keyframes draw {
+        to {
+          stroke-dashoffset: 0;
+        }
+      }
+      .chev {
+        stroke: var(--fg-3);
+        stroke-width: 2;
+        fill: none;
+        opacity: 0.55;
+      }
+      .node {
+        opacity: 0;
+        animation: pop 0.5s forwards;
+        animation-delay: calc(var(--i) * 0.11s + 0.55s);
+      }
+      @keyframes pop {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .node circle {
+        stroke: var(--bg);
+        stroke-width: 3;
+      }
+      .node .lbl {
+        font-family: var(--mono);
+        font-size: 20px;
+        font-weight: 500;
+        fill: var(--fg);
+      }
+      .node .num {
+        font-family: var(--mono);
+        font-size: 14px;
+        font-weight: 700;
+      }
+      .loop-core .k {
+        font-family: var(--mono);
+        font-size: 15px;
+        letter-spacing: 0.22em;
+        fill: var(--fg-3);
+      }
+      .loop-core .k2 {
+        font-family: var(--mono);
+        font-size: 13px;
+        fill: var(--fg-3);
+        opacity: 0.7;
+      }
+
+      /* ---- generic cards ---- */
+      .card {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1.35rem 1.4rem;
+      }
+      .grid {
+        display: grid;
+        gap: 1rem;
+      }
+      .g2 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .g3 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .g4 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      /* ---- target: risks + goals ---- */
+      .risks {
+        grid-template-columns: repeat(4, 1fr);
+        margin-bottom: 1.3rem;
+      }
+      .risk {
+        border-radius: var(--r);
+        border: 1px solid var(--line);
+        background: var(--bg-2);
+        padding: 1.1rem 1.15rem;
+      }
+      .risk .rn {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--cyan);
+      }
+      .risk h4 {
+        font-size: 1.05rem;
+        margin: 0.5rem 0 0.4rem;
+      }
+      .risk p {
+        color: var(--fg-2);
+        font-size: 0.9rem;
+      }
+      .goals {
+        list-style: none;
+        padding: 0;
+        margin: 1.4rem 0 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .goals li {
+        display: flex;
+        gap: 0.85rem;
+        align-items: baseline;
+        color: var(--fg-2);
+        border-left: 2px solid var(--amber);
+        padding: 0.15rem 0 0.15rem 1rem;
+      }
+      .goals li b {
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .goals .gi {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+        flex: none;
+      }
+      .note {
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--fg-3);
+        border: 1px dashed var(--line);
+        border-radius: var(--r-s);
+        padding: 0.9rem 1rem;
+        margin-top: 1.4rem;
+        line-height: 1.55;
+      }
+
+      /* ---- weekly OS ---- */
+      .bar {
+        display: flex;
+        height: 56px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        margin-bottom: 1.4rem;
+      }
+      .seg {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #0e141a;
+        position: relative;
+        min-width: 0;
+      }
+      .seg span {
+        padding-inline: 0.4rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .blocks {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .block {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1.05rem 1.05rem;
+        border-top: 3px solid var(--bl, var(--fg-3));
+      }
+      .block .bm {
+        font-family: var(--mono);
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+      .block .bt {
+        font-weight: 600;
+        margin: 0.15rem 0 0.45rem;
+        font-size: 0.98rem;
+      }
+      .block .bd {
+        color: var(--fg-2);
+        font-size: 0.85rem;
+      }
+      .block .out {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--fg-3);
+        margin-top: 0.7rem;
+        display: block;
+      }
+
+      /* ---- track ruler ---- */
+      .ruler {
+        display: flex;
+        height: 44px;
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        margin-bottom: 0.5rem;
+      }
+      .rseg {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 0 0.7rem;
+        color: #0e141a;
+        min-width: 0;
+      }
+      .rseg b {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .rseg small {
+        font-family: var(--mono);
+        font-size: 0.6rem;
+        opacity: 0.85;
+        line-height: 1;
+        margin-top: 0.15rem;
+      }
+      .ruler-legend {
+        display: flex;
+        gap: 1.4rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+        margin-bottom: 2.2rem;
+        flex-wrap: wrap;
+      }
+      .ruler-legend span {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+      }
+      .ruler-legend i {
+        width: 20px;
+        height: 8px;
+        border-radius: 3px;
+        display: inline-block;
+      }
+
+      .part-head {
+        display: flex;
+        align-items: baseline;
+        gap: 0.9rem;
+        margin: 2.4rem 0 1.1rem;
+        padding-bottom: 0.7rem;
+        border-bottom: 1px solid var(--line);
+      }
+      .part-head:first-of-type {
+        margin-top: 0;
+      }
+      .part-head .pk {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+      }
+      .part-head.i .pk {
+        color: var(--amber);
+        border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line));
+      }
+      .part-head.ii .pk {
+        color: var(--cyan);
+        border: 1px solid color-mix(in srgb, var(--cyan) 45%, var(--line));
+      }
+      .part-head h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+      .part-head .pw {
+        margin-left: auto;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+      }
+
+      /* ---- phase modules ---- */
+      .phase {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        margin-bottom: 1rem;
+        border-left: 3px solid var(--acc, var(--fg-3));
+        overflow: hidden;
+      }
+      .phase.i {
+        --acc: var(--amber);
+      }
+      .phase.ii {
+        --acc: var(--cyan);
+      }
+      .phase > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 1.2rem 1.35rem;
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        gap: 1.1rem;
+        align-items: center;
+        transition: background 0.15s;
+      }
+      .phase > summary::-webkit-details-marker {
+        display: none;
+      }
+      .phase > summary:hover {
+        background: var(--bg-3);
+      }
+      .pnum {
+        font-family: var(--mono);
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--acc);
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+      .pmid h4 {
+        font-size: 1.12rem;
+        font-weight: 600;
+      }
+      .pmid .foc {
+        color: var(--fg-2);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+      }
+      .pmeta {
+        text-align: right;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+        white-space: nowrap;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        align-items: flex-end;
+      }
+      .pmeta .hrs {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--fg);
+      }
+      .chevd {
+        width: 11px;
+        height: 11px;
+        border-right: 2px solid var(--fg-3);
+        border-bottom: 2px solid var(--fg-3);
+        transform: rotate(45deg);
+        transition: transform 0.2s;
+        margin-top: 0.15rem;
+      }
+      .phase[open] > summary .chevd {
+        transform: rotate(-135deg);
+      }
+      .pbody {
+        padding: 0 1.35rem 1.4rem;
+        border-top: 1px solid var(--line-soft);
+      }
+      .pcols {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.4rem 2rem;
+        margin-top: 1.3rem;
+      }
+      .col-h {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--fg-3);
+        margin-bottom: 0.7rem;
+      }
+      ul.learn {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.4rem;
+      }
+      ul.learn li {
+        color: var(--fg-2);
+        font-size: 0.9rem;
+        padding-left: 1.1rem;
+        position: relative;
+      }
+      ul.learn li::before {
+        content: "'";
+        position: absolute;
+        left: 0;
+        color: var(--acc);
+        font-family: var(--mono);
+      }
+      .pass {
+        background: var(--bg-3);
+        border-radius: var(--r-s);
+        padding: 0.9rem 1rem;
+        margin-top: 1.3rem;
+        border-left: 2px solid var(--acc);
+      }
+      .pass .col-h {
+        margin-bottom: 0.4rem;
+      }
+      .pass p {
+        color: var(--fg);
+        font-size: 0.9rem;
+      }
+      .sources {
+        margin-top: 1.3rem;
+      }
+      .sources ol {
+        margin: 0.4rem 0 0;
+        padding-left: 1.2rem;
+        display: grid;
+        gap: 0.3rem;
+      }
+      .sources li {
+        color: var(--fg-2);
+        font-size: 0.86rem;
+      }
+      .sources a {
+        color: var(--fg);
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+        transition: border-color 0.15s;
+      }
+      .sources a:hover {
+        border-color: var(--acc);
+      }
+      .sources .au {
+        color: var(--fg-3);
+      }
+      .subnote {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--fg-3);
+        margin-top: 1rem;
+        line-height: 1.5;
+      }
+
+      /* ---- task checkboxes ---- */
+      .tasks {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.15rem;
+      }
+      .task {
+        display: flex;
+        gap: 0.7rem;
+        align-items: flex-start;
+        padding: 0.35rem 0.1rem;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: var(--fg-2);
+        border-radius: 6px;
+      }
+      .task:hover {
+        color: var(--fg);
+      }
+      .task input {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 17px;
+        height: 17px;
+        border: 1.5px solid var(--line);
+        border-radius: 5px;
+        flex: none;
+        margin-top: 0.15rem;
+        cursor: pointer;
+        position: relative;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .task input:checked {
+        background: var(--acc);
+        border-color: var(--acc);
+      }
+      .task input:checked::after {
+        content: '';
+        position: absolute;
+        left: 4.5px;
+        top: 1px;
+        width: 5px;
+        height: 9px;
+        border: solid #0e141a;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+      .task input:focus-visible {
+        outline: 2px solid var(--acc);
+        outline-offset: 2px;
+      }
+      .task:has(input:checked) span {
+        color: var(--fg-3);
+        text-decoration: line-through;
+        text-decoration-color: color-mix(in srgb, var(--acc) 60%, transparent);
+      }
+      .prog {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-top: 0.9rem;
+      }
+      .prog .track {
+        flex: 1;
+        height: 5px;
+        background: var(--bg-3);
+        border-radius: 99px;
+        overflow: hidden;
+        max-width: 180px;
+      }
+      .prog .fill {
+        height: 100%;
+        width: 0;
+        background: var(--acc);
+        border-radius: 99px;
+        transition: width 0.3s;
+      }
+
+      /* ---- reading ---- */
+      .tranche-k {
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .tranche-k .n {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.25rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        color: var(--fg-3);
+      }
+      .tranche-k.now .n {
+        color: var(--amber);
+        border-color: color-mix(in srgb, var(--amber) 45%, var(--line));
+      }
+      .tranche-k.later .n {
+        color: var(--cyan);
+        border-color: color-mix(in srgb, var(--cyan) 45%, var(--line));
+      }
+      .tranche-k h4 {
+        font-size: 0.98rem;
+        font-weight: 600;
+      }
+      .books {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 0.55rem;
+      }
+      .book {
+        display: flex;
+        flex-direction: column;
+        gap: 0.1rem;
+        padding: 0.65rem 0.75rem;
+        background: var(--bg-3);
+        border-radius: var(--r-s);
+        border: 1px solid transparent;
+      }
+      .book .bt {
+        font-weight: 600;
+        font-size: 0.92rem;
+      }
+      .book a.bt {
+        text-decoration: none;
+        border-bottom: 1px solid var(--line);
+      }
+      .book a.bt:hover {
+        border-color: var(--fg-2);
+      }
+      .book .ba {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--fg-3);
+      }
+      .online {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.3rem;
+      }
+      .chip {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--fg-2);
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 0.35rem 0.7rem;
+        text-decoration: none;
+        transition:
+          border-color 0.15s,
+          color 0.15s;
+      }
+      .chip:hover {
+        border-color: var(--cyan);
+        color: var(--fg);
+      }
+      .hier {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--mono);
+        font-size: 0.78rem;
+        color: var(--fg-2);
+        margin-top: 1.2rem;
+        line-height: 2;
+      }
+      .hier b {
+        color: var(--fg);
+        font-weight: 500;
+      }
+      .hier .ar {
+        color: var(--fg-3);
+      }
+      details.more {
+        margin-top: 1.6rem;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: var(--bg-2);
+      }
+      details.more > summary {
+        cursor: pointer;
+        list-style: none;
+        padding: 1rem 1.2rem;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--fg-2);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      details.more > summary::-webkit-details-marker {
+        display: none;
+      }
+      details.more[open] > summary {
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .more-body {
+        padding: 1.2rem;
+        display: grid;
+        gap: 0.9rem;
+      }
+      .shelf-row {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        align-items: baseline;
+      }
+      .shelf-row .sk {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--cyan);
+        white-space: nowrap;
+      }
+      .shelf-row .sv {
+        color: var(--fg-2);
+        font-size: 0.9rem;
+      }
+
+      /* ---- first 30 days ---- */
+      .weeks30 {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      .wk {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1.15rem;
+        position: relative;
+        --acc: var(--amber);
+      }
+      .wk .wn {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--acc);
+      }
+      .wk h4 {
+        font-size: 1.02rem;
+        margin: 0.4rem 0 0.5rem;
+      }
+      .wk p {
+        color: var(--fg-2);
+        font-size: 0.87rem;
+      }
+      .wk .out {
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        color: var(--cyan);
+        background: var(--bg-3);
+        border-radius: 6px;
+        padding: 0.45rem 0.55rem;
+        margin-top: 0.8rem;
+        display: block;
+        word-break: break-word;
+      }
+      .wk .tasks {
+        margin-top: 0.8rem;
+      }
+
+      /* ---- footer / setup ---- */
+      footer {
+        border-top: 1px solid var(--line);
+        background: var(--bg-2);
+        padding-block: clamp(3rem, 7vw, 4.5rem);
+      }
+      .setup-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.4rem;
+        align-items: start;
+      }
+      .setup-grid > * {
+        min-width: 0;
+      }
+      .tree {
+        font-family: var(--mono);
+        font-size: 0.82rem;
+        line-height: 1.85;
+        color: var(--fg-2);
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .tree .root {
+        color: var(--fg);
+        font-weight: 700;
+      }
+      .tree .d {
+        color: var(--cyan);
+      }
+      .tree .c {
+        color: var(--fg-3);
+      }
+      .cmd {
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: var(--r-s);
+        padding: 0.9rem 1rem;
+        font-family: var(--mono);
+        font-size: 0.8rem;
+        color: var(--fg);
+        overflow-x: auto;
+        margin-top: 1rem;
+        position: relative;
+      }
+      .cmd .p {
+        color: var(--cyan);
+      }
+      .copy {
+        position: absolute;
+        top: 0.55rem;
+        right: 0.55rem;
+        font-family: var(--mono);
+        font-size: 0.66rem;
+        color: var(--fg-3);
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+      }
+      .copy:hover {
+        color: var(--fg);
+      }
+      .setup-cta {
+        color: var(--fg-2);
+        font-size: 0.92rem;
+        margin-top: 1.1rem;
+      }
+      .setup-cta b {
+        color: var(--fg);
+      }
+      .foot-meta {
+        max-width: var(--wrap);
+        margin: 2.6rem auto 0;
+        padding-top: 1.6rem;
+        border-top: 1px solid var(--line-soft);
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--fg-3);
+      }
+      .reset {
+        background: none;
+        border: 1px solid var(--line);
+        color: var(--fg-3);
+        font-family: var(--mono);
+        font-size: 0.7rem;
+        padding: 0.35rem 0.7rem;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+      .reset:hover {
+        color: var(--fg);
+        border-color: var(--fg-3);
+      }
+
+      /* ---- responsive ---- */
+      @media (max-width: 900px) {
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 2.4rem;
+        }
+        .loop {
+          max-width: 400px;
+        }
+        .risks {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .blocks {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .g4,
+        .g3 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .weeks30 {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .setup-grid {
+          grid-template-columns: 1fr;
+          gap: 1.8rem;
+        }
+        .nav-links a:nth-child(n + 4) {
+          display: none;
+        }
+      }
+      @media (max-width: 560px) {
+        .risks,
+        .blocks,
+        .g2,
+        .g3,
+        .g4,
+        .weeks30 {
+          grid-template-columns: 1fr;
+        }
+        .pcols {
+          grid-template-columns: 1fr;
+          gap: 1.1rem;
+        }
+        .phase > summary {
+          grid-template-columns: auto 1fr;
+          gap: 0.9rem;
+        }
+        .pmeta {
+          grid-column: 2;
+          text-align: left;
+          flex-direction: row;
+          align-items: baseline;
+          gap: 0.7rem;
+        }
+        .chevd {
+          display: none;
+        }
+        .stats {
+          gap: 1.2rem;
+        }
+        .nav-links {
+          display: none;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .ring-anim {
+          animation: none;
+          stroke-dashoffset: 0;
+        }
+        .node {
+          animation: none;
+          opacity: 1;
+        }
+        * {
+          transition: none !important;
+        }
+      }
+      @media print {
+        body {
+          background: #fff;
+          color: #111;
+        }
+        nav,
+        #scroll,
+        .copy,
+        .reset {
+          display: none;
+        }
+        .section,
+        footer {
+          border-color: #ddd;
+        }
+        .card,
+        .phase,
+        .block,
+        .risk,
+        .wk,
+        .book {
+          background: #fff;
+          border-color: #ccc;
+        }
+        .amber,
+        .cyan {
+          color: #111;
+        }
+      }
+    
+
+      /* ---- v2 additions ---- */
+      :root {
+        --green: #88c0a7;
+        --rose: #d68f9d;
+        --violet: #a89bd4;
+      }
+      .phase.iii { --acc: var(--violet); }
+      .nav-progress {
+        font-family: var(--mono);
+        font-size: 0.68rem;
+        color: var(--fg-3);
+        white-space: nowrap;
+      }
+      .nav-progress b { color: var(--cyan); }
+      .hero-note {
+        margin-top: 1.1rem;
+        border-left: 2px solid var(--cyan);
+        padding-left: 1rem;
+        color: var(--fg-2);
+        max-width: 58ch;
+        font-size: 0.92rem;
+      }
+      .equation {
+        margin-top: 1.25rem;
+        padding: 1.05rem 1.2rem;
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        border-radius: var(--r-s);
+        font-family: var(--mono);
+        color: var(--fg-2);
+        overflow-x: auto;
+      }
+      .equation b { color: var(--fg); }
+      .equation .op { color: var(--amber); padding-inline: .3rem; }
+      .moats { grid-template-columns: repeat(5, 1fr); }
+      .moat {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1.1rem;
+        min-height: 100%;
+      }
+      .moat .mn {
+        font-family: var(--mono);
+        color: var(--cyan);
+        font-size: .68rem;
+        letter-spacing: .13em;
+        text-transform: uppercase;
+      }
+      .moat h4 { font-size: 1.02rem; margin: .45rem 0 .45rem; }
+      .moat p { color: var(--fg-2); font-size: .87rem; }
+      .approaches { grid-template-columns: repeat(2, 1fr); }
+      .approach {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r-l);
+        padding: 1.35rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .approach::before {
+        content: '';
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 3px;
+        background: var(--ap, var(--cyan));
+      }
+      .approach-head {
+        display: flex;
+        gap: .8rem;
+        align-items: baseline;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .approach h3 { font-size: 1.3rem; }
+      .approach .school { font-family: var(--mono); color: var(--fg-3); font-size: .72rem; }
+      .priority {
+        font-family: var(--mono);
+        font-size: .65rem;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        border: 1px solid color-mix(in srgb, var(--ap) 45%, var(--line));
+        color: var(--ap);
+        border-radius: 999px;
+        padding: .25rem .55rem;
+      }
+      .thesis {
+        margin-top: .75rem;
+        color: var(--fg);
+        font-weight: 600;
+      }
+      .take-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+      .take-block {
+        border-radius: var(--r-s);
+        padding: .85rem .9rem;
+        background: var(--bg-3);
+        border: 1px solid var(--line-soft);
+      }
+      .take-block h4 {
+        font-family: var(--mono);
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--ap);
+        margin-bottom: .45rem;
+      }
+      .take-block.reject h4 { color: var(--rose); }
+      .take-block ul { margin: 0; padding-left: 1.05rem; color: var(--fg-2); font-size: .86rem; }
+      .take-block li + li { margin-top: .28rem; }
+      .exercise {
+        margin-top: 1rem;
+        border-top: 1px solid var(--line-soft);
+        padding-top: .85rem;
+        color: var(--fg-2);
+        font-size: .86rem;
+      }
+      .exercise b { color: var(--fg); }
+      .architecture {
+        margin-top: 1.2rem;
+        background: linear-gradient(145deg, var(--bg-2), var(--bg-3));
+        border: 1px solid var(--line);
+        border-radius: var(--r-l);
+        padding: 1.3rem;
+      }
+      .arch-flow {
+        display: flex;
+        align-items: stretch;
+        gap: .55rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+      }
+      .arch-node {
+        flex: 1 1 150px;
+        min-width: 0;
+        border: 1px solid var(--line);
+        background: var(--bg);
+        border-radius: var(--r-s);
+        padding: .75rem .8rem;
+      }
+      .arch-node b { display: block; font-size: .9rem; }
+      .arch-node span { display: block; color: var(--fg-3); font-size: .75rem; margin-top: .25rem; }
+      .arch-arrow { align-self: center; color: var(--fg-3); font-family: var(--mono); }
+      .substrate {
+        margin-top: .7rem;
+        font-family: var(--mono);
+        font-size: .72rem;
+        color: var(--fg-3);
+        border: 1px dashed var(--line);
+        border-radius: var(--r-s);
+        padding: .7rem .8rem;
+      }
+      .ladder { display: grid; gap: .65rem; }
+      .ladder-step {
+        display: grid;
+        grid-template-columns: 54px 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: .9rem 1rem;
+      }
+      .ladder-step .ln {
+        font-family: var(--mono);
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--cyan);
+      }
+      .ladder-step h4 { font-size: 1rem; }
+      .ladder-step p { color: var(--fg-2); font-size: .86rem; margin-top: .25rem; }
+      .gate {
+        font-family: var(--mono);
+        font-size: .7rem;
+        color: var(--amber);
+        border: 1px solid color-mix(in srgb, var(--amber) 40%, var(--line));
+        border-radius: 999px;
+        padding: .35rem .65rem;
+        max-width: 280px;
+        text-align: center;
+      }
+      .parts3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin-bottom: 1.2rem; }
+      .part-mini { border: 1px solid var(--line); background: var(--bg-2); border-radius: var(--r); padding: 1rem; }
+      .part-mini .pk { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: .12em; color: var(--pm, var(--cyan)); }
+      .part-mini h4 { margin-top: .4rem; font-size: 1rem; }
+      .part-mini p { margin-top: .35rem; color: var(--fg-2); font-size: .84rem; }
+      .phase .why {
+        margin-top: 1.1rem;
+        padding: .8rem .9rem;
+        border: 1px dashed var(--line);
+        border-radius: var(--r-s);
+        font-size: .84rem;
+        color: var(--fg-2);
+      }
+      .phase .why b { color: var(--fg); }
+      .phase .sources a[target='_blank']::after,
+      .source-links a[target='_blank']::after { content: ' ↗'; color: var(--fg-3); font-size: .7em; }
+      .lab-grid { grid-template-columns: repeat(2, 1fr); }
+      .experiment {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1.15rem;
+      }
+      .experiment .en {
+        font-family: var(--mono);
+        color: var(--violet);
+        font-size: .68rem;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+      .experiment h4 { margin: .45rem 0 .6rem; font-size: 1.05rem; }
+      .experiment dl { display: grid; grid-template-columns: auto 1fr; gap: .35rem .7rem; margin: 0; font-size: .84rem; }
+      .experiment dt { font-family: var(--mono); color: var(--fg-3); }
+      .experiment dd { margin: 0; color: var(--fg-2); }
+      .benchmark {
+        margin-top: 1rem;
+        padding: 1.1rem;
+        background: var(--bg-3);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+      }
+      .metric-grid { grid-template-columns: repeat(4, 1fr); }
+      .metric {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1rem;
+      }
+      .metric .mk { font-family: var(--mono); color: var(--cyan); font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; }
+      .metric h4 { font-size: .98rem; margin: .4rem 0 .35rem; }
+      .metric p { color: var(--fg-2); font-size: .82rem; }
+      .metric code { font-family: var(--mono); color: var(--amber); font-size: .75rem; }
+      .proof-grid { grid-template-columns: repeat(3, 1fr); }
+      .proof {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-top: 3px solid var(--pf, var(--cyan));
+        border-radius: var(--r);
+        padding: 1.15rem;
+      }
+      .proof .pn { font-family: var(--mono); color: var(--pf, var(--cyan)); font-size: .68rem; letter-spacing: .12em; text-transform: uppercase; }
+      .proof h4 { margin: .45rem 0 .5rem; font-size: 1.05rem; }
+      .proof p { color: var(--fg-2); font-size: .86rem; }
+      .proof ul { color: var(--fg-2); font-size: .84rem; padding-left: 1.1rem; }
+      .proof li + li { margin-top: .25rem; }
+      .resume-lines {
+        margin-top: 1rem;
+        display: grid;
+        gap: .55rem;
+      }
+      .resume-line {
+        font-family: var(--mono);
+        font-size: .76rem;
+        color: var(--fg-2);
+        background: var(--bg);
+        border: 1px solid var(--line);
+        border-radius: var(--r-s);
+        padding: .7rem .8rem;
+      }
+      .quarter-grid { grid-template-columns: repeat(4, 1fr); }
+      .quarter {
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        padding: 1rem;
+      }
+      .quarter .q { font-family: var(--mono); color: var(--amber); font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; }
+      .quarter h4 { font-size: .98rem; margin: .4rem 0; }
+      .quarter p { color: var(--fg-2); font-size: .83rem; }
+      .source-links { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .8rem; }
+      .source-links a {
+        font-family: var(--mono);
+        font-size: .7rem;
+        color: var(--fg-2);
+        text-decoration: none;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: .32rem .6rem;
+      }
+      .source-links a:hover { color: var(--fg); border-color: var(--cyan); }
+      .allocation {
+        display: grid;
+        grid-template-columns: 180px 1fr;
+        gap: 1.3rem;
+        align-items: center;
+        margin-top: 1.2rem;
+      }
+      .donut {
+        width: 180px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: conic-gradient(var(--amber) 0 34.6%, var(--cyan) 34.6% 73.1%, var(--violet) 73.1% 84.6%, var(--green) 84.6% 100%);
+        position: relative;
+      }
+      .donut::after {
+        content: '468h';
+        position: absolute;
+        inset: 24px;
+        background: var(--bg-2);
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-family: var(--mono);
+        font-size: 1.35rem;
+        font-weight: 700;
+      }
+      .alloc-list { display: grid; gap: .55rem; }
+      .alloc-row { display: grid; grid-template-columns: 14px 1fr auto; gap: .65rem; align-items: center; font-size: .86rem; color: var(--fg-2); }
+      .alloc-row i { width: 12px; height: 12px; border-radius: 3px; background: var(--c); }
+      .alloc-row b { color: var(--fg); font-family: var(--mono); font-size: .75rem; }
+      .source-caveat { color: var(--fg-3); font-size: .78rem; margin-top: .8rem; }
+      .callout {
+        margin-top: 1.2rem;
+        padding: 1rem 1.1rem;
+        border-left: 3px solid var(--amber);
+        background: color-mix(in srgb, var(--amber) 7%, var(--bg-2));
+        border-radius: 0 var(--r-s) var(--r-s) 0;
+        color: var(--fg-2);
+      }
+      .callout b { color: var(--fg); }
+      .kill-list { grid-template-columns: repeat(4, 1fr); }
+      .footer-progress {
+        font-family: var(--mono);
+        color: var(--fg-2);
+        margin-top: 1rem;
+        font-size: .78rem;
+      }
+      @media (max-width: 1000px) {
+        .moats { grid-template-columns: repeat(3, 1fr); }
+        .metric-grid, .quarter-grid { grid-template-columns: repeat(2, 1fr); }
+      }
+      @media (max-width: 760px) {
+        .approaches, .lab-grid, .proof-grid, .parts3 { grid-template-columns: 1fr; }
+        .take-grid { grid-template-columns: 1fr; }
+        .allocation { grid-template-columns: 1fr; }
+        .donut { margin-inline: auto; }
+        .ladder-step { grid-template-columns: 42px 1fr; }
+        .ladder-step .gate { grid-column: 2; justify-self: start; }
+        .arch-arrow { display: none; }
+        .nav-progress { display: none; }
+      }
+      @media (max-width: 560px) {
+        .moats, .metric-grid, .quarter-grid, .kill-list { grid-template-columns: 1fr; }
+      }
+</style>
+  </head>
+  <body>
+    <div id="scroll"></div>
+
+    <nav>
+      <div class="nav-in">
+        <div class="brand"><span class="dot"></span>product-engineer-lab · v2</div>
+        <div class="nav-links">
+          <a href="#target">target</a>
+          <a href="#market">market</a>
+          <a href="#synthesis">four schools</a>
+          <a href="#ladder">ladder</a>
+          <a href="#weekly">weekly</a>
+          <a href="#track">52 weeks</a>
+          <a href="#lab">lab</a>
+          <a href="#metrics">metrics</a>
+          <a href="#position">proof</a>
+          <a href="#reading">sources</a>
+          <a href="#start">30 days</a>
+          <a href="#cautions">reject</a>
+        </div>
+        <div class="nav-progress"><b id="overallPct">0%</b> complete</div>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="section hero">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <div class="hero-eye">
+              <span class="tag live">● Sep 2026 → Sep 2027</span>
+              <span class="tag">9 hrs / week</span>
+              <span class="tag">≈468 deliberate hrs</span>
+              <span class="tag">senior-SWE track</span>
+            </div>
+            <h1 class="title">Become the engineer who <span class="b">owns the proof.</span></h1>
+            <p class="lede">
+              You already know how to build software. Spend the next year becoming harder to commoditize: decide what matters,
+              shape codebases agents cannot easily degrade, build executable verification, direct heterogeneous agents safely,
+              operate the result, and remain accountable for the user and business outcome.
+            </p>
+            <p class="hero-note">
+              The plan does not train “prompt engineering.” It trains the scarce work around cheap code generation:
+              <b>judgment, constraints, verification, orchestration, and consequence.</b>
+            </p>
+            <div class="stats">
+              <div class="stat"><div class="n">7</div><div class="l">evidence-gated phases</div></div>
+              <div class="stat"><div class="n">1</div><div class="l">spine product all year</div></div>
+              <div class="stat"><div class="n amber">3</div><div class="l">signature proof assets</div></div>
+              <div class="stat"><div class="n cyan">4×</div><div class="l">quarterly market rebase</div></div>
+            </div>
+          </div>
+          <div>
+            <svg class="loop" viewBox="0 0 640 640" role="img" aria-label="The repeating eight-stage loop: Observe, Frame, Shape, Architect, Direct, Verify, Operate, and Garden.">
+              <defs><linearGradient id="g-ring" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E6AC5B" /><stop offset=".5" stop-color="#9CB59A" /><stop offset="1" stop-color="#57BACB" /></linearGradient></defs>
+              <circle class="ring ring-anim" cx="320" cy="320" r="210" pathLength="100" />
+              <path class="chev" d="M392 130 l16 6 l-6 16" /><path class="chev" d="M510 392 l6 16 l-16 6" /><path class="chev" d="M248 510 l-16 -6 l6 -16" /><path class="chev" d="M130 248 l-6 -16 l16 -6" />
+              <g class="loop-core" text-anchor="middle"><text class="k" x="320" y="312">OWN THE LOOP</text><text class="k2" x="320" y="338">artifact + evidence + outcome</text></g>
+              <g class="node" style="--i:0"><circle cx="320" cy="110" r="9" fill="#E6AC5B"/><text class="lbl" x="320" y="80" text-anchor="middle"><tspan class="num" fill="#E6AC5B">01</tspan> Observe</text></g>
+              <g class="node" style="--i:1"><circle cx="469" cy="171" r="9" fill="#E6AC5B"/><text class="lbl" x="489" y="164" text-anchor="start"><tspan class="num" fill="#E6AC5B">02</tspan> Frame</text></g>
+              <g class="node" style="--i:2"><circle cx="530" cy="320" r="9" fill="#DBB073"/><text class="lbl" x="550" y="325" text-anchor="start"><tspan class="num" fill="#DBB073">03</tspan> Shape</text></g>
+              <g class="node" style="--i:3"><circle cx="469" cy="469" r="9" fill="#57BACB"/><text class="lbl" x="489" y="486" text-anchor="start"><tspan class="num" fill="#57BACB">04</tspan> Architect</text></g>
+              <g class="node" style="--i:4"><circle cx="320" cy="530" r="9" fill="#57BACB"/><text class="lbl" x="320" y="562" text-anchor="middle"><tspan class="num" fill="#57BACB">05</tspan> Direct</text></g>
+              <g class="node" style="--i:5"><circle cx="171" cy="469" r="9" fill="#57BACB"/><text class="lbl" x="151" y="486" text-anchor="end"><tspan class="num" fill="#57BACB">06</tspan> Verify</text></g>
+              <g class="node" style="--i:6"><circle cx="110" cy="320" r="9" fill="#57BACB"/><text class="lbl" x="90" y="325" text-anchor="end"><tspan class="num" fill="#57BACB">07</tspan> Operate</text></g>
+              <g class="node" style="--i:7"><circle cx="171" cy="171" r="9" fill="#9CB59A"/><text class="lbl" x="151" y="164" text-anchor="end"><tspan class="num" fill="#9CB59A">08</tspan> Garden</text></g>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- TARGET -->
+    <section class="section" id="target">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">The durable professional identity</span>
+          <h2 class="sec-title">Own the decisions and constraints around the code</h2>
+          <p class="sec-sub">Implementation remains necessary, but it is becoming cheaper and more abundant. Your moat is the compound ability to choose, shape, constrain, verify, operate, and explain the result.</p>
+        </div>
+        <div class="grid moats">
+          <div class="moat"><div class="mn">Moat 01</div><h4>Product judgment</h4><p>Find consequential problems, reject weak ideas, shape scope, and tie work to changed behavior.</p></div>
+          <div class="moat"><div class="mn">Moat 02</div><h4>Domain leverage</h4><p>Know the money, risk, policy, workflow, and failure modes that a generic model cannot infer from a ticket.</p></div>
+          <div class="moat"><div class="mn">Moat 03</div><h4>Architecture</h4><p>Encode intent in types, APIs, modules, state machines, lints, and migration paths so the safe path is easiest.</p></div>
+          <div class="moat"><div class="mn">Moat 04</div><h4>Verification</h4><p>Give agents tools to control the real product, collect evidence, run evals, and expose false confidence.</p></div>
+          <div class="moat"><div class="mn">Moat 05</div><h4>Agent operations</h4><p>Route work, isolate authority, supervise exceptions, recover state, measure economics, and own the outcome.</p></div>
+        </div>
+        <div class="equation"><b>Marketability</b><span class="op">=</span>outcomes<span class="op">×</span>technical judgment<span class="op">×</span>verification<span class="op">×</span>domain depth<span class="op">×</span>visible evidence</div>
+        <div class="note">This is multiplicative, not additive. A dazzling agent demo with no user outcome, a product case study with no technical depth, or expert code with no inspectable evidence is easy to discount.</div>
+      </div>
+    </section>
+
+    <!-- MARKET -->
+    <section class="section" id="market">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Market thesis · researched September 2026</span>
+          <h2 class="sec-title">Prepare for compression, not extinction</h2>
+          <p class="sec-sub">The safest working hypothesis is that fewer people will be paid merely to translate tickets into code, while demand persists for people who can deploy AI into real systems, control risk, and own ambiguous outcomes. Re-test the hypothesis every quarter.</p>
+        </div>
+        <div class="grid risks">
+          <div class="risk"><div class="rn">Signal 01 · Demand</div><h4>Software work is still growing</h4><p>The U.S. BLS projects 10% growth for software developers, QA analysts, and testers from 2025–35, with about 106,100 openings per year. AI and security are cited as demand drivers.</p></div>
+          <div class="risk"><div class="rn">Signal 02 · Baseline shift</div><h4>AI literacy is becoming normal</h4><p>Indeed reported that software-development postings mentioned AI at least 20% of the time by December 2025, even amid broader hiring weakness. “Can use AI” will not remain a differentiator by itself.</p></div>
+          <div class="risk"><div class="rn">Signal 03 · Amplification</div><h4>The delivery system decides the gain</h4><p>DORA’s 2025 research frames AI as an amplifier: strong sociotechnical systems compound the benefit; weak systems amplify instability and waste.</p></div>
+          <div class="risk"><div class="rn">Signal 04 · Skill mix</div><h4>Judgment and security rise with AI</h4><p>Employer research continues to emphasize AI/data, cybersecurity, analytical and creative thinking, adaptability, and leadership. The defensible profile combines technical and human systems skills.</p></div>
+        </div>
+        <div class="card">
+          <span class="eyebrow">Quarterly market rebase · 90 minutes</span>
+          <div class="grid g3" style="margin-top:1rem">
+            <div><div class="col-h">Collect</div><ul class="learn"><li>20 current postings across the role families below.</li><li>Two practitioner conversations.</li><li>One real interview or hiring-manager screen every 6 months.</li></ul></div>
+            <div><div class="col-h">Extract</div><ul class="learn"><li>Outcomes and responsibilities repeated across postings.</li><li>Evidence employers ask candidates to show.</li><li>New capability that is becoming baseline versus scarce.</li></ul></div>
+            <div><div class="col-h">Change</div><ul class="learn"><li>Reallocate the next 13 weeks only when repeated evidence moves.</li><li>Update portfolio language to match the role’s vocabulary.</li><li>Delete a learning goal that no longer earns its place.</li></ul></div>
+          </div>
+          <div class="online" style="margin-top:1rem">
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm">BLS software outlook</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.hiringlab.org/2026/01/22/january-labor-market-update-jobs-mentioning-ai-are-growing-amid-broader-hiring-weakness/">Indeed AI posting data</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://dora.dev/research/2025/">DORA 2025</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.weforum.org/publications/the-future-of-jobs-report-2025/in-full/3-skills-outlook/">WEF skills outlook</a>
+          </div>
+          <div class="note">Search by responsibility, not title: senior/product engineer · applied AI / forward-deployed engineer · evals / agent reliability · AI platform / developer productivity · staff engineer on AI-enabled product teams.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOUR SCHOOLS -->
+    <section class="section" id="synthesis">
+      <div class="wrap">
+        <div class="sec-head">
+          <span class="eyebrow">Four AI-engineering schools · distilled</span>
+          <h2 class="sec-title">Take the mechanisms; reject the theater</h2>
+          <p class="sec-sub">These approaches solve different bottlenecks. Train them in priority order and only after the preceding layer works.</p>
+        </div>
+        <div class="grid approaches">
+          <article class="approach" style="--ap:var(--green)">
+            <div class="approach-head"><div><span class="school">Lauren “poteto” Tan · garden / laboratory</span><h3>Make quality elastic</h3></div><span class="priority">foundation · highest</span></div>
+            <p class="thesis">The codebase and verifier should teach, constrain, and prove the work so contributor count can rise without quality collapsing.</p>
+            <div class="take-grid"><div class="take-block"><h4>Adopt</h4><ul><li>Project-local control CLI and Feature Map.</li><li>Real-artifact evidence and independent verification.</li><li>Organic architecture: encode repeated lessons in types, APIs, lints, and tools.</li><li>Arena for alternatives, swarm for coverage, interrogation for skepticism.</li></ul></div><div class="take-block reject"><h4>Reject</h4><ul><li>Turning every anecdote into a permanent rule.</li><li>Screenshot theater or a stale verifier as “proof.”</li><li>PR volume as an outcome metric.</li></ul></div></div>
+            <p class="exercise"><b>Training artifact:</b> Build a verifier that lets a cold agent drive and prove ten user journeys, then inject defects to measure what it misses.</p>
+          </article>
+          <article class="approach" style="--ap:var(--cyan)">
+            <div class="approach-head"><div><span class="school">Kun Chen · ship / control plane</span><h3>Protect human attention and authority</h3></div><span class="priority">foundation · high</span></div>
+            <p class="thesis">One liaison should route work to isolated workers, separate investigation from shipping, and escalate only decisions that require the captain.</p>
+            <div class="take-grid"><div class="take-block"><h4>Adopt</h4><ul><li>Firstmate → optional domain secondmates → disposable crewmates.</li><li>Clean worktree per task and explicit merge authority.</li><li>Ship versus scout task shapes.</li><li>Event-driven supervision and “unknown is not dead” recovery semantics.</li><li>Capability-, ambiguity-, cost-, and quota-aware routing.</li></ul></div><div class="take-block reject"><h4>Reject</h4><ul><li>A large bespoke control plane before concurrency hurts.</li><li>Model rankings based only on personal impressions.</li><li>Silent fallback that changes authority or ownership.</li></ul></div></div>
+            <p class="exercise"><b>Training artifact:</b> Compare single-agent, implement/review, and firstmate/two-worker modes on the same tasks; keep the hierarchy only where it cuts human interruption or lead time.</p>
+          </article>
+          <article class="approach" style="--ap:var(--amber)">
+            <div class="approach-head"><div><span class="school">Jeffrey Emanuel · factory / work graph</span><h3>Make work durable and schedulable</h3></div><span class="priority">scale · selective</span></div>
+            <p class="thesis">Plans, self-contained tasks, dependencies, coordination records, and procedural memory let workers remain replaceable.</p>
+            <div class="take-grid"><div class="take-block"><h4>Adopt</h4><ul><li>Detailed work packets with context, acceptance criteria, and proof.</li><li>Explicit dependency graph for large known programs.</li><li>Deterministic robot/JSON interfaces.</li><li>Durable coordination and session-history retrieval.</li><li>Convert recurring friction into tools.</li></ul></div><div class="take-block reject"><h4>Reject</h4><ul><li>Exhaustive plans for empirical product uncertainty.</li><li>Shared dirty checkout and direct-to-main as a default.</li><li>Agent count, commits, or lines as quality proxies.</li></ul></div></div>
+            <p class="exercise"><b>Training artifact:</b> Convert one 20-task migration into dependency-aware work packets and compare graph routing with FIFO/manual selection.</p>
+          </article>
+          <article class="approach" style="--ap:var(--violet)">
+            <div class="approach-head"><div><span class="school">Steve Yegge · city / institution</span><h3>Give recurring operations durable owners</h3></div><span class="priority">operations · late</span></div>
+            <p class="thesis">Long-lived products eventually need persistent roles, event-driven monitors, handoffs, doctrine, and feedback from production—not only task workers.</p>
+            <div class="take-grid"><div class="take-block"><h4>Adopt</h4><ul><li>Seat/session separation as a durable service-role abstraction.</li><li>“Crons watch, models act”: deterministic monitors wake judgment.</li><li>Self-authored handoffs and bounded sessions.</li><li>Scoped homes, explicit escalation, and blameless postmortems.</li><li>Feed outcomes back to the role that produced the work.</li></ul></div><div class="take-block reject"><h4>Reject</h4><ul><li>Red-main Land Rush outside exceptional throughput regimes.</li><li>Unsandboxed broad production authority.</li><li>Persistent-agent personhood as a correctness premise.</li><li>Building an agent bureaucracy that becomes the product.</li></ul></div></div>
+            <p class="exercise"><b>Training artifact:</b> Create one bounded event-driven operational role with scoped credentials, graceful handoff, recovery, and a postmortem loop—no artificial “company.”</p>
+          </article>
+        </div>
+
+        <div class="architecture">
+          <span class="eyebrow">Recommended default architecture</span>
+          <div class="arch-flow">
+            <div class="arch-node"><b>You</b><span>outcome, product judgment, authority</span></div><span class="arch-arrow">→</span>
+            <div class="arch-node"><b>Read-mostly firstmate</b><span>intake, task class, routing, escalation</span></div><span class="arch-arrow">→</span>
+            <div class="arch-node"><b>Isolated task worker</b><span>one brief, one worktree, bounded tools</span></div><span class="arch-arrow">→</span>
+            <div class="arch-node"><b>Independent verifier</b><span>real artifact, evals, exact head</span></div><span class="arch-arrow">→</span>
+            <div class="arch-node"><b>Clean main + production</b><span>observability, rollback, user evidence</span></div>
+          </div>
+          <div class="substrate">shared substrate: code + hard constraints · task records · evidence · curated project brain · event-driven monitors · graph scheduling only when the backlog is truly interdependent</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LADDER -->
+    <section class="section" id="ladder">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Complexity budget</span><h2 class="sec-title">Never add an agent layer on faith</h2><p class="sec-sub">Every rung introduces failure modes, maintenance, cost, and coordination. Advance only when a measured requirement fails at the current rung.</p></div>
+        <div class="ladder">
+          <div class="ladder-step"><div class="ln">00</div><div><h4>Deterministic automation</h4><p>Use normal code, scripts, static analysis, state machines, and scheduled jobs.</p></div><div class="gate">Advance only when judgment is genuinely required.</div></div>
+          <div class="ladder-step"><div class="ln">01</div><div><h4>One agent with deep tools</h4><p>Give one capable agent the repository, a bounded brief, and a real verification surface.</p></div><div class="gate">Advance when independent review or parallelism has measured value.</div></div>
+          <div class="ladder-step"><div class="ln">02</div><div><h4>Implementer + independent reviewer</h4><p>Separate creation from skepticism and use a different model family or external oracle where possible.</p></div><div class="gate">Advance when your attention—not worker ability—is the bottleneck.</div></div>
+          <div class="ladder-step"><div class="ln">03</div><div><h4>Firstmate + isolated workers</h4><p>One liaison dispatches clear ship work and separate scout work into clean worktrees.</p></div><div class="gate">Advance when ≥20 tasks have material dependency structure.</div></div>
+          <div class="ladder-step"><div class="ln">04</div><div><h4>Dependency graph + swarm</h4><p>Use durable work packets, explicit blockers, coordination, and graph-aware scheduling.</p></div><div class="gate">Advance when a recurring operational stream needs continuity.</div></div>
+          <div class="ladder-step"><div class="ln">05</div><div><h4>Persistent operational roles</h4><p>Assign one bounded role a charter, state, scoped authority, event triggers, handoffs, and recovery.</p></div><div class="gate">Stop. Add another role only after workload proves it.</div></div>
+        </div>
+        <div class="callout"><b>Hard rule:</b> do not build a custom orchestrator during this plan. Configure existing tools or write the thinnest adapter that makes the experiment possible. Your portfolio should prove product and engineering judgment, not recreate someone else’s 150,000-line harness.</div>
+      </div>
+    </section>
+
+    <!-- WEEKLY -->
+    <section class="section" id="weekly">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">The weekly operating system</span><h2 class="sec-title">Five hours build; four hours make it trustworthy</h2><p class="sec-sub">Nine hours, one spine product, one observable result. Passive reading, AI news, and tool tourism do not receive fixed time.</p></div>
+        <div class="bar" aria-hidden="true">
+          <div class="seg" style="flex:45;background:var(--amber)"><span>Study · 45</span></div>
+          <div class="seg" style="flex:45;background:var(--amber-d)"><span>Teardown · 45</span></div>
+          <div class="seg" style="flex:225;background:var(--cyan)"><span>Build/direct · 225</span></div>
+          <div class="seg" style="flex:75;background:var(--cyan-d)"><span>Verify · 75</span></div>
+          <div class="seg" style="flex:75;background:var(--green)"><span>Observe · 75</span></div>
+          <div class="seg" style="flex:75;background:var(--fg-3)"><span>Garden/prove · 75</span></div>
+        </div>
+        <div class="grid blocks">
+          <div class="block" style="--bl:var(--amber)"><div class="bm">45<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Targeted source study</div><div class="bd">Read only the next concept blocking the current artifact. Prefer primary docs or one canonical chapter.</div><span class="out">→ 3 decisions or testable principles</span></div>
+          <div class="block" style="--bl:var(--amber-d)"><div class="bm">45<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Teardown</div><div class="bd">Map one product flow, architecture boundary, verifier, agent workflow, or incident.</div><span class="out">→ annotated model + one falsifiable claim</span></div>
+          <div class="block" style="--bl:var(--cyan)"><div class="bm">225<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Build and direct</div><div class="bd">Ship one vertical slice. Let an agent produce the first pass while you own the brief, architecture, and exceptions.</div><span class="out">→ small reviewable change</span></div>
+          <div class="block" style="--bl:var(--cyan-d)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Verify and evaluate</div><div class="bd">Drive the real artifact, inspect the diff, run independent review, and capture traces or behavior-level evidence.</div><span class="out">→ verdict + evidence pointer</span></div>
+          <div class="block" style="--bl:var(--green)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Observe reality</div><div class="bd">Watch a user, inspect production/eval failures, or sample current job requirements. Never substitute opinion for observation.</div><span class="out">→ ranked evidence</span></div>
+          <div class="block" style="--bl:var(--fg-3)"><div class="bm">75<small style="font-size:.6rem;color:var(--fg-3)">min</small></div><div class="bt">Garden and prove</div><div class="bd">Encode one recurring lesson structurally, prune one stale rule, update the decision ledger, and package high-signal evidence.</div><span class="out">→ lever + retained lesson</span></div>
+        </div>
+        <div class="note">A week counts only when it ends in trusted behavior, new user/production evidence, or a reusable structural lever. “The agent wrote a lot” does not count.</div>
+      </div>
+    </section>
+
+    <!-- TRACK -->
+    <section class="section" id="track">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">The 52-week track</span><h2 class="sec-title">Seven phases; one product accumulates the evidence</h2><p class="sec-sub">The capstone is not a final-month toy. Choose the spine product in week 1 and improve the same real workflow through product, architecture, verification, orchestration, and production evidence.</p></div>
+        <div class="ruler" aria-hidden="true">
+          <div class="rseg" style="flex:4;background:var(--amber)"><b>P1</b><small>W1–4</small></div>
+          <div class="rseg" style="flex:8;background:var(--amber-d)"><b>P2</b><small>W5–12</small></div>
+          <div class="rseg" style="flex:6;background:var(--amber-dd)"><b>P3</b><small>W13–18</small></div>
+          <div class="rseg" style="flex:10;background:var(--cyan)"><b>P4</b><small>W19–28</small></div>
+          <div class="rseg" style="flex:10;background:var(--cyan-d)"><b>P5</b><small>W29–38</small></div>
+          <div class="rseg" style="flex:6;background:var(--violet)"><b>P6</b><small>W39–44</small></div>
+          <div class="rseg" style="flex:8;background:var(--green)"><b>P7</b><small>W45–52</small></div>
+        </div>
+        <div class="parts3">
+          <div class="part-mini" style="--pm:var(--amber)"><span class="pk">Part I · 162h</span><h4>Product reality</h4><p>Baseline the loop, choose the right problem, and make the experience usable and complete.</p></div>
+          <div class="part-mini" style="--pm:var(--cyan)"><span class="pk">Part II · 180h</span><h4>Systems and proof</h4><p>Encode architecture, reliability, security, executable verification, and evals.</p></div>
+          <div class="part-mini" style="--pm:var(--violet)"><span class="pk">Part III · 126h</span><h4>Scale and market proof</h4><p>Measure orchestration, operate one persistent role, and package the capstone.</p></div>
+        </div>
+        <div class="allocation card">
+          <div class="donut" aria-label="Time allocation: 34.6 percent product foundations, 38.5 percent systems and verification, 11.5 percent orchestration, 15.4 percent capstone and market proof."></div>
+          <div>
+            <span class="eyebrow">Why the hours are deliberately uneven</span>
+            <div class="alloc-list" style="margin-top:.9rem">
+              <div class="alloc-row"><i style="--c:var(--amber)"></i><span>Product, UX, and baseline foundations</span><b>162h · 34.6%</b></div>
+              <div class="alloc-row"><i style="--c:var(--cyan)"></i><span>Architecture, reliability, verification, evals, and safety</span><b>180h · 38.5%</b></div>
+              <div class="alloc-row"><i style="--c:var(--violet)"></i><span>Multi-agent orchestration and persistent operations</span><b>54h · 11.5%</b></div>
+              <div class="alloc-row"><i style="--c:var(--green)"></i><span>Capstone launch, evidence, and market translation</span><b>72h · 15.4%</b></div>
+            </div>
+            <p class="source-caveat">Orchestration receives the smallest allocation because it is easy to overbuild and fast-moving. Verification and architecture survive model churn.</p>
+          </div>
+        </div>
+        <div style="margin-top:1.4rem">
+        <details class="phase i" open>
+          <summary>
+            <div class="pnum">01</div>
+            <div class="pmid">
+              <h4>Baseline the loop; choose the spine product</h4>
+              <div class="foc">Establish one measurable, single-agent delivery loop before adding managers, swarms, memories, or orchestration.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">36 hrs</span><span>Weeks 1–4</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> Without a baseline and an executable verifier, agent count only multiplies uncertainty. This phase makes later claims falsifiable.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Outcome-first briefs: desired behavior, constraints, edge states, and evidence—not implementation choreography.</li><li>Context hygiene: repository truth and fresh inspection outrank chat memory.</li><li>Agent-facing tools: narrow commands, typed or structured I/O, dry-run, idempotency, and diagnostic errors.</li><li>Baseline economics: elapsed time, human intervention, rework, model/cloud cost, and escaped defects.</li><li>The autonomy ladder: deterministic code → one agent → reviewer → manager/workers → graph swarm → persistent roles.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p1a" /><span>Select one recurring, consequential workflow with ≥5 reachable users and constraints that cannot be prompted away.</span></label></li><li><label class="task"><input type="checkbox" data-k="p1b" /><span>Create the spine-product repository, CI, telemetry, decision ledger, and an evidence directory.</span></label></li><li><label class="task"><input type="checkbox" data-k="p1c" /><span>Curate a fixed 12-task benchmark from real work: bugs, features, refactors, investigation, performance, and security.</span></label></li><li><label class="task"><input type="checkbox" data-k="p1d" /><span>Build verifier v0: <code>doctor</code>, <code>seed/reset</code>, one real user journey, and one inspectable evidence artifact.</span></label></li><li><label class="task"><input type="checkbox" data-k="p1e" /><span>Run one task manually and one with a single agent; record first-pass success, review minutes, rework, and cost.</span></label></li><li><label class="task"><input type="checkbox" data-k="p1f" /><span>Ship one thin vertical slice to at least two real users.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>You can trace one request from evidence → brief → agent change → independent real-artifact verification → clean integration, and you have baseline numbers against which every later layer must compete.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://github.com/cursor/plugins/blob/main/pstack/docs/guide/README.md" target="_blank" rel="noreferrer">The pstack guide</a>: <span class="au">Lauren Tan</span></li><li><a href="https://www.anthropic.com/research/building-effective-agents" target="_blank" rel="noreferrer">Building Effective Agents</a>: <span class="au">Anthropic</span></li><li><a href="https://github.com/kunchenguid/firstmate" target="_blank" rel="noreferrer">Firstmate overview</a>: <span class="au">Kun Chen</span></li><li><a href="https://openai.github.io/openai-agents-python/tracing/" target="_blank" rel="noreferrer">OpenAI Agents SDK: tracing</a>: <span class="au">OpenAI</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase i">
+          <summary>
+            <div class="pnum">02</div>
+            <div class="pmid">
+              <h4>Product judgment, discovery & shaping</h4>
+              <div class="foc">Find a problem worth automating, understand why it persists, and make the first expensive rejection before code makes you attached.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 5–12</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> Model capability commoditizes implementation faster than it commoditizes access to users, domain context, and the judgment to kill the wrong thing.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Problem interviews grounded in recent behavior, workarounds, stakes, and switching costs.</li><li>Outcomes, opportunity-solution trees, assumption mapping, and tests that maximize information per hour.</li><li>System models: boundary, stocks, flows, reinforcing/balancing loops, delays, and likely compensation.</li><li>Shaping: appetite, boundaries, no-gos, rabbit holes, and fixed time with variable scope.</li><li>Measurement: primary outcome, activation, retention, guardrails, novelty effects, and trustworthy populations/windows.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p2a" /><span>Conduct 10 problem interviews and observe 5 real attempts at the workflow without explaining it.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2b" /><span>Build an opportunity-solution tree tied to one behavioral outcome.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2c" /><span>Create a system model; label every relationship observed, measured, inferred, or speculative.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2d" /><span>Test the three riskiest assumptions with prototypes, concierge work, or fake-door experiments.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2e" /><span>Write one shaped pitch with appetite, boundaries, no-gos, rabbit holes, and explicit kill criteria.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2f" /><span>Instrument a funnel with one primary metric, one activation metric, one retention signal, and two guardrails.</span></label></li><li><label class="task"><input type="checkbox" data-k="p2g" /><span>Reject or materially reshape at least one idea because the evidence did not support it.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>You can explain the user’s current workaround, why it survives, which intervention has leverage, what could compensate against it, and what observation would prove your model wrong.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://www.producttalk.org/getting-started-with-discovery/" target="_blank" rel="noreferrer">Continuous Discovery Habits</a>: <span class="au">Teresa Torres</span></li><li><a href="https://rosenfeldmedia.com/books/interviewing-users-second-edition/" target="_blank" rel="noreferrer">Interviewing Users, 2e</a>: <span class="au">Steve Portigal</span></li><li><a href="https://basecamp.com/shapeup" target="_blank" rel="noreferrer">Shape Up</a>: <span class="au">Ryan Singer</span></li><li><a href="https://www.svpg.com/four-big-risks/" target="_blank" rel="noreferrer">Four big product risks</a>: <span class="au">SVPG</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase i">
+          <summary>
+            <div class="pnum">03</div>
+            <div class="pmid">
+              <h4>Interface craft, accessibility & product feel</h4>
+              <div class="foc">Make the product legible, fast-feeling, accessible, and complete across states—not merely attractive in a screenshot.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">54 hrs</span><span>Weeks 13–18</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> AI can generate attractive surfaces cheaply. Marketable product judgment is the ability to make the entire user journey understandable, resilient, and measurably better.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Mental models, mappings, information scent, recognition over recall, and error recovery.</li><li>Hierarchy, typography, density, rhythm, interface language, responsiveness, and perceived performance.</li><li>Keyboard, focus, semantics, contrast, target size, screen-reader behavior, and reduced motion.</li><li>State completeness: first-run, normal, empty, loading, streaming, error, offline, recovery, and success.</li><li>Moderated usability testing and preference testing only after task completion works.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p3a" /><span>Complete four full-flow teardowns of shipped products; map intent, attention, interaction, state, and emotion.</span></label></li><li><label class="task"><input type="checkbox" data-k="p3b" /><span>Reconstruct two flows without copying their CSS; explain the design logic.</span></label></li><li><label class="task"><input type="checkbox" data-k="p3c" /><span>Create a compact design system for type, spacing, color, inputs, actions, feedback, and motion.</span></label></li><li><label class="task"><input type="checkbox" data-k="p3d" /><span>Ship one polished responsive workflow across all material states.</span></label></li><li><label class="task"><input type="checkbox" data-k="p3e" /><span>Complete keyboard-only and screen-reader audits; resolve every P0/P1 accessibility issue.</span></label></li><li><label class="task"><input type="checkbox" data-k="p3f" /><span>Run five usability sessions over at least two iterations and record completion, hesitation, errors, and recovery.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>A new user completes the core task without your help; the workflow remains coherent under keyboard and assistive technology; every visual decision is tied to comprehension, behavior, convention, or brand.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://sensible.com/dont-make-me-think/" target="_blank" rel="noreferrer">Don’t Make Me Think, Revisited</a>: <span class="au">Steve Krug</span></li><li><a href="https://www.w3.org/WAI/WCAG22/quickref/" target="_blank" rel="noreferrer">WCAG 2.2 Quick Reference</a>: <span class="au">W3C</span></li><li><a href="https://www.gov.uk/service-manual/user-research" target="_blank" rel="noreferrer">GOV.UK accessibility and user research</a>: <span class="au">GOV.UK</span></li><li><a href="https://refactoringui.com/" target="_blank" rel="noreferrer">Refactoring UI</a>: <span class="au">Adam Wathan & Steve Schoger</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase ii">
+          <summary>
+            <div class="pnum">04</div>
+            <div class="pmid">
+              <h4>Organic architecture, reliability & security</h4>
+              <div class="foc">Turn recurring review judgment into code, types, APIs, module boundaries, fitness functions, and operational constraints.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">90 hrs</span><span>Weeks 19–28</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> Poteto’s strongest lesson is career-critical: the best rules are in the substrate. A senior engineer who can make agent output structurally safe scales farther than one who merely reviews more diffs.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Deep modules, information hiding, cohesion, coupling, reader load, and stable conceptual boundaries.</li><li>Type-driven domain modeling: parse at boundaries, brand primitives, and make illegal states unrepresentable.</li><li>Evolutionary architecture: automated fitness functions, migrations, compatibility windows, and deletion of obsolete paths.</li><li>Transactions, idempotency, retries, timeouts, backpressure, overload, queues, and cascading failure.</li><li>SLOs, error budgets, observability, least privilege, threat modeling, secrets, privacy, and cost boundaries.</li><li>Agent legibility: obvious project layout, canonical commands, machine-readable output, and explicit side effects.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p4a" /><span>Create C4 context/container diagrams and at least five ADRs with alternatives, consequences, and revisit triggers.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4b" /><span>Refactor one high-friction boundary into a deep module or explicit domain model; migrate callers and delete the legacy path.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4c" /><span>Convert at least three repeated review comments into a type, lint, test, runtime guard, code generator, or CI fitness function.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4d" /><span>Create an agent-facing repository map plus canonical <code>check</code>, <code>test</code>, <code>run</code>, and <code>inspect</code> commands.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4e" /><span>Define SLOs, an error budget, a runbook, and run one controlled failure drill.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4f" /><span>Create a threat model and cost model for the key workflow; enforce least privilege and explicit approval boundaries.</span></label></li><li><label class="task"><input type="checkbox" data-k="p4g" /><span>Give a cold agent three bounded changes; record every architectural violation and encode only recurring, high-value lessons.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>The easiest path through the codebase is the correct path. Invalid states fail at construction or at the boundary; agents can make bounded changes without spreading architecture damage; you can name the system’s breaking point and migration path.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://github.com/cursor/plugins/blob/main/pstack/skills/poteto-mode/SKILL.md" target="_blank" rel="noreferrer">pstack engineering principles</a>: <span class="au">Lauren Tan</span></li><li><a href="https://web.stanford.edu/~ouster/cgi-bin/book.php" target="_blank" rel="noreferrer">A Philosophy of Software Design, 2e</a>: <span class="au">John Ousterhout</span></li><li><a href="https://www.oreilly.com/library/view/designing-data-intensive-applications/9781098119058/" target="_blank" rel="noreferrer">Designing Data-Intensive Applications, 2e</a>: <span class="au">Martin Kleppmann & Chris Riccomini</span></li><li><a href="https://sre.google/books/" target="_blank" rel="noreferrer">Google SRE books</a>: <span class="au">Google</span></li><li><a href="https://aws.amazon.com/builders-library/" target="_blank" rel="noreferrer">AWS Builders’ Library</a>: <span class="au">AWS</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase ii">
+          <summary>
+            <div class="pnum">05</div>
+            <div class="pmid">
+              <h4>Executable verification, evals & agent safety</h4>
+              <div class="foc">Build the control and observation surface that lets a cold agent prove real product behavior without you becoming the click-test bottleneck.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">90 hrs</span><span>Weeks 29–38</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> Verification is the scarce complement to cheap code generation. This phase creates a marketable asset: an executable product oracle, not a collection of prompts.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Project-local verification skills: control CLI, Feature Map, test accounts, seed/reset, and evidence capture.</li><li>Evaluation layers: deterministic checks, representative cases, behavioral graders, operational metrics, and production feedback.</li><li>Independent current-patch verification and exact-artifact release testing.</li><li>Trace-based failure taxonomy: capability, context, tool, state, permission, stopping, recovery, and human-handoff failures.</li><li>Agent security: prompt injection, confused deputy, data exfiltration, tool authorization, sandboxing, and approval gates.</li><li>Verifier validity: false positives, false negatives, test-only paths, stale maps, and evidence that proves only one example.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p5a" /><span>Build verifier v1 with at least 10 stable commands: health, seed/reset, navigate, interact, snapshot, screenshot, logs, network, trace, and cleanup.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5b" /><span>Create a Feature Map covering every core user journey, entry path, entitlement, state, and known gotcha.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5c" /><span>Curate 50–100 versioned eval cases with explicit acceptance criteria and a balanced failure taxonomy.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5d" /><span>Add an independent verifier and exact-head publication gate; no writer may self-certify its own intent-sensitive change.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5e" /><span>Seed five known defects and measure what the verifier, tests, reviewer, and CI each catch or miss.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5f" /><span>Threat-model the agent workflow; implement least-privilege tools, stopping conditions, approval gates, and prompt-injection tests.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5g" /><span>Automate verifier maintenance and drift detection; never rewrite the map merely to hide a product regression.</span></label></li><li><label class="task"><input type="checkbox" data-k="p5h" /><span>Install and smoke-test the exact distributable artifact, not only the source tree.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>A cold agent can implement and prove ten representative changes with inspectable evidence and no manual clicking. Seeded defects expose the real limits of each gate, and security-sensitive actions cannot occur without explicit authority.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://github.com/cursor/plugins/blob/main/pstack/skills/create-verification-skill/SKILL.md" target="_blank" rel="noreferrer">Create a verification skill</a>: <span class="au">Lauren Tan</span></li><li><a href="https://github.com/cursor/plugins/blob/main/pstack/skills/maintain-verification-skill/SKILL.md" target="_blank" rel="noreferrer">Maintain a verification skill</a>: <span class="au">Lauren Tan</span></li><li><a href="https://github.com/poteto/verification-skill-example" target="_blank" rel="noreferrer">Verification skill example</a>: <span class="au">Lauren Tan</span></li><li><a href="https://github.com/kunchenguid/no-mistakes" target="_blank" rel="noreferrer">no-mistakes</a>: <span class="au">Kun Chen</span></li><li><a href="https://openai.github.io/openai-agents-python/" target="_blank" rel="noreferrer">OpenAI Agents SDK: guardrails and tracing</a>: <span class="au">OpenAI</span></li><li><a href="https://www.nist.gov/itl/ai-risk-management-framework" target="_blank" rel="noreferrer">NIST AI Risk Management Framework</a>: <span class="au">NIST</span></li><li><a href="https://genai.owasp.org/" target="_blank" rel="noreferrer">OWASP Agentic AI guidance</a>: <span class="au">OWASP</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase iii">
+          <summary>
+            <div class="pnum">06</div>
+            <div class="pmid">
+              <h4>Orchestration, routing & persistent operations</h4>
+              <div class="foc">Learn all four agent-organization schools experimentally, then keep only the smallest topology that improves trusted outcomes.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">54 hrs</span><span>Weeks 39–44</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> Orchestration is intentionally only 54 hours. It is a multiplier and an operating skill, not the product and not a substitute for verification or architecture.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Chen: one liaison, ship vs scout, isolated worktrees, explicit merge authority, remote ownership, and quota-aware routing.</li><li>Emanuel: self-contained work packets, dependency graphs, durable coordination, robot interfaces, and procedural memory.</li><li>Yegge: persistent role seats, event-driven monitors, graceful handoffs, project doctrine, and blameless postmortems.</li><li>Poteto: arena for alternatives, swarm for coverage, interrogation for skepticism, and skill-based scheduling.</li><li>Queueing and backpressure: producer/consumer imbalance, merge capacity, review capacity, and orchestration tax.</li><li>Model routing as measured policy: hard capability, ambiguity, latency, cost/quota, and observed rework—not model fandom.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p6a" /><span>Compare four modes on a fixed subset of the benchmark: single agent; implementer + independent reviewer; firstmate + two isolated workers; graph-routed swarm.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6b" /><span>Use one 20-task dependency-rich migration to compare FIFO/manual routing with explicit task dependencies and graph-aware priority.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6c" /><span>Build a model registry from outcomes: task class, ambiguity, chosen model, latency, cost, interventions, review findings, and acceptance.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6d" /><span>Create one event-driven monitor that spends no model tokens while idle and wakes an agent only for judgment.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6e" /><span>Run one persistent operational role on a remote machine with a charter, scoped credentials, bounded authority, self-authored handoff, and recovery procedure; simulate connection loss without creating duplicate ownership.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6f" /><span>Externalize all essential state into briefs, task records, code, evidence, or curated memory with provenance and expiry.</span></label></li><li><label class="task"><input type="checkbox" data-k="p6g" /><span>Write a topology-selection guide and delete or disable every layer that failed to beat the simpler baseline.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>For each task class, you can defend the simplest effective topology with measured quality, human time, elapsed time, and cost. A manager, graph, memory layer, or persistent role survives only when it earns its maintenance tax.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://github.com/kunchenguid/firstmate" target="_blank" rel="noreferrer">Firstmate</a>: <span class="au">Kun Chen</span></li><li><a href="https://github.com/kunchenguid/quota-axi" target="_blank" rel="noreferrer">quota-axi</a>: <span class="au">Kun Chen</span></li><li><a href="https://agent-flywheel.com/core-flywheel" target="_blank" rel="noreferrer">The Core Flywheel</a>: <span class="au">Jeffrey Emanuel</span></li><li><a href="https://agent-flywheel.com/complete-guide" target="_blank" rel="noreferrer">The Complete Flywheel Guide</a>: <span class="au">Jeffrey Emanuel</span></li><li><a href="https://yegge.ai/essays/the-shape-of-things-to-come/" target="_blank" rel="noreferrer">The Shape of Things to Come</a>: <span class="au">Steve Yegge</span></li><li><a href="https://yegge.ai/essays/model-welfare/" target="_blank" rel="noreferrer">Model Welfare for Agentic Engineers</a>: <span class="au">Steve Yegge</span></li><li><a href="https://poteto.github.io/noodle/" target="_blank" rel="noreferrer">Noodle</a>: <span class="au">Lauren Tan</span></li><li><a href="https://github.com/poteto/brainmaxxing" target="_blank" rel="noreferrer">brainmaxxing</a>: <span class="au">Lauren Tan</span></li></ol></div>
+          </div>
+        </details>
+
+        <details class="phase iii">
+          <summary>
+            <div class="pnum">07</div>
+            <div class="pmid">
+              <h4>Capstone launch & market proof</h4>
+              <div class="foc">Turn the year-long spine product into one inspectable story of product judgment, systems ownership, agent leverage, and measured outcomes.</div>
+            </div>
+            <div class="pmeta"><span class="hrs">72 hrs</span><span>Weeks 45–52</span><span class="chevd"></span></div>
+          </summary>
+          <div class="pbody">
+            <div class="why"><b>Why this earns the time:</b> The capstone is not started in week 45. It is the spine product you have improved all year. The final phase packages the evidence and closes the remaining trust gaps.</div>
+            <div class="pcols">
+              <div>
+                <div class="col-h">Learn only what changes the artifact</div>
+                <ul class="learn"><li>Case-study argument: problem evidence → rejected ideas → intervention → architecture → verification → operation → outcome.</li><li>Production readiness: SLOs, incident response, security posture, cost, data handling, and rollback/recovery.</li><li>Market translation: describe business and user outcomes first; tools and models are implementation details.</li><li>Portfolio compression: three deep proof assets beat thirty shallow demos.</li><li>Interview readiness: product tradeoffs, system design, failure analysis, agent/eval design, and leadership through ambiguity.</li></ul>
+              </div>
+              <div>
+                <div class="col-h">Produce</div>
+                <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="p7a" /><span>Reach ≥10 real users or complete 8 recorded sessions; collect at least 30 days of product/eval telemetry where feasible.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7b" /><span>Demonstrate one material outcome improvement against the phase-1 baseline while guardrails remain acceptable.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7c" /><span>Run a production-like failure drill and publish the resulting postmortem and structural correction.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7d" /><span>Publish proof 1: product case study with user evidence, rejected paths, measured outcome, and remaining uncertainty.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7e" /><span>Publish proof 2: verification/eval system deep dive plus one reusable open-source lever.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7f" /><span>Publish proof 3: orchestration benchmark showing when single-agent, reviewer pair, hierarchy, and graph swarm win or lose.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7g" /><span>Have a senior engineer, product/design practitioner, and applied-AI practitioner challenge the evidence; incorporate the strongest criticism.</span></label></li><li><label class="task"><input type="checkbox" data-k="p7h" /><span>Create role-specific resume/portfolio variants and complete one real interview loop before you urgently need a job.</span></label></li></ul>
+              </div>
+            </div>
+            <div class="pass">
+              <div class="col-h">Evidence gate</div>
+              <p>A hiring panel can independently inspect the product, source, verifier, evals, traces, architecture, security boundaries, operating evidence, and user outcome—and understand exactly what judgment you supplied that the agents did not.</p>
+            </div>
+            <div class="sources"><div class="col-h">Sources · read only when the phase needs them</div><ol><li><a href="https://dora.dev/research/" target="_blank" rel="noreferrer">DORA research</a>: <span class="au">Google Cloud</span></li><li><a href="https://posthog.com/handbook/engineering/product-engineering" target="_blank" rel="noreferrer">PostHog product engineering handbook</a>: <span class="au">PostHog</span></li><li><a href="https://linear.app/method" target="_blank" rel="noreferrer">Linear Method</a>: <span class="au">Linear</span></li><li><a href="https://sre.google/books/" target="_blank" rel="noreferrer">Google SRE books</a>: <span class="au">Google</span></li></ol></div>
+          </div>
+        </details>
+</div>
+      </div>
+    </section>
+
+    <!-- LAB -->
+    <section class="section" id="lab">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Controlled AI-engineering laboratory</span><h2 class="sec-title">Learn the four approaches by making them compete</h2><p class="sec-sub">Do not copy anyone’s mythology. Hold code, task, acceptance criteria, and environment constant; change one workflow variable; keep only what improves trusted outcomes.</p></div>
+        <div class="grid lab-grid">
+          <article class="experiment"><div class="en">Experiment 01 · Poteto</div><h4>Does executable verification change autonomy?</h4><dl><dt>Compare</dt><dd>Tests-only agent vs. the same agent with control CLI + Feature Map.</dd><dt>Measure</dt><dd>First-pass acceptance, human click minutes, missed behavior, token use.</dd><dt>Keep when</dt><dd>The verifier reduces human intervention or catches defects without unacceptable false confidence.</dd></dl></article>
+          <article class="experiment"><div class="en">Experiment 02 · Chen</div><h4>When does a firstmate pay for itself?</h4><dl><dt>Compare</dt><dd>You managing two workers directly vs. one liaison managing isolated workers.</dd><dt>Measure</dt><dd>Interruptions, context switches, task lead time, duplicate work, recovery time.</dd><dt>Keep when</dt><dd>The manager cuts your attention cost while preserving exact authority and output quality.</dd></dl></article>
+          <article class="experiment"><div class="en">Experiment 03 · Emanuel</div><h4>When does graph scheduling beat a queue?</h4><dl><dt>Compare</dt><dd>FIFO/manual task choice vs. dependency-aware selection on one 20-task migration.</dd><dt>Measure</dt><dd>Blocked time, critical-path duration, rework, coordination messages, graph maintenance.</dd><dt>Keep when</dt><dd>The graph shortens the real critical path enough to repay task-modeling overhead.</dd></dl></article>
+          <article class="experiment"><div class="en">Experiment 04 · Yegge</div><h4>Does a persistent role improve operations?</h4><dl><dt>Compare</dt><dd>Scheduled stateless agent vs. an event-driven role with charter, history, and handoff.</dd><dt>Measure</dt><dd>Detection latency, token waste, repeated mistakes, recovery quality, operator trust.</dd><dt>Keep when</dt><dd>Continuity improves decisions—not merely personality—and authority remains bounded.</dd></dl></article>
+        </div>
+        <div class="benchmark">
+          <div class="col-h">Benchmark contract</div>
+          <div class="grid g3">
+            <div><ul class="learn"><li>Fix the repository at a known commit.</li><li>Use explicit acceptance tests and hidden seeded defects.</li><li>Include 3 bugs, 3 features, 2 refactors, 2 investigations, 1 performance task, 1 security task.</li></ul></div>
+            <div><ul class="learn"><li>Compare six representative tasks across all modes.</li><li>Use the dependency-rich migration only for graph scheduling.</li><li>Repeat noisy trials enough to distinguish luck from a useful pattern.</li></ul></div>
+            <div><ul class="learn"><li>Do not let the author model grade its own intent-sensitive work.</li><li>Record failures and inconclusive runs.</li><li>Publish the protocol and raw scorecard with the conclusion.</li></ul></div>
+          </div>
+        </div>
+        <div class="note">Model names expire. Preserve a live registry of observed behavior by task class, and rerun the benchmark quarterly. No provider gets a permanent role because it was fashionable this month.</div>
+      </div>
+    </section>
+
+    <!-- METRICS -->
+    <section class="section" id="metrics">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Score the system, not the output volume</span><h2 class="sec-title">Eight numbers that keep the plan honest</h2><p class="sec-sub">Track weekly during experiments and monthly otherwise. Optimize for trusted outcomes per unit of scarce human attention—not PR count, lines, tokens, or agent utilization.</p></div>
+        <div class="grid metric-grid">
+          <div class="metric"><div class="mk">Outcome</div><h4>Product behavior</h4><p>The primary user/business metric and guardrails defined in phase 2.</p><code>Δ outcome vs baseline</code></div>
+          <div class="metric"><div class="mk">Quality</div><h4>First-pass trust rate</h4><p>Changes accepted by independent verification without intent-sensitive rework.</p><code>trusted first pass / attempts</code></div>
+          <div class="metric"><div class="mk">Human</div><h4>Intervention minutes</h4><p>Your active clarification, review, clicking, repair, and orchestration time.</p><code>human min / trusted change</code></div>
+          <div class="metric"><div class="mk">Economics</div><h4>Cost per trusted change</h4><p>Model, cloud/CI, and human time—not just API tokens.</p><code>model + infra + human time</code></div>
+          <div class="metric"><div class="mk">Delivery</div><h4>Evidence lead time</h4><p>Elapsed time from accepted brief to inspectable behavioral proof.</p><code>proof_at − brief_at</code></div>
+          <div class="metric"><div class="mk">Rework</div><h4>Correction load</h4><p>Follow-up commits, reopened work, reverted behavior, and repair sessions.</p><code>rework / accepted scope</code></div>
+          <div class="metric"><div class="mk">Escape</div><h4>Post-merge defects</h4><p>Relevant regressions discovered after the independent gate or by users.</p><code>escaped defects / release</code></div>
+          <div class="metric"><div class="mk">System</div><h4>Handoff/recovery failure</h4><p>Lost state, duplicate work, wrong ownership, stale memory, and unprovable artifact lineage.</p><code>failed transitions / transitions</code></div>
+        </div>
+        <div class="callout"><b>Interpretation rule:</b> higher autonomy is not inherently better. A workflow wins only when it improves product outcome, trusted throughput, human attention, or economics without worsening escape risk beyond the agreed boundary.</div>
+      </div>
+    </section>
+
+    <!-- POSITION -->
+    <section class="section" id="position">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Market proof</span><h2 class="sec-title">Build three artifacts a hiring manager cannot hand-wave away</h2><p class="sec-sub">The portfolio is not a gallery of apps. It is an inspectable argument that you can find value, build and operate the system, direct agents, and know whether the result works.</p></div>
+        <div class="grid proof-grid">
+          <article class="proof" style="--pf:var(--amber)"><div class="pn">Proof 01 · Product</div><h4>Outcome case study</h4><p>One real workflow, real users, rejected ideas, accessible execution, measured behavior, and remaining uncertainty.</p><ul><li>5-minute demo and concise written narrative.</li><li>Raw or sanitized research/evidence appendix.</li><li>What you changed after being wrong.</li></ul></article>
+          <article class="proof" style="--pf:var(--cyan)"><div class="pn">Proof 02 · Trust</div><h4>Verification + eval system</h4><p>A project-local control surface, Feature Map, eval dataset, traces, independent gate, and seeded-defect results.</p><ul><li>Open-source one reusable lever.</li><li>Show false positives and false negatives.</li><li>Explain authority and security boundaries.</li></ul></article>
+          <article class="proof" style="--pf:var(--violet)"><div class="pn">Proof 03 · Scale</div><h4>Agent-organization benchmark</h4><p>A controlled comparison of single-agent, reviewer pair, hierarchy, graph swarm, and one persistent role.</p><ul><li>Protocol and raw scorecard.</li><li>Cost/human-time/quality tradeoffs.</li><li>Clear examples where simpler won.</li></ul></article>
+        </div>
+        <div class="card" style="margin-top:1.2rem">
+          <span class="eyebrow">Resume language: outcome first, mechanism second</span>
+          <div class="resume-lines">
+            <div class="resume-line">Improved [user/business outcome] by [measured amount] for [population], while holding [guardrails] within [bounds].</div>
+            <div class="resume-line">Built an executable verification surface covering [N] journeys; reduced human verification from [A] to [B] minutes and caught [N] seeded/real defects before release.</div>
+            <div class="resume-line">Designed an isolated agent-delivery workflow with exact-head evidence and scoped authority; changed cost per trusted change by [X%] with [escape/rework result].</div>
+            <div class="resume-line">Refactored [boundary/domain] into enforceable types/APIs/fitness functions; cold-agent violations fell from [A] to [B] across [N] tasks.</div>
+          </div>
+        </div>
+        <div class="grid quarter-grid" style="margin-top:1rem">
+          <div class="quarter"><div class="q">Gate 1 · Week 13</div><h4>Problem + baseline</h4><p>Real workflow, users, tracer slice, verifier v0, benchmark, and first public teardown.</p></div>
+          <div class="quarter"><div class="q">Gate 2 · Week 26</div><h4>Product + architecture</h4><p>Usable beta, clear domain model, hard constraints, SLO/threat/cost drafts, and one structural case study.</p></div>
+          <div class="quarter"><div class="q">Gate 3 · Week 39</div><h4>Trust system</h4><p>Control CLI, Feature Map, eval set, independent gate, seeded-defect study, and security boundary.</p></div>
+          <div class="quarter"><div class="q">Gate 4 · Week 52</div><h4>Outcome + market proof</h4><p>Real outcome, operational evidence, three signature artifacts, practitioner critique, and live interview calibration.</p></div>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <span class="eyebrow">Positioning habits</span>
+          <ul class="tasks" data-phase><li><label class="task"><input type="checkbox" data-k="pos1" /><span>Choose and name a defensible domain by week 8; access to users matters more than trendiness.</span></label></li><li><label class="task"><input type="checkbox" data-k="pos2" /><span>Have two practitioner conversations per month across product engineering, applied AI/FDE, and eval/reliability roles.</span></label></li><li><label class="task"><input type="checkbox" data-k="pos3" /><span>Publish one high-signal artifact per quarter; do not force a weekly content treadmill.</span></label></li><li><label class="task"><input type="checkbox" data-k="pos4" /><span>Contribute one meaningful fix or verification improvement to a credible open-source project.</span></label></li><li><label class="task"><input type="checkbox" data-k="pos5" /><span>Maintain role-specific resume/portfolio variants and update them from current posting language.</span></label></li><li><label class="task"><input type="checkbox" data-k="pos6" /><span>Work toward six months of expenses and complete a real interview loop before urgency removes your bargaining power.</span></label></li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- READING -->
+    <section class="section" id="reading">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Minimum viable curriculum</span><h2 class="sec-title">Five books; primary sources for everything else</h2><p class="sec-sub">Do not spend the year consuming. Buy or borrow a book when the phase produces an artifact that needs it; stop reading when you have the principle required for the next experiment.</p></div>
+        <div class="grid g2">
+          <div class="card">
+            <div class="tranche-k now"><span class="n">Core five</span><h4>Highest return for this plan</h4></div>
+            <ul class="books">
+              <li class="book"><span class="bt">Continuous Discovery Habits</span><span class="ba">Teresa Torres · phase 2</span></li>
+              <li class="book"><span class="bt">Don’t Make Me Think, Revisited</span><span class="ba">Steve Krug · phase 3</span></li>
+              <li class="book"><span class="bt">A Philosophy of Software Design, 2e</span><span class="ba">John Ousterhout · phase 4</span></li>
+              <li class="book"><span class="bt">Designing Data-Intensive Applications, 2e</span><span class="ba">Kleppmann & Riccomini · phase 4</span></li>
+              <li class="book"><span class="bt">Trustworthy Online Controlled Experiments</span><span class="ba">Kohavi, Tang & Xu · phases 2 / 7</span></li>
+            </ul>
+            <div class="note">The Pragmatic Programmer, Design of Everyday Things, Refactoring UI, and architecture pattern books remain useful references. They do not receive recurring fixed hours unless the artifact exposes a specific gap.</div>
+          </div>
+          <div class="card">
+            <div class="tranche-k later"><span class="n">Practitioner systems</span><h4>Read critically; reproduce one claim</h4></div>
+            <ul class="books">
+              <li class="book"><a class="bt" target="_blank" rel="noreferrer" href="https://github.com/cursor/plugins/tree/main/pstack">pstack + verification example</a><span class="ba">Poteto · architecture and executable proof</span></li>
+              <li class="book"><a class="bt" target="_blank" rel="noreferrer" href="https://github.com/kunchenguid/firstmate">Firstmate + no-mistakes + quota-axi</a><span class="ba">Chen · hierarchy, isolation, authority, routing</span></li>
+              <li class="book"><a class="bt" target="_blank" rel="noreferrer" href="https://agent-flywheel.com/core-flywheel">Core Flywheel + complete guide</a><span class="ba">Emanuel · task graphs, coordination, memory</span></li>
+              <li class="book"><a class="bt" target="_blank" rel="noreferrer" href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come + Model Welfare</a><span class="ba">Yegge · persistent operations and institutions</span></li>
+            </ul>
+            <div class="note">Treat self-reported throughput, future predictions, and model rankings as hypotheses. The training requirement is to reproduce or falsify a narrow claim on your benchmark.</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:1rem">
+          <span class="eyebrow">Free, primary, operational references</span>
+          <div class="online">
+            <a class="chip" target="_blank" rel="noreferrer" href="https://dora.dev/research/">DORA</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://sre.google/books/">Google SRE</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://aws.amazon.com/builders-library/">AWS Builders’ Library</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.w3.org/WAI/WCAG22/quickref/">WCAG 2.2</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.gov.uk/service-manual">GOV.UK Service Manual</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.anthropic.com/research/building-effective-agents">Anthropic agents</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents">Anthropic context engineering</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://openai.github.io/openai-agents-python/">OpenAI Agents SDK</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://modelcontextprotocol.io/docs/learn/architecture">MCP specification</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://www.nist.gov/itl/ai-risk-management-framework">NIST AI RMF</a>
+            <a class="chip" target="_blank" rel="noreferrer" href="https://genai.owasp.org/">OWASP GenAI / Agentic</a>
+          </div>
+          <div class="hier"><span class="eyebrow" style="width:100%">Source hierarchy</span><b>Observed users / production</b><span class="ar">→</span><b>standards and primary docs</b><span class="ar">→</span><b>canonical books</b><span class="ar">→</span><b>practitioner systems</b><span class="ar">→</span><b>social-media claims</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIRST 30 DAYS -->
+    <section class="section" id="start">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">Start now · first 30 days</span><h2 class="sec-title">Close the loop before studying the fleet</h2><p class="sec-sub">The first month produces one small real product slice, a baseline benchmark, a primitive verifier, and evidence from users. Do not install a multi-agent stack yet.</p></div>
+        <div class="grid weeks30">
+          <div class="wk"><div class="wn">Week 1 · Choose</div><h4>Market and problem baseline</h4><p>Sample 20 relevant postings, choose one accessible domain workflow, recruit five potential users, and define the plan’s eight metrics.</p><span class="out">market/2026-09-baseline.md + product/problem-brief.md</span><ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w1"/><span>Done</span></label></li></ul></div>
+          <div class="wk"><div class="wn">Week 2 · Observe</div><h4>Watch the current workflow</h4><p>Run three problem interviews and two direct observations. Map states, failures, workaround cost, and one measurable outcome.</p><span class="out">research/sessions/001…005 + product/system-model.md</span><ul class="tasks" data-phase style="--acc:var(--amber)"><li><label class="task"><input type="checkbox" data-k="w2"/><span>Done</span></label></li></ul></div>
+          <div class="wk"><div class="wn">Week 3 · Instrument</div><h4>Build verifier v0</h4><p>Create health, seed/reset, and one real user-journey command. Capture baseline evidence, then let one agent implement a thin slice.</p><span class="out">verification/control/ + feature-map/core.md + benchmark.csv</span><ul class="tasks" data-phase style="--acc:var(--cyan)"><li><label class="task"><input type="checkbox" data-k="w3"/><span>Done</span></label></li></ul></div>
+          <div class="wk"><div class="wn">Week 4 · Prove</div><h4>Ship, independently verify, learn</h4><p>Review the diff, drive the actual artifact, test with two users, record the outcome and every catch, then encode one recurring lesson.</p><span class="out">release/001-evidence.md + decisions/0001.md</span><ul class="tasks" data-phase style="--acc:var(--cyan)"><li><label class="task"><input type="checkbox" data-k="w4"/><span>Done</span></label></li></ul></div>
+        </div>
+        <div class="callout"><b>Month-one win:</b> not “I learned four agent frameworks.” It is “I shipped one useful slice, know how much help the agent actually provided, and can prove what worked and what failed.”</div>
+      </div>
+    </section>
+
+    <!-- CAUTIONS -->
+    <section class="section" id="cautions">
+      <div class="wrap">
+        <div class="sec-head"><span class="eyebrow">What receives zero scheduled hours</span><h2 class="sec-title">Twelve activities that masquerade as future-proofing</h2></div>
+        <div class="grid kill-list">
+          <div class="risk"><div class="rn">Reject 01</div><h4>Agent-stack tourism</h4><p>Do not cycle through frameworks without a fixed benchmark and a measured need.</p></div>
+          <div class="risk"><div class="rn">Reject 02</div><h4>Orchestrator before verifier</h4><p>Parallel blind agents create uncertainty faster than value.</p></div>
+          <div class="risk"><div class="rn">Reject 03</div><h4>Front-loaded novel-length plans</h4><p>Detail known work; prototype empirical uncertainty.</p></div>
+          <div class="risk"><div class="rn">Reject 04</div><h4>Shared/red main by default</h4><p>Use isolation and controlled integration until measured throughput makes another consistency model necessary.</p></div>
+          <div class="risk"><div class="rn">Reject 05</div><h4>Named-agent theater</h4><p>A persistent role needs recurring work, scoped authority, and measurable continuity value.</p></div>
+          <div class="risk"><div class="rn">Reject 06</div><h4>Prompt and skill hoarding</h4><p>A skill earns trust only through execution-based evaluation on current repositories.</p></div>
+          <div class="risk"><div class="rn">Reject 07</div><h4>PR / LOC / token vanity</h4><p>Count trusted outcomes, human attention, cost, rework, and escapes.</p></div>
+          <div class="risk"><div class="rn">Reject 08</div><h4>Memory without governance</h4><p>Require provenance, scope, expiry, contradiction handling, and deletion.</p></div>
+          <div class="risk"><div class="rn">Reject 09</div><h4>Verifier theater</h4><p>Mocks, screenshots, and happy paths do not prove state, security, concurrency, or production behavior.</p></div>
+          <div class="risk"><div class="rn">Reject 10</div><h4>Permanent model folklore</h4><p>Benchmark by task class and revisit quarterly; do not encode today’s favorite model as architecture.</p></div>
+          <div class="risk"><div class="rn">Reject 11</div><h4>Rule accretion</h4><p>Every new lint or gate needs a real invariant, owner, false-positive budget, and deletion trigger.</p></div>
+          <div class="risk"><div class="rn">Reject 12</div><h4>Generic wrapper capstone</h4><p>Choose a recurring domain problem with users, stakes, and observable success.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="wrap">
+        <span class="eyebrow" style="display:block;margin-bottom:1.8rem">Setup · create the evidence repository</span>
+        <div class="setup-grid">
+          <div><div class="tree"><span class="root">product-engineer-lab/</span>
+├── <span class="d">spine-product/</span>       <span class="c"># the product itself</span>
+├── <span class="d">research/</span>
+│   ├── users/               <span class="c"># interviews + observations</span>
+│   ├── market/              <span class="c"># quarterly posting samples</span>
+│   └── teardowns/           <span class="c"># product + system analyses</span>
+├── <span class="d">architecture/</span>
+│   ├── adrs/                <span class="c"># decisions and revisit triggers</span>
+│   ├── fitness/             <span class="c"># lints, checks, constraints</span>
+│   └── runbooks/            <span class="c"># SLOs, incidents, recovery</span>
+├── <span class="d">verification/</span>
+│   ├── control/             <span class="c"># agent-facing product CLI</span>
+│   ├── feature-map/         <span class="c"># behavior-level product map</span>
+│   ├── evals/               <span class="c"># cases, graders, taxonomy</span>
+│   └── evidence/            <span class="c"># traces, screenshots, reports</span>
+├── <span class="d">orchestration/</span>
+│   ├── benchmark/           <span class="c"># fixed tasks + raw scorecards</span>
+│   ├── routing/             <span class="c"># model/task outcome registry</span>
+│   ├── tasks/               <span class="c"># briefs + dependency graph</span>
+│   └── memory/              <span class="c"># curated, expiring knowledge</span>
+├── <span class="d">decisions/</span>           <span class="c"># evidence → decision → result</span>
+└── <span class="d">portfolio/</span>           <span class="c"># three signature proofs</span></div></div>
+          <div>
+            <div class="cmd" id="cmd"><button class="copy" onclick="copyCmd()">copy</button><span class="p">$</span> mkdir -p product-engineer-lab/{spine-product,research/{users,market,teardowns},architecture/{adrs,fitness,runbooks},verification/{control,feature-map,evals,evidence},orchestration/{benchmark,routing,tasks,memory},decisions,portfolio}</div>
+            <p class="setup-cta">Block a recurring <b>45m study + 45m teardown + 225m build + 75m verification + 75m observation + 75m gardening</b> sequence. Keep the order; move the sessions as needed.</p>
+            <div class="footer-progress">Progress: <span id="overallCount">0 / 0</span> checked deliverables.</div>
+          </div>
+        </div>
+        <div class="foot-meta">
+          <span>AI-native product-engineer plan · 9 hrs/week · Sep 2026 → Sep 2027 · ≈468 hrs · research refreshed Sep 5, 2026</span>
+          <span><button class="reset" onclick="toggleAllDetails()">Expand / collapse all</button> <button class="reset" onclick="resetProgress()">Reset progress</button></span>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      (function () {
+        var KEY = 'pel-v2-progress';
+        var boxes = Array.prototype.slice.call(document.querySelectorAll('input[type=checkbox][data-k]'));
+        function load() { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } }
+        function save(m) { try { localStorage.setItem(KEY, JSON.stringify(m)); } catch (e) {} }
+        var state = load();
+        boxes.forEach(function (b) { if (state[b.dataset.k]) b.checked = true; });
+        function updateMeters() {
+          document.querySelectorAll('ul.tasks[data-phase]').forEach(function (ul) {
+            var ins = ul.querySelectorAll('input[type=checkbox]');
+            if (ins.length < 2) return;
+            var done = Array.prototype.filter.call(ins, function (i) { return i.checked; }).length;
+            var meter = ul.parentElement.querySelector('.prog');
+            if (!meter) { meter = document.createElement('div'); meter.className = 'prog'; meter.innerHTML = '<span class="c"></span><span class="track"><span class="fill"></span></span>'; ul.parentElement.appendChild(meter); }
+            meter.querySelector('.c').textContent = done + ' / ' + ins.length;
+            meter.querySelector('.fill').style.width = (done / ins.length) * 100 + '%';
+          });
+          var doneAll = boxes.filter(function (b) { return b.checked; }).length;
+          var pct = boxes.length ? Math.round(doneAll / boxes.length * 100) : 0;
+          var pctEl = document.getElementById('overallPct'); if (pctEl) pctEl.textContent = pct + '%';
+          var countEl = document.getElementById('overallCount'); if (countEl) countEl.textContent = doneAll + ' / ' + boxes.length;
+        }
+        boxes.forEach(function (b) { b.addEventListener('change', function () { state[b.dataset.k] = b.checked; if (!b.checked) delete state[b.dataset.k]; save(state); updateMeters(); }); });
+        updateMeters();
+        window.resetProgress = function () { if (!confirm('Reset every checkbox in this plan?')) return; boxes.forEach(function (b) { b.checked = false; }); state = {}; save(state); updateMeters(); };
+        window.toggleAllDetails = function () { var all = Array.prototype.slice.call(document.querySelectorAll('details')); var open = all.some(function (d) { return !d.open; }); all.forEach(function (d) { d.open = open; }); };
+        window.copyCmd = function () {
+          var t = 'mkdir -p product-engineer-lab/{spine-product,research/{users,market,teardowns},architecture/{adrs,fitness,runbooks},verification/{control,feature-map,evals,evidence},orchestration/{benchmark,routing,tasks,memory},decisions,portfolio}';
+          navigator.clipboard.writeText(t).then(function () { var btn = document.querySelector('#cmd .copy'); if (!btn) return; var old = btn.textContent; btn.textContent = 'copied'; setTimeout(function () { btn.textContent = old; }, 1400); }).catch(function () {});
+        };
+        var bar = document.getElementById('scroll'); var ticking = false;
+        function onScroll() { if (ticking) return; ticking = true; requestAnimationFrame(function () { var h = document.documentElement.scrollHeight - window.innerHeight; bar.style.width = (h > 0 ? (window.scrollY / h) * 100 : 0) + '%'; ticking = false; }); }
+        window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
+        var links = Array.prototype.slice.call(document.querySelectorAll('.nav-links a')); var map = {};
+        links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+        if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (entries) { entries.forEach(function (en) { if (en.isIntersecting) { links.forEach(function (a) { a.classList.remove('active'); }); if (map[en.target.id]) map[en.target.id].classList.add('active'); } }); }, { rootMargin: '-42% 0px -52% 0px' }); Object.keys(map).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); }); }
+        var opened = [];
+        window.addEventListener('beforeprint', function () { opened = []; document.querySelectorAll('details').forEach(function (d) { opened.push(d.open); d.open = true; }); });
+        window.addEventListener('afterprint', function () { document.querySelectorAll('details').forEach(function (d, i) { d.open = opened[i]; }); });
+      })();
+    </script>
+  </body>
+</html>
