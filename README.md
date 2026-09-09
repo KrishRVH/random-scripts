@@ -17,7 +17,8 @@ Personal scaffolds, small utilities, and learning examples.
 - `examples/c/ultimate-hello-world.c` - Maximal C feature demonstration.
 - `examples/cobol/snake.cob` - Portable line-mode Snake in ANSI COBOL-85.
 
-The standards gate compiles the portable C examples. `ultimate-hello-world.c` is
+The standards gate compiles the portable C examples and tests the walkthrough's
+interactive input. `ultimate-hello-world.c` is
 kept as an unsafe/platform-specific demonstration and is not part of the default
 compile gate.
 

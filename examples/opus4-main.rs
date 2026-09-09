@@ -626,11 +626,7 @@ impl PolygonLayer {
         let transformed = self.get_transformed_vertices();
         let n = transformed.len();
         
-        if self.layer_index > 0 && !self.point_inside(&ball.pos) {
-            return None;
-        }
-        
-        if self.layer_index == 0 && !self.point_inside(&ball.pos) {
+        if !self.point_inside(&ball.pos) {
             return None;
         }
         

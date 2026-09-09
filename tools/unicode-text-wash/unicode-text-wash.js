@@ -7,8 +7,8 @@ const { Transform } = require('stream');
 const { pipeline } = require('stream/promises');
 const { TextDecoder } = require('util');
 
-const QUOTE = String.fromCharCode(34);
-const APOS = String.fromCharCode(39);
+const QUOTE = '"';
+const APOS = "'";
 
 const REPLACEMENTS = new Map([
   // Dashes and hyphens.

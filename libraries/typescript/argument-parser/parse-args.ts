@@ -1,20 +1,6 @@
 /**
- * Security policy: dangerous keys
- * We intentionally ignore keys that are known to participate in prototype
- * manipulation or surprising object behavior when flag objects are merged into
- * plain objects (e.g., Object.assign({}, flags) or object spread).
- *
- * Ignored keys (conservative list):
- * - "__proto__", "prototype", "constructor"
- * - "toString", "valueOf"
- * - "__defineGetter__", "__defineSetter__", "__lookupGetter__", "__lookupSetter__"
- * - "hasOwnProperty", "isPrototypeOf", "propertyIsEnumerable"
- *
- * Notes:
- * - The returned flags object uses a null prototype to mitigate pollution via
- *   special keys, but downstream merges into plain objects may still be risky.
- *   These keys are therefore dropped entirely at parse time, even if configured
- *   as array/numeric/boolean flags or reachable via alias.
+ * Drop object/prototype keys because callers may merge flags into plain objects.
+ * A null-prototype result alone does not protect those downstream merges.
  */
 const DANGEROUS_FLAG_KEYS = new Set([
   '__proto__',
@@ -83,10 +69,8 @@ export interface ParserOptions {
    * Flags that should be parsed as booleans.
    * True: "true", "1", "yes", "on". False: "false", "0", "no", "off".
    * Case-insensitive. Unrecognized literals remain strings.
-   * - Note: Boolean parsing does not trim whitespace. The entire next token is checked literally.
-   *  For equals-form values,
-   *   "--b= true " stays the string " true ". For space-separated values,
-   *   the entire next token is checked literally.
+   * Boolean parsing does not trim whitespace: both "--b= true " and a separate
+   * " true " token keep the original string.
    *
    * Precedence: numeric parsing (if configured) runs before boolean parsing.
    */
@@ -94,7 +78,9 @@ export interface ParserOptions {
   /**
    * Short flag aliases (e.g., { v: 'verbose' }).
    * Aliases apply to both short (-v) and long (--v) spellings. Values are
-   * stored under the resolved (canonical) name.
+   * stored under the resolved (canonical) name. Resolution is case-sensitive
+   * and single-hop: { a: 'b', b: 'c' } resolves 'a' to 'b'. Only own properties
+   * participate; the prototype chain is ignored.
    */
   aliases?: Record<string, string>;
   /**
@@ -118,110 +104,39 @@ export interface ParserOptions {
   strict?: boolean;
 }
 /**
- * Parse and MUTATE a command-line arguments array into flags, positionals, and
- * raw extras. In-place mutation keeps a single authoritative argv instance for
- * callers that pass positionals onward after flag extraction.
- *
- * Behavior highlights:
- * - Mutates the passed-in argv, removing parsed flags and any consumed values.
- * - positionals is the exact same array reference as argv (post-mutation).
- * - "--" stops flag parsing; everything after is collected into "raw".
+ * Parse flags in place. The returned positionals array is the same object as
+ * argv, with flags and consumed values removed. A standalone "--" ends parsing
+ * and moves everything after it to raw; a lone "-" stays positional.
  *
  * Long flags:
- * - "--flag" => boolean true (unless a value is valid and consumed)
- * - "--flag=value" => attached value is always used (including empty "")
- *   Note: This is accepted even if the flag is not in the
- *   flagsThatAcceptTheNextArgumentAsAValueIfItsValid set. In strict mode, the
- *   flag must still be "known" (by canonical name) or it throws.
+ * - "--flag" sets true unless the flag accepts and consumes the next value.
+ * - "--flag=value" always uses the attached value, including an empty string.
+ *   The flag need not be value-accepting, but strict mode still requires a
+ *   known canonical name (see ParserOptions.strict).
  *
  * Short flags:
- * - "-abc" => "-a", "-b", "-c" set to true
- * - Only the last short flag can take a value:
- *   - "-c=value" => value for "c" (in strict mode, "c" must be known AND
- *     value-accepting)
- *   - "-c value" => consumes the next token if valid (same rule as long)
- * - If "-abc=value" is used but "c" does not accept a value:
- *   - strict === true: throws "does not accept a value"
- *   - strict === false: parses "-a", "-b", "-c" and preserves "value" as a
- *     positional token at the same index (not re-parsed)
- * - Unsupported "-p3000" is treated as a short group per policy; use "-p=3000"
- *   or "-p 3000".
+ * - "-abc" sets "a", "b", and "c" to true. Only the last flag may take a value.
+ * - "-c=value" uses the attached value if "c" is value-accepting. In strict
+ *   mode, an unknown last flag throws before any earlier group member is parsed;
+ *   a known last flag that does not accept values throws "does not accept a value".
+ * - In non-strict mode, an attached value on a non-value-accepting last flag
+ *   replaces the group token as a positional at the same index.
+ * - "-=value" becomes positional "value"; "-=" becomes positional "" in both modes.
+ * - "-p3000" is a group of short flags. Use "-p=3000" or "-p 3000" for a value.
  *
- * Value consumption heuristics (when a flag is in
- * flagsThatAcceptTheNextArgumentAsAValueIfItsValid):
- * - For a long flag "--flag":
- *   - The next token is consumed as the value if:
- *     - it does NOT start with "-" (e.g., "foo", "+3", "1e3", "0x10"), OR
- *     - it is a valid negative decimal per isNegativeNumber (e.g., "-10", "-.5", "-0")
- *   - Otherwise, the flag remains boolean true and the next token is parsed
- *     normally at its position. This means tokens like "-1e3" or "-0x10"
- *     are not consumed and will be interpreted as short-flag groups in
- *     non-strict mode (e.g., "-1e3" -> "-1", "-e", "-3"), or will throw on
- *     the first unknown short in strict mode.
+ * Value consumption:
+ * - A value-accepting flag consumes the next token if it does not start with
+ *   "-", or if it is a negative decimal such as "-10", "-.5", or "-0".
+ * - Other tokens stay in the parsing stream. For example, "-1e3" and "-0x10"
+ *   become short-flag groups in non-strict mode and may throw in strict mode.
+ * - Attached values are never re-parsed, even when they look like flags.
  *
- * - For grouped short flags "-xyz":
- *   - Only the last short may take a value.
- *   - With "-z=value": the attached value is used. In strict mode, the last
- *     short must be known and value-accepting; otherwise an error is thrown.
- *   - With "-z value": the next token is consumed under the same rule as long
- *     flags (see above).
- *   - If an attached value is provided for a last short that does NOT accept
- *     a value, the token is replaced with that value as a positional and is
- *     not re-parsed.
+ * Sparse argv entries are skipped without compaction. Callers that need a
+ * dense positional array can use argv.filter(x => x !== undefined).
  *
- * - Values provided via "=..." (long or short) are never re-parsed, even if
- *   they look like flags (e.g., "--msg=--help" is stored as the string "--help").
- *
- * - A lone "-" is always treated as a positional token.
- *
- * - Unsupported "-p3000" is treated as a grouped short sequence; use "-p=3000"
- *   or "-p 3000" instead.
- *
- * Unknown flags policy:
- * - strict === false (default): unknown flags are accepted, parsed as boolean
- *   true or strings (if a value is attached/consumed), and removed from argv.
- * - strict === true: unknown flags throw. An alias mapping alone is not
- *   sufficient; the resolved canonical name must appear in at least one known
- *   set (value-accepting, array, numeric, boolean).
- *
- * Aliases
- * - Single-hop only: aliases[flag] is used if present; alias chains are not
- *   followed (e.g., { a: 'b', b: 'c' } resolves 'a' -> 'b').
- * - Case-sensitive.
- * - In strict mode, the resolved (canonical) name must appear in at least one
- *   of the known sets (value-accepting, array, numeric, boolean). An alias
- *   mapping alone does not make a flag "known".
- *
- * Sparse argv
- * - The parser skips undefined entries (sparse arrays) during scanning but does
- *   not compact them. After parsing, the mutated argv (returned as "positionals")
- *   may still contain holes. Callers who rely on dense arrays can compact via
- *   argv.filter(x => x !== undefined) after parsing.
- *
- * Dangerous keys policy
- * - The following keys are dropped entirely (not stored) to mitigate prototype
- *   pollution when flags objects are merged into plain objects:
- *   "__proto__", "prototype", "constructor", "toString", "valueOf",
- *   "__defineGetter__", "__defineSetter__", "__lookupGetter__",
- *   "__lookupSetter__", "hasOwnProperty", "isPrototypeOf",
- *   "propertyIsEnumerable".
- * - Dropping applies even if the key is:
- *   - configured as array/numeric/boolean,
- *   - or reached via an alias,
- *   - and in both strict and non-strict modes.
- * - In strict mode this does not throw; the assignment is silently dropped.
- *
- * Security hardening:
- * - The returned flags object has a null prototype to avoid prototype pollution
- *   via special keys like "__proto__" or "constructor".
- *
- * Note on tokens starting with "-":
- * - After a value-accepting flag, a next token starting with "-" is consumed
- *   as a value only if it is a valid negative decimal per isNegativeNumber.
- *   Otherwise it is not consumed and is parsed normally at its position.
- *   In non-strict mode this often means the token becomes a short-flag group
- *   (e.g., "-1e3" -> flags "1", "e", "3"). In strict mode it throws at the
- *   first unknown short.
+ * Flags use a null-prototype object. DANGEROUS_FLAG_KEYS are never stored,
+ * including through aliases or when configured as array, numeric, or boolean
+ * flags. Strict-mode name and value-acceptance checks still apply before storage.
  */
 export function parseArgs(argv: string[], options: ParserOptions = {}): ParsedArgs {
   const {
@@ -314,15 +229,9 @@ export function parseArgs(argv: string[], options: ParserOptions = {}): ParsedAr
       // - "-=value" => replace token with "value" (not re-parsed)
       // - "-="      => replace token with "" (empty string, not re-parsed)
       if (shortFlags.length === 0) {
-        if (attachedValue !== null) {
-          argv.splice(i, 1, attachedValue);
-          i++;
-          continue;
-        } else {
-          argv.splice(i, 1, '');
-          i++;
-          continue;
-        }
+        argv.splice(i, 1, attachedValue ?? '');
+        i++;
+        continue;
       }
       // With an attached "=value", in strict mode ensure:
       // 1) the last short is known; otherwise throw unknown first
@@ -524,23 +433,9 @@ function parseNumericStrict(value: string): number | null {
     return 0;
   }
   const s = value.trim();
-  if (
-    s === 'Infinity' ||
-    s === '+Infinity' ||
-    s === '-Infinity' ||
-    s.toLowerCase() === 'nan' ||
-    /^[-+]?0[xob]/i.test(s) || // 0x, 0o, 0b
-    /[eE]/.test(s) // disallow scientific/exponent notation
-  ) {
-    return null;
-  }
   const decimalPattern = /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/;
   if (!decimalPattern.test(s)) {
     return null;
   }
-  const num = parseFloat(s);
-  if (Number.isNaN(num)) {
-    return null;
-  }
-  return num;
+  return parseFloat(s);
 }

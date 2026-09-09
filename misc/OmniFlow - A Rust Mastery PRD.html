@@ -758,7 +758,7 @@
                 <strong>Collections and iterators:</strong> custom iterator structs, <code>IntoIterator</code> for owned
                 and borrowed forms, <code>FromIterator</code>, <code>Extend</code>, <code>ExactSizeIterator</code>,
                 <code>FusedIterator</code>, <code>DoubleEndedIterator</code>, <code>try_fold</code>,
-                <code>ControlFlow</code>, <code>RangeBounds</code>, <code>Entry</code>, and heterogenous lookup.
+                <code>ControlFlow</code>, <code>RangeBounds</code>, <code>Entry</code>, and heterogeneous lookup.
                 <code>BuildHasher</code>/custom-hasher policy, <code>Ord</code> total-order discipline, sorted-slice
                 search, and generational-index slabs.
               </li>
@@ -1594,7 +1594,7 @@ body_crc:    u32  little-endian</code></pre>
               </li>
               <li>
                 Frame header size, magic, and version invariants are proven with const assertions in inline
-                <code>const { ... }</code> blocks (e.g. <code>const { assert!(HEADER_LEN == 20) }</code>), so violations
+                <code>const { ... }</code> blocks (e.g. <code>const { assert!(HEADER_LEN == 22) }</code>), so violations
                 are compile errors, not test failures.
               </li>
               <li>
@@ -1811,7 +1811,7 @@ body_crc:    u32  little-endian</code></pre>
               <li>
                 <code>Hash</code>/<code>Eq</code>/<code>Borrow</code> coherence is property-tested: for every
                 owned/borrowed key pair (<code>TopicBuf</code> / <code>&amp;TopicStr</code>), equal keys hash
-                identically across the <code>Borrow</code> boundary, preventing silent heterogenous-lookup misses.
+                identically across the <code>Borrow</code> boundary, preventing silent heterogeneous-lookup misses.
               </li>
               <li>
                 Route priority implements <code>Ord</code> with a documented total order; sorting uses
@@ -1931,7 +1931,7 @@ body_crc:    u32  little-endian</code></pre>
 <span class="kw">pub fn</span> stage_names(&amp;<span class="kw">self</span>) -&gt; <span class="kw">impl</span> <span class="ty">Iterator</span>&lt;Item = &amp;<span class="ty">str</span>&gt; + <span class="kw">use</span>&lt;<span class="kw">'_</span>&gt;;
 
 <span class="kw">pub fn</span> build_filter&lt;<span class="ty">F</span>&gt;(f: <span class="ty">F</span>) -&gt; <span class="kw">impl</span> <span class="ty">Stage</span> + <span class="ty">Send</span> + <span class="ty">Sync</span> + <span class="kw">use</span>&lt;<span class="ty">F</span>&gt;
-<span class="kw">where</span> <span class="ty">F</span>: <span class="ty">Fn</span>(<span class="ty">EventRef</span>&lt;<span class="kw">'_</span>&gt;) -&gt; <span class="ty">bool</span>;</code></pre>
+<span class="kw">where</span> <span class="ty">F</span>: <span class="ty">Fn</span>(<span class="ty">EventRef</span>&lt;<span class="kw">'_</span>&gt;) -&gt; <span class="ty">bool</span> + <span class="ty">Send</span> + <span class="ty">Sync</span>;</code></pre>
 
             <ol class="reqs">
               <li>GAT/lending stages are used only where borrowed output materially reduces allocation.</li>
@@ -2133,8 +2133,9 @@ POST /ingest/batch      GET  /readyz          GET  /debug/pipeline
                 criticality.
               </li>
               <li>
-                <code>catch_unwind</code> is used around native plugin calls, not around arbitrary application logic.
-                Captured host state must satisfy <code>UnwindSafe</code> and <code>RefUnwindSafe</code>; a quarantine
+                Rust plugin entry shims use <code>catch_unwind</code> before a panic can cross the
+                <code>extern "C"</code> boundary. The host quarantines the instance on the returned failure status.
+                Captured adapter state must satisfy <code>UnwindSafe</code> and <code>RefUnwindSafe</code>; a quarantine
                 boundary must not imply that logically poisoned state is reusable.
               </li>
               <li>
@@ -2455,6 +2456,7 @@ Reserved -&gt; Appended -&gt; Durable -&gt; Delivered -&gt; Checkpointed -&gt; R
 
             <p><strong>10.14.2 Native C ABI plugins</strong></p>
             <pre><code><span class="kw">#[repr(C)]</span>
+<span class="kw">#[derive(Clone, Copy)]</span>
 <span class="kw">pub struct</span> <span class="ty">OmniSlice</span> { ptr: *<span class="kw">const</span> <span class="ty">u8</span>, len: <span class="ty">usize</span> }
 
 <span class="kw">#[repr(transparent)]</span>
@@ -2504,8 +2506,9 @@ Reserved -&gt; Appended -&gt; Durable -&gt; Delivered -&gt; Checkpointed -&gt; R
               <li>FFI declarations use <code>unsafe extern</code> blocks.</li>
               <li><code>unsafe_op_in_unsafe_fn</code> is denied in plugin ABI crates.</li>
               <li>
-                Panics must not unwind through an <code>extern "C"</code> boundary. The host catches Rust plugin panics
-                on the Rust side of the boundary and quarantines the affected instance.
+                Panics must not unwind through an <code>extern "C"</code> boundary. Rust plugin entry shims catch panics
+                and return a failure status; the host quarantines the affected instance. A catch around the host's call
+                cannot intercept a Rust panic that reaches this non-unwinding ABI boundary.
               </li>
               <li>
                 The quarantine closure's captures satisfy <code>UnwindSafe</code>/<code>RefUnwindSafe</code>;
@@ -3174,8 +3177,8 @@ debug = true</code></pre>
               <li>
                 Panic strategy is load-bearing and selected per build invocation. Cargo applies one selected profile to
                 every target in an invocation, and package overrides cannot set <code>panic</code>, <code>lto</code>, or
-                <code>rpath</code>. Therefore the server and CLI build with the unwind-capable
-                <code>release</code> profile because plugin quarantine depends on <code>catch_unwind</code>; embedded
+                <code>rpath</code>. Therefore the server, CLI, and Rust native plugins build with the unwind-capable
+                <code>release</code> profile because plugin entry shims depend on <code>catch_unwind</code>; embedded
                 examples build separately with <code>cargo build --profile embedded ...</code> and
                 <code>panic = "abort"</code>. A host compile guard on <code>cfg(panic = "unwind")</code> makes an
                 accidental abort host build fail.
@@ -3744,7 +3747,7 @@ debug = true</code></pre>
                 </tr>
                 <tr>
                   <td><code>Borrow</code></td>
-                  <td>heterogenous map lookup</td>
+                  <td>heterogeneous map lookup</td>
                   <td>allocation tests</td>
                 </tr>
                 <tr>
@@ -4817,7 +4820,7 @@ debug = true</code></pre>
             <h3><span class="n">14.6</span><code>collections-and-iterators.md</code></h3>
             <p>
               Must explain: route table collection choices; why route snapshots use <code>Arc&lt;[T]&gt;</code> or
-              <code>Box&lt;[T]&gt;</code>; iterator trait guarantees; heterogenous lookup through <code>Borrow</code>;
+              <code>Box&lt;[T]&gt;</code>; iterator trait guarantees; heterogeneous lookup through <code>Borrow</code>;
               entry/disjoint-mut usage; why <code>Index</code> is avoided in public fallible lookups;
               <code>ControlFlow</code> and <code>try_fold</code> usage. Additionally: the per-map hasher table with each
               map's <code>BuildHasher</code> and DoS stance, the route-priority total order, and the generational-slab
@@ -5061,7 +5064,7 @@ cargo bench -p omniflow-codec</code></pre>
             <h3><span class="n">M3</span>Routing, iterators, and collection semantics</h3>
             <p>
               Scope: route table and topic filter model; immutable snapshots with <code>Arc&lt;[T]&gt;</code> or
-              <code>Box&lt;[T]&gt;</code>; custom iterator family; heterogenous lookup; entry and disjoint-mut updates.
+              <code>Box&lt;[T]&gt;</code>; custom iterator family; heterogeneous lookup; entry and disjoint-mut updates.
               Per-map hasher policy, <code>Ord</code>/sorted-search discipline, generational-index slab (§10.7 req
               13–18).
             </p>
@@ -5263,7 +5266,7 @@ omniflow ingest file examples/events.jsonl</code></pre>
             <h3><span class="n">17.3</span>Borrowing async closure pipeline</h3>
             <pre><code><span class="kw">let</span> cache = <span class="ty">MetadataCache</span>::connect(<span class="st">"http://localhost:9001"</span>).<span class="kw">await</span>?;
 
-<span class="kw">let</span> stage = async_filter(<span class="st">"known-device"</span>, <span class="kw">async</span> |event: <span class="ty">EventRef</span>&lt;<span class="kw">'_</span>&gt;| {
+<span class="kw">let</span> stage = async_filter(<span class="st">"known-device"</span>, <span class="kw">async move</span> |event: <span class="ty">EventRef</span>&lt;<span class="kw">'_</span>&gt;| {
     <span class="kw">let</span> <span class="ty">Some</span>(device_id) = event.attributes().get_str(<span class="st">"device.id"</span>) <span class="kw">else</span> {
         <span class="kw">return false</span>;
     };
@@ -5395,8 +5398,8 @@ event.write_payload(<span class="kw">b</span><span class="st">"23.4"</span>)?;
                 </tr>
                 <tr>
                   <td>Unwind boundary mistakes</td>
-                  <td>Panic across C ABI can be undefined</td>
-                  <td><code>catch_unwind</code>, <code>C-unwind</code> policy, tests</td>
+                  <td>An uncaught Rust panic aborts at a non-unwinding C ABI boundary</td>
+                  <td>Catch inside Rust plugin shims, explicit <code>C-unwind</code> policy, tests</td>
                 </tr>
                 <tr>
                   <td>Dyn/static trait confusion</td>
@@ -5535,6 +5538,20 @@ event.write_payload(<span class="kw">b</span><span class="st">"23.4"</span>)?;
 
     <script>
       (function () {
+        var printDetails = [];
+        window.addEventListener('beforeprint', function () {
+          printDetails = Array.from(document.querySelectorAll('details.acc'), function (details) {
+            var open = details.open;
+            details.open = true;
+            return { details: details, open: open };
+          });
+        });
+        window.addEventListener('afterprint', function () {
+          printDetails.forEach(function (saved) {
+            saved.details.open = saved.open;
+          });
+          printDetails = [];
+        });
         var links = document.querySelectorAll('nav.toc a[href^="#"]');
         if (!links.length || !('IntersectionObserver' in window)) return;
         var map = {};

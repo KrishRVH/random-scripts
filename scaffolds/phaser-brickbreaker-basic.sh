@@ -19,7 +19,11 @@ PROJECT_NAME=${1:-brickbreaker-game}
 
 echo -e "${GREEN}📁 Creating project: ${PROJECT_NAME}${NC}"
 
-# Create project directory
+# Keep an existing project intact.
+if [ -e "$PROJECT_NAME" ]; then
+  printf 'Path already exists: %s\n' "$PROJECT_NAME" >&2
+  exit 1
+fi
 mkdir -p "$PROJECT_NAME"
 cd "$PROJECT_NAME"
 
@@ -32,7 +36,7 @@ mkdir -p \
   src/game/{physics,input,audio,state,commands} \
   src/entities/{ball,paddle,brick,powerup} \
   src/systems/{collision,scoring,particles,ui} \
-  src/utils/{math,debug,testing} \
+  src/utils/{math,debug} \
   tests/{unit,integration,e2e,visual} \
   tests/unit/{entities,systems,utils} \
   tests/fixtures \
@@ -48,7 +52,7 @@ cat > package.json << 'EOF'
   "name": "brickbreaker-game",
   "version": "1.0.0",
   "type": "module",
-  "description": "Production-quality TypeScript/Phaser brickbreaker with SQLite-level testing",
+  "description": "TypeScript/Phaser scene skeleton with schemas and test examples",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -61,7 +65,6 @@ cat > package.json << 'EOF'
     "lint": "biome lint ./src",
     "format": "biome format --write ./src",
     "check": "biome check --apply ./src",
-    "prepare": "lefthook install",
     "analyze": "vite build --mode analyze"
   },
   "keywords": ["game", "phaser", "typescript", "brickbreaker"],
@@ -75,10 +78,7 @@ echo -e "${GREEN}📦 Installing dependencies...${NC}"
 # Core dependencies
 npm install --save \
   phaser@^3.70.0 \
-  zod@^3.22.0 \
-  xstate@^5.9.0 \
-  zustand@^4.5.0 \
-  mitt@^3.0.1
+  zod@^3.22.0
 
 # Development dependencies
 npm install --save-dev \
@@ -94,7 +94,6 @@ npm install --save-dev \
 # Testing dependencies
 npm install --save-dev \
   jsdom@^24.0.0 \
-  jest-canvas-mock@^2.5.0 \
   fast-check@^3.17.0 \
   @vitest/coverage-v8@^1.5.0 \
   @playwright/test@^1.43.0
@@ -135,10 +134,9 @@ cat > tsconfig.json << 'EOF'
       "@utils/*": ["src/utils/*"],
       "@types/*": ["src/types/*"],
       "@config/*": ["src/config/*"],
-      "@assets/*": ["src/assets/*"],
-      "@test-utils": ["src/utils/testing/index.ts"]
+      "@assets/*": ["src/assets/*"]
     },
-    "types": ["vitest/globals", "node"],
+    "types": ["vitest/globals", "node", "vite/client"],
     "skipLibCheck": true
   },
   "include": ["src/**/*", "tests/**/*"],
@@ -174,7 +172,6 @@ export default defineConfig(({ mode }) => ({
       output: {
         manualChunks: {
           phaser: ['phaser'],
-          vendor: ['zod', 'xstate', 'zustand', 'mitt'],
         },
       },
     },
@@ -202,7 +199,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: ['./tests/setup.ts'],
     include: ['tests/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['tests/e2e/**/*', 'tests/visual/**/*'],
     coverage: {
@@ -233,51 +229,6 @@ export default defineConfig({
     clearMocks: true,
   },
 });
-EOF
-
-echo -e "${GREEN}🧪 Creating test setup${NC}"
-
-# Create test setup file
-cat > tests/setup.ts << 'EOF'
-import 'jest-canvas-mock';
-import { vi } from 'vitest';
-
-// Add game container to DOM for Phaser
-document.body.innerHTML = '<div id="game-container"></div>';
-
-// Mock requestAnimationFrame for deterministic testing
-let frameId = 0;
-let callbacks: Map<number, FrameRequestCallback> = new Map();
-
-global.requestAnimationFrame = vi.fn((callback: FrameRequestCallback) => {
-  const id = ++frameId;
-  callbacks.set(id, callback);
-  return id;
-});
-
-global.cancelAnimationFrame = vi.fn((id: number) => {
-  callbacks.delete(id);
-});
-
-// Helper to advance frames in tests
-(global as any).advanceFrames = (count: number = 1, deltaTime: number = 16.67) => {
-  for (let i = 0; i < count; i++) {
-    const currentCallbacks = Array.from(callbacks.entries());
-    for (const [id, callback] of currentCallbacks) {
-      callback(performance.now() + deltaTime * i);
-    }
-  }
-};
-
-// Mock Audio Context
-global.AudioContext = vi.fn(() => ({
-  createBufferSource: vi.fn(),
-  createGain: vi.fn(),
-  decodeAudioData: vi.fn(),
-  destination: {},
-})) as any;
-
-// Mock WebGL - already handled by jest-canvas-mock
 EOF
 
 echo -e "${GREEN}🎯 Creating Biome configuration${NC}"
@@ -367,174 +318,6 @@ pre-push:
     build:
       run: npm run build
       tags: [build]
-EOF
-
-echo -e "${GREEN}🎮 Creating core game utilities${NC}"
-
-# Create SQLite-inspired testing utilities
-cat > src/utils/testing/assertions.ts << 'EOF'
-/**
- * SQLite-inspired assertion utilities
- * These compile to no-ops in production but provide runtime checks in tests
- */
-
-const IS_TEST = process.env.NODE_ENV === 'test';
-const IS_DEV = process.env.NODE_ENV === 'development';
-
-/**
- * Assert that a condition should ALWAYS be true
- * Throws in test/dev, no-op in production
- */
-export function ALWAYS(condition: boolean, message?: string): asserts condition {
-  if ((IS_TEST || IS_DEV) && !condition) {
-    throw new Error(`ALWAYS assertion failed: ${message || 'Condition was false'}`);
-  }
-}
-
-/**
- * Assert that a condition should NEVER be true
- * Throws in test/dev, no-op in production
- */
-export function NEVER(condition: boolean, message?: string): asserts condition is false {
-  if ((IS_TEST || IS_DEV) && condition) {
-    throw new Error(`NEVER assertion failed: ${message || 'Condition was true'}`);
-  }
-}
-
-/**
- * Mark code as unreachable
- * Throws in all environments if reached
- */
-export function UNREACHABLE(message?: string): never {
-  throw new Error(`Unreachable code executed: ${message || 'This should never happen'}`);
-}
-
-/**
- * Type guard for non-null values with assertion
- */
-export function assertDefined<T>(
-  value: T | null | undefined,
-  message?: string
-): asserts value is T {
-  if (value === null || value === undefined) {
-    throw new Error(`Value was null or undefined: ${message || 'Expected defined value'}`);
-  }
-}
-
-/**
- * Type guard for exhaustive switch statements
- */
-export function assertNever(value: never): never {
-  throw new Error(`Unhandled value: ${JSON.stringify(value)}`);
-}
-EOF
-
-# Create testing index
-cat > src/utils/testing/index.ts << 'EOF'
-export * from './assertions';
-export * from './test-helpers';
-EOF
-
-# Create test helpers
-cat > src/utils/testing/test-helpers.ts << 'EOF'
-import { Game } from 'phaser';
-import type { Types } from 'phaser';
-
-/**
- * Create a headless Phaser game for testing
- */
-export function createTestGame(config?: Partial<Types.Core.GameConfig>): Game {
-  return new Game({
-    type: Phaser.HEADLESS,
-    width: 800,
-    height: 600,
-    physics: {
-      default: 'arcade',
-      arcade: {
-        gravity: { x: 0, y: 0 },
-        debug: false,
-      },
-    },
-    scene: [],
-    ...config,
-  });
-}
-
-/**
- * Deterministic frame advancement for testing
- */
-export class TestGameLoop {
-  private mockTime = 0;
-  private frameCallbacks: Array<(time: number, delta: number) => void> = [];
-
-  addFrameCallback(callback: (time: number, delta: number) => void): void {
-    this.frameCallbacks.push(callback);
-  }
-
-  removeFrameCallback(callback: (time: number, delta: number) => void): void {
-    const index = this.frameCallbacks.indexOf(callback);
-    if (index > -1) {
-      this.frameCallbacks.splice(index, 1);
-    }
-  }
-
-  /**
-   * Advance the game by a specific number of frames
-   */
-  advance(frames: number = 1, deltaTime: number = 16.67): void {
-    for (let i = 0; i < frames; i++) {
-      this.mockTime += deltaTime;
-      for (const callback of this.frameCallbacks) {
-        callback(this.mockTime, deltaTime);
-      }
-    }
-  }
-
-  /**
-   * Advance the game by a specific amount of time
-   */
-  advanceTime(milliseconds: number, frameTime: number = 16.67): void {
-    const frames = Math.ceil(milliseconds / frameTime);
-    this.advance(frames, frameTime);
-  }
-
-  reset(): void {
-    this.mockTime = 0;
-    this.frameCallbacks = [];
-  }
-
-  get currentTime(): number {
-    return this.mockTime;
-  }
-}
-
-/**
- * Create a deterministic random number generator for testing
- */
-export class SeededRandom {
-  private seed: number;
-
-  constructor(seed: number = 12345) {
-    this.seed = seed;
-  }
-
-  next(): number {
-    this.seed = (this.seed * 1664525 + 1013904223) % 2147483647;
-    return this.seed / 2147483647;
-  }
-
-  nextInt(min: number, max: number): number {
-    return Math.floor(this.next() * (max - min + 1)) + min;
-  }
-
-  nextFloat(min: number, max: number): number {
-    return this.next() * (max - min) + min;
-  }
-
-  reset(seed: number = 12345): void {
-    this.seed = seed;
-  }
-}
 EOF
 
 echo -e "${GREEN}🎮 Creating type definitions${NC}"
@@ -697,6 +480,7 @@ echo -e "${GREEN}🎮 Creating game configuration${NC}"
 
 # Create game config
 cat > src/config/game.config.ts << 'EOF'
+import Phaser from 'phaser';
 import type { Types } from 'phaser';
 
 export const GAME_CONFIG: Types.Core.GameConfig = {
@@ -1110,78 +894,48 @@ EOF
 
 echo -e "${GREEN}🧪 Creating example tests${NC}"
 
-# Create entity test example
+# Test the supplied schema; gameplay is implemented by the project author.
 cat > tests/unit/entities/ball.test.ts << 'EOF'
-import { describe, it, expect, beforeEach } from 'vitest';
-import { ALWAYS, NEVER } from '@test-utils';
-import type { BallState } from '@/types/schemas';
+import { describe, it, expect } from 'vitest';
+import { BallStateSchema } from '@/types/schemas';
 
-describe('Ball Entity', () => {
-  let ballState: BallState;
+const ballState = {
+  id: 'ball-1',
+  type: 'ball',
+  position: { x: 400, y: 300 },
+  velocity: { x: 200, y: -200 },
+  active: true,
+  destroyed: false,
+  radius: 8,
+  speed: 300,
+  damage: 1,
+};
 
-  beforeEach(() => {
-    ballState = {
-      id: 'ball-1',
-      type: 'ball',
-      position: { x: 400, y: 300 },
-      velocity: { x: 200, y: -200 },
-      active: true,
-      destroyed: false,
-      radius: 8,
-      speed: 300,
-      damage: 1,
-    };
+describe('Ball state schema', () => {
+  it('accepts a complete ball state', () => {
+    expect(BallStateSchema.safeParse(ballState).success).toBe(true);
   });
 
-  describe('Movement', () => {
-    it('should update position based on velocity', () => {
-      const deltaTime = 0.016; // 60 FPS
-      const expectedX = ballState.position.x + ballState.velocity.x * deltaTime;
-      const expectedY = ballState.position.y + ballState.velocity.y * deltaTime;
-
-      // Update position (implementation would be in Ball class)
-      ballState.position.x += ballState.velocity.x * deltaTime;
-      ballState.position.y += ballState.velocity.y * deltaTime;
-
-      expect(ballState.position.x).toBeCloseTo(expectedX);
-      expect(ballState.position.y).toBeCloseTo(expectedY);
-    });
-
-    it('should maintain constant speed', () => {
-      const speed = Math.sqrt(
-        ballState.velocity.x ** 2 + ballState.velocity.y ** 2
-      );
-      
-      expect(speed).toBeCloseTo(ballState.speed, 5);
-    });
-
-    it('should enforce speed limits', () => {
-      const MAX_SPEED = 600;
-      ALWAYS(ballState.speed <= MAX_SPEED, 'Ball speed exceeds maximum');
-      NEVER(ballState.speed <= 0, 'Ball speed must be positive');
-    });
+  it.each([0, -1])('rejects non-positive speed %s', (speed) => {
+    expect(BallStateSchema.safeParse({ ...ballState, speed }).success).toBe(false);
   });
 
-  describe('Collision', () => {
-    it('should reverse X velocity on vertical wall collision', () => {
-      const originalVelocityX = ballState.velocity.x;
-      
-      // Simulate wall collision
-      ballState.velocity.x = -ballState.velocity.x;
-      
-      expect(ballState.velocity.x).toBe(-originalVelocityX);
-    });
-
-    it('should reverse Y velocity on horizontal wall collision', () => {
-      const originalVelocityY = ballState.velocity.y;
-      
-      // Simulate ceiling collision
-      ballState.velocity.y = -ballState.velocity.y;
-      
-      expect(ballState.velocity.y).toBe(-originalVelocityY);
-    });
+  it('rejects fractional damage', () => {
+    expect(BallStateSchema.safeParse({ ...ballState, damage: 1.5 }).success).toBe(false);
   });
 });
+EOF
+
+cat > src/utils/math/vector.ts << 'EOF'
+export function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
+}
+
+export function normalizeVector(x: number, y: number): { x: number; y: number } {
+  const magnitude = Math.hypot(x, y);
+  if (magnitude === 0) return { x: 0, y: 0 };
+  return { x: x / magnitude, y: y / magnitude };
+}
 EOF
 
 # Create property-based test example
@@ -1189,25 +943,16 @@ cat > tests/unit/utils/math.test.ts << 'EOF'
 import { describe, it, expect } from 'vitest';
 import * as fc from 'fast-check';
 
-// Example math utilities to test
-export function clamp(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value));
-}
-
-export function normalizeVector(x: number, y: number): { x: number; y: number } {
-  const magnitude = Math.sqrt(x * x + y * y);
-  if (magnitude === 0) return { x: 0, y: 0 };
-  return { x: x / magnitude, y: y / magnitude };
-}
+import { clamp, normalizeVector } from '@/utils/math/vector';
 
 describe('Math Utilities', () => {
   describe('clamp', () => {
     it('should return value within bounds', () => {
       fc.assert(
         fc.property(
-          fc.float({ min: -1000, max: 1000 }),
-          fc.float({ min: -100, max: 100 }),
-          fc.float({ min: -100, max: 100 }),
+          fc.float({ min: -1000, max: 1000, noNaN: true }),
+          fc.float({ min: -100, max: 100, noNaN: true }),
+          fc.float({ min: -100, max: 100, noNaN: true }),
           (value, min, max) => {
             // Ensure min <= max
             if (min > max) [min, max] = [max, min];
@@ -1404,17 +1149,15 @@ echo -e "${GREEN}📝 Creating README${NC}"
 cat > README.md << 'EOF'
 # TypeScript/Phaser Brickbreaker
 
-Production-quality brickbreaker game with SQLite-level testing standards.
+Phaser scene skeleton with TypeScript, Zod schemas, and unit/property test examples.
+`GameScene` is a placeholder. Implement gameplay before shipping the game.
 
 ## 🎯 Features
 
-- **100% Type Safety** - Strictest TypeScript configuration with branded types
-- **Comprehensive Testing** - Unit, integration, E2E, and property-based testing
-- **SQLite-Inspired Quality** - ALWAYS/NEVER assertions, defensive programming patterns
-- **Cross-Platform** - Web, iOS, Android via Capacitor; Desktop via Tauri
-- **Modern Tooling** - Vite, Vitest, Biome, Lefthook for lightning-fast development
-- **State Management** - XState for game states, Zustand for UI state
-- **Runtime Validation** - Zod schemas for all data structures
+- Strict TypeScript configuration, branded types, and Zod schemas
+- Unit and property tests for the supplied schema and math functions
+- Playwright configuration and directories for future integration and E2E tests
+- Vite, Vitest, Biome, and Lefthook configuration
 
 ## 🚀 Quick Start
 
@@ -1452,7 +1195,6 @@ src/
 ├── entities/       # Game entities (ball, paddle, bricks)
 ├── systems/        # Game systems (collision, scoring)
 ├── utils/          # Utilities and helpers
-│   └── testing/    # Testing utilities (ALWAYS/NEVER assertions)
 ├── types/          # TypeScript types and schemas
 └── config/         # Game configuration
 
@@ -1465,11 +1207,9 @@ tests/
 
 ## 🧪 Testing Philosophy
 
-Following SQLite's 590:1 test-to-code ratio philosophy:
-
-1. **Foundation Libraries** - 100% coverage with defensive assertions
-2. **Game Logic** - 80-90% coverage with property-based testing
-3. **Integration** - E2E and visual regression for user-facing features
+Test production functions and schemas. Add gameplay assertions as the game
+implementation develops, then add integration and browser coverage for its main
+player interactions.
 
 ## 🛠️ Technology Stack
 
@@ -1478,7 +1218,6 @@ Following SQLite's 590:1 test-to-code ratio philosophy:
 - **Build**: Vite 5.2
 - **Testing**: Vitest, fast-check, Playwright
 - **Validation**: Zod
-- **State**: XState, Zustand
 - **Code Quality**: Biome, Lefthook
 - **CI/CD**: GitHub Actions
 
@@ -1623,6 +1362,7 @@ cp public/assets/sprites/ball.png public/assets/sprites/powerup.png
 cp public/assets/sprites/ball.png public/assets/sprites/particle.png
 
 echo -e "${GREEN}🔧 Initializing Lefthook${NC}"
+npm pkg set scripts.prepare="lefthook install"
 npx lefthook install
 
 echo -e "${GREEN}🎉 Project scaffold complete!${NC}"

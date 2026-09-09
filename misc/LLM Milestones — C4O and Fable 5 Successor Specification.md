@@ -28,12 +28,12 @@ Benchmarks remain important, but they are evidence rather than the definition of
 
 ## 2. Current status
 
-| Milestone | Status | Current crossing |
-|---|---|---|
-| **A1 — Fast, cheap cloud C4O successor** | **Achieved** | GPT-5.6 Luna is the full multimodal crossing. DeepSeek V4 Flash 0731 is a text-only crossing. |
-| **A2 — Local C4O successor on RTX 4090** | **Core crossing achieved; completion pending** | Qwen3.8-27B has crossed the practical capability milestone. The remaining requirement is more than 200K usable local context. |
-| **B1 — Fast, cheap cloud Fable 5 successor** | **Open** | No current model combines Fable-level capability, at least 100 output tokens/second, Luna-class economics, vision, and the complete 1M-context envelope. |
-| **B2 — Local Fable 5 successor on RTX 4090** | **Open** | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090. |
+| Milestone                                    | Status                                         | Current crossing                                                                                                                                         |
+| -------------------------------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A1 — Fast, cheap cloud C4O successor**     | **Achieved**                                   | GPT-5.6 Luna is the full multimodal crossing. DeepSeek V4 Flash 0731 is a text-only crossing.                                                            |
+| **A2 — Local C4O successor on RTX 4090**     | **Core crossing achieved; completion pending** | Qwen3.8-27B has crossed the practical capability milestone. The remaining requirement is more than 200K usable local context.                            |
+| **B1 — Fast, cheap cloud Fable 5 successor** | **Open**                                       | No current model combines Fable-level capability, at least 100 output tokens/second, Luna-class economics, vision, and the complete 1M-context envelope. |
+| **B2 — Local Fable 5 successor on RTX 4090** | **Open**                                       | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090.                                                 |
 
 ---
 
@@ -125,27 +125,27 @@ Only the third number determines local milestone completion.
 
 **C4O** always means the original Claude 4 Opus release:
 
-| Attribute | C4O baseline |
-|---|---|
-| Exact API model | `claude-opus-4-20250514` |
-| Reasoning mode | Extended thinking |
-| Context | 200K tokens |
-| Modalities | Text and image input; text output |
-| Launch price | $15/M input; $75/M output |
-| Weights | Closed |
-| Artificial Analysis Intelligence Index | 32*, estimated historical result |
-| Current paired AA task economics | Unavailable |
-| Current DeepSWE result | Unavailable |
+| Attribute                              | C4O baseline                      |
+| -------------------------------------- | --------------------------------- |
+| Exact API model                        | `claude-opus-4-20250514`          |
+| Reasoning mode                         | Extended thinking                 |
+| Context                                | 200K tokens                       |
+| Modalities                             | Text and image input; text output |
+| Launch price                           | $15/M input; $75/M output         |
+| Weights                                | Closed                            |
+| Artificial Analysis Intelligence Index | 32*, estimated historical result  |
+| Current paired AA task economics       | Unavailable                       |
+| Current DeepSWE result                 | Unavailable                       |
 
 Artificial Analysis marks the C4O score with an asterisk because it is an estimated historical result rather than a fresh execution of the complete current suite. It is a useful directional intelligence bar, not a pristine simultaneous comparison.
 
 The best retained token-use proxy from the original handoff is Kagi’s private benchmark row:
 
-| Metric | C4O proxy |
-|---|---:|
-| Accuracy | 74.3% |
-| Reported tokens per task | 17,058 |
-| Mean time per task | 13.3 seconds |
+| Metric                   |    C4O proxy |
+| ------------------------ | -----------: |
+| Accuracy                 |        74.3% |
+| Reported tokens per task |       17,058 |
+| Mean time per task       | 13.3 seconds |
 
 That result is not interchangeable with Artificial Analysis or DeepSWE. It remains useful only as a directional record of how token-efficient C4O felt on one historical task set.
 
@@ -166,15 +166,15 @@ Those fields must remain unknown rather than being reconstructed from unrelated 
 
 A full A1 crossing should provide:
 
-| Dimension | Target |
-|---|---|
-| Capability | Broadly better than C4O for agentic software engineering |
-| Output speed | **At least 100 tokens/second** |
-| Economics | Luna-class comfortable pricing and negligible practical task cost |
+| Dimension      | Target                                                                      |
+| -------------- | --------------------------------------------------------------------------- |
+| Capability     | Broadly better than C4O for agentic software engineering                    |
+| Output speed   | **At least 100 tokens/second**                                              |
+| Economics      | Luna-class comfortable pricing and negligible practical task cost           |
 | Token behavior | Reasonable enough that verbosity does not erase the speed or cost advantage |
-| Context | At least 200K |
-| Modalities | Text and image input for a full crossing |
-| Tool use | No material regression for coding agents |
+| Context        | At least 200K                                                               |
+| Modalities     | Text and image input for a full crossing                                    |
+| Tool use       | No material regression for coding agents                                    |
 
 **Luna-class pricing** is the preferred reference, not an inflexible ceiling:
 
@@ -186,10 +186,10 @@ A model may be somewhat more expensive per token and still qualify when cost per
 
 ### Current crossings
 
-| Candidate | AA Index | Output speed | Context | Vision | List price per M input/output | AA output tokens/task | AA cost/task | Status |
-|---|---:|---:|---:|---|---:|---:|---:|---|
-| **GPT-5.6 Luna `max`** | 52 | **171.2 tok/s** | 1.05M | Yes | **$0.20 / $1.20** | ≈20K | **$0.05** | **Full A1 crossing** |
-| **DeepSeek V4 Flash 0731 `max`** | 52 | **103.4 tok/s** | 1M | **No** | $0.44 / $1.32 peak | ≈46K | **$0.11** | **Text-only A1 crossing** |
+| Candidate                        | AA Index |    Output speed | Context | Vision | List price per M input/output | AA output tokens/task | AA cost/task | Status                    |
+| -------------------------------- | -------: | --------------: | ------: | ------ | ----------------------------: | --------------------: | -----------: | ------------------------- |
+| **GPT-5.6 Luna `max`**           |       52 | **171.2 tok/s** |   1.05M | Yes    |             **$0.20 / $1.20** |                  ≈20K |    **$0.05** | **Full A1 crossing**      |
+| **DeepSeek V4 Flash 0731 `max`** |       52 | **103.4 tok/s** |      1M | **No** |            $0.44 / $1.32 peak |                  ≈46K |    **$0.11** | **Text-only A1 crossing** |
 
 Luna’s official API envelope includes 1.05M context, 128K maximum output, image input, tool support, and the listed $0.20/$1.20 pricing. Artificial Analysis measures 52 intelligence, 171.2 output tokens/second, approximately 20K weighted output tokens per task, and $0.05 per Intelligence Index task.
 
@@ -241,16 +241,16 @@ On the shared DeepSWE v1.1 leaderboard, DeepSeek uses 108K output tokens and 153
 
 A complete A2 crossing requires:
 
-| Dimension | Target |
-|---|---|
-| Hardware | One RTX 4090 with 24GB VRAM |
-| Execution | Fully local; no cloud or second GPU |
-| Weights | Downloadable and locally usable |
-| Capability | Broadly C4O-level or better in the actual software-engineering workflow |
-| Modalities | Text and image input |
-| Context | **More than 200K usable local context** |
-| Speed | Interactive enough for sustained agent use |
-| Reliability | Stable multi-turn coding and tool workflows |
+| Dimension   | Target                                                                  |
+| ----------- | ----------------------------------------------------------------------- |
+| Hardware    | One RTX 4090 with 24GB VRAM                                             |
+| Execution   | Fully local; no cloud or second GPU                                     |
+| Weights     | Downloadable and locally usable                                         |
+| Capability  | Broadly C4O-level or better in the actual software-engineering workflow |
+| Modalities  | Text and image input                                                    |
+| Context     | **More than 200K usable local context**                                 |
+| Speed       | Interactive enough for sustained agent use                              |
+| Reliability | Stable multi-turn coding and tool workflows                             |
 
 Local speed is intentionally practical rather than ceremonial:
 
@@ -314,18 +314,18 @@ The remaining finish line is **more than 200K usable context on one RTX 4090 24G
 
 Milestone B uses the deployed Claude Fable 5 experience as the new reference point.
 
-| Attribute | Fable 5 baseline |
-|---|---|
-| API model | `claude-fable-5` |
-| Positioning | Anthropic’s most capable widely released model |
-| Intended workload | Long-running agents, difficult coding, complex knowledge work |
-| Reasoning | Adaptive reasoning, always on |
-| Context | **1M tokens** |
-| Maximum output | **128K tokens** |
-| Modalities | Text and image input; text output |
-| Price | **$10/M input; $50/M output** |
-| Prompt-cache discount | 90% on cached input |
-| Weights | Closed |
+| Attribute             | Fable 5 baseline                                              |
+| --------------------- | ------------------------------------------------------------- |
+| API model             | `claude-fable-5`                                              |
+| Positioning           | Anthropic’s most capable widely released model                |
+| Intended workload     | Long-running agents, difficult coding, complex knowledge work |
+| Reasoning             | Adaptive reasoning, always on                                 |
+| Context               | **1M tokens**                                                 |
+| Maximum output        | **128K tokens**                                               |
+| Modalities            | Text and image input; text output                             |
+| Price                 | **$10/M input; $50/M output**                                 |
+| Prompt-cache discount | 90% on cached input                                           |
+| Weights               | Closed                                                        |
 
 Anthropic describes Fable 5 as a model for long-running agents that can plan across stages, delegate to sub-agents, check its own work, perform complex migrations, write tests, and use vision to validate implementation against intended designs.
 
@@ -343,28 +343,28 @@ Milestone B uses this actual deployed experience rather than pretending that an 
 
 ### Model-level Artificial Analysis profile
 
-| Metric | Fable 5 |
-|---|---:|
-| Intelligence Index v4.1.1 | **62** |
-| Output speed | **66.5 tok/s** |
-| Time to first answer token | **141.52 seconds** |
-| Weighted output tokens per AA task | ≈33.1K |
-| Cost per AA task | **$3.14** |
-| Total AA output tokens | **83M** |
-| Total AA evaluation cost | **$5,455.22** |
-| Context | 1M |
-| Vision | Yes |
+| Metric                             |            Fable 5 |
+| ---------------------------------- | -----------------: |
+| Intelligence Index v4.1.1          |             **62** |
+| Output speed                       |     **66.5 tok/s** |
+| Time to first answer token         | **141.52 seconds** |
+| Weighted output tokens per AA task |             ≈33.1K |
+| Cost per AA task                   |          **$3.14** |
+| Total AA output tokens             |            **83M** |
+| Total AA evaluation cost           |      **$5,455.22** |
+| Context                            |                 1M |
+| Vision                             |                Yes |
 
 Artificial Analysis measures Fable at 62 intelligence, 66.5 output tokens/second, 141.52 seconds to first answer token, and $3.14 per weighted Intelligence Index task. The complete run generated 83M output tokens.
 
 ### Independent DeepSWE v1.1 profile
 
-| Metric | Fable 5 `max` |
-|---|---:|
-| Pass rate | **70% ± 4%** |
-| Average output tokens/task | **119K** |
-| Average cost/task | **$21.63** |
-| Agent steps/task | **88** |
+| Metric                     | Fable 5 `max` |
+| -------------------------- | ------------: |
+| Pass rate                  |  **70% ± 4%** |
+| Average output tokens/task |      **119K** |
+| Average cost/task          |    **$21.63** |
+| Agent steps/task           |        **88** |
 
 DeepSWE v1.1 contains 113 original long-horizon engineering tasks and runs the compared models through mini-swe-agent for consistency.
 
@@ -372,15 +372,15 @@ DeepSWE v1.1 contains 113 original long-horizon engineering tasks and runs the c
 
 Fable 5 `max` with fallback in Claude Code currently records:
 
-| Metric | Result |
-|---|---:|
-| Coding Agent Index v1.3 | **66** |
-| DeepSWE | 66% |
-| Terminal-Bench v2 | 83% |
-| SWE-Atlas-QnA | 49% |
-| Average total tokens/task | **14M** |
-| Average API cost/task | **$11.70** |
-| Average wall time/task | **23.4 minutes** |
+| Metric                    |           Result |
+| ------------------------- | ---------------: |
+| Coding Agent Index v1.3   |           **66** |
+| DeepSWE                   |              66% |
+| Terminal-Bench v2         |              83% |
+| SWE-Atlas-QnA             |              49% |
+| Average total tokens/task |          **14M** |
+| Average API cost/task     |       **$11.70** |
+| Average wall time/task    | **23.4 minutes** |
 
 The 14M figure includes total agent token traffic—input, cached context, and output—across long multi-turn executions. It is not comparable to the 119K DeepSWE output-token figure.
 
@@ -407,16 +407,16 @@ Milestone B asks when that experience becomes either abundant in the cloud or lo
 
 A full B1 crossing requires:
 
-| Dimension | Target |
-|---|---|
-| Capability | Fable 5-level or better for long-horizon agentic software engineering |
-| Output speed | **At least 100 tokens/second** |
-| Economics | Approximately Luna-class pricing and similarly low cost per successful task |
-| Context | **At least 1M usable context** |
-| Output envelope | Sufficient for long autonomous runs; ideally near Fable’s 128K maximum |
-| Modalities | Text and image input |
-| Tool use | Mature coding, terminal, file, and structured tool behavior |
-| Token behavior | No verbosity severe enough to erase the speed or cost advantage |
+| Dimension       | Target                                                                      |
+| --------------- | --------------------------------------------------------------------------- |
+| Capability      | Fable 5-level or better for long-horizon agentic software engineering       |
+| Output speed    | **At least 100 tokens/second**                                              |
+| Economics       | Approximately Luna-class pricing and similarly low cost per successful task |
+| Context         | **At least 1M usable context**                                              |
+| Output envelope | Sufficient for long autonomous runs; ideally near Fable’s 128K maximum      |
+| Modalities      | Text and image input                                                        |
+| Tool use        | Mature coding, terminal, file, and structured tool behavior                 |
+| Token behavior  | No verbosity severe enough to erase the speed or cost advantage             |
 
 A text-only model may receive a **B1 text-only crossing**, but cannot be considered the complete successor.
 
@@ -494,17 +494,17 @@ The likely future crossing is a model with approximately Fable-level agency, Lun
 
 A complete B2 crossing requires:
 
-| Dimension | Target |
-|---|---|
-| Hardware | One RTX 4090 24GB |
-| Execution | Local only; no cloud or second GPU |
-| Weights | Downloadable and locally usable |
-| Capability | Fable 5-level practical agentic software engineering |
-| Modalities | Text and image input |
-| Context | **1M stable, usable local context** |
-| Speed | Interactive enough for extended autonomous work |
-| Reliability | Stable long-running tool and coding loops |
-| Ownership | No dependency on a hosted proprietary inference service |
+| Dimension   | Target                                                  |
+| ----------- | ------------------------------------------------------- |
+| Hardware    | One RTX 4090 24GB                                       |
+| Execution   | Local only; no cloud or second GPU                      |
+| Weights     | Downloadable and locally usable                         |
+| Capability  | Fable 5-level practical agentic software engineering    |
+| Modalities  | Text and image input                                    |
+| Context     | **1M stable, usable local context**                     |
+| Speed       | Interactive enough for extended autonomous work         |
+| Reliability | Stable long-running tool and coding loops               |
+| Ownership   | No dependency on a hosted proprietary inference service |
 
 Indicative local speed:
 
@@ -543,25 +543,25 @@ Qwen3.8-27B establishes that C4O-class local agency is now practical. The next e
 
 ### Artificial Analysis model-level economics
 
-| Model | AA Index | Output speed | First-answer latency | Weighted output tokens/task | Cost/task | Total AA output |
-|---|---:|---:|---:|---:|---:|---:|
-| **Original C4O** | 32* | — | — | — | — | — |
-| **GPT-5.6 Luna `max`** | 52 | **171.2 tok/s** | 120.23 s | ≈20K | **$0.05** | 130M |
-| **DeepSeek V4 Flash 0731 `max`** | 52 | **103.4 tok/s** | **1.19 s** | ≈46K | **$0.11** | 210M |
-| **Qwen3.8-27B** | 52 | — | — | Not yet extracted reliably | — | 160M |
-| **Claude Fable 5 `max` with fallback** | **62** | 66.5 tok/s | 141.52 s | ≈33.1K | **$3.14** | 83M |
+| Model                                  | AA Index |    Output speed | First-answer latency | Weighted output tokens/task | Cost/task | Total AA output |
+| -------------------------------------- | -------: | --------------: | -------------------: | --------------------------: | --------: | --------------: |
+| **Original C4O**                       |      32* |               — |                    — |                           — |         — |               — |
+| **GPT-5.6 Luna `max`**                 |       52 | **171.2 tok/s** |             120.23 s |                        ≈20K | **$0.05** |            130M |
+| **DeepSeek V4 Flash 0731 `max`**       |       52 | **103.4 tok/s** |           **1.19 s** |                        ≈46K | **$0.11** |            210M |
+| **Qwen3.8-27B**                        |       52 |               — |                    — |  Not yet extracted reliably |         — |            160M |
+| **Claude Fable 5 `max` with fallback** |   **62** |      66.5 tok/s |             141.52 s |                      ≈33.1K | **$3.14** |             83M |
 
 The Luna and DeepSeek per-task values come from Artificial Analysis’s weighted task-token chart: approximately 14K reasoning plus 6K answer tokens for Luna, and 37K reasoning plus 9K answer tokens for DeepSeek. Model-level totals and costs come from the respective AA model pages.
 
 ### Long-horizon software-engineering economics
 
-| Model | DeepSWE pass rate | Output tokens/task | Cost/task | Steps/task | AA Coding Agent Index | AA Coding Agent total tokens/task | AA Coding Agent cost/task |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| **Original C4O** | — | — | — | — | — | — | — |
-| **GPT-5.6 Luna `max`** | **67% ± 4%** | **73K** | $0.61 | 102 | 59 | 15.5M | **$0.31** |
-| **DeepSeek V4 Flash `max`** | 53% ± 4% | 108K | **$0.10** | 153 | 55 | 20.9M | **$0.07** |
-| **Qwen3.8-27B** | No accepted shared-leaderboard row | — | — | — | No exact 27B row | — | — |
-| **Claude Fable 5 `max`** | **70% ± 4%** | 119K | **$21.63** | 88 | **66** | 14M | **$11.70** |
+| Model                       |                  DeepSWE pass rate | Output tokens/task |  Cost/task | Steps/task | AA Coding Agent Index | AA Coding Agent total tokens/task | AA Coding Agent cost/task |
+| --------------------------- | ---------------------------------: | -----------------: | ---------: | ---------: | --------------------: | --------------------------------: | ------------------------: |
+| **Original C4O**            |                                  — |                  — |          — |          — |                     — |                                 — |                         — |
+| **GPT-5.6 Luna `max`**      |                       **67% ± 4%** |            **73K** |      $0.61 |        102 |                    59 |                             15.5M |                 **$0.31** |
+| **DeepSeek V4 Flash `max`** |                           53% ± 4% |               108K |  **$0.10** |        153 |                    55 |                             20.9M |                 **$0.07** |
+| **Qwen3.8-27B**             | No accepted shared-leaderboard row |                  — |          — |          — |      No exact 27B row |                                 — |                         — |
+| **Claude Fable 5 `max`**    |                       **70% ± 4%** |               119K | **$21.63** |         88 |                **66** |                               14M |                **$11.70** |
 
 DeepSWE figures come from the shared v1.1 leaderboard. Artificial Analysis Coding Agent Index figures come from its current Claude Code and Codex model-variant table.
 

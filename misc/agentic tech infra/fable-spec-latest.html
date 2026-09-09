@@ -563,7 +563,8 @@
         padding: 8px 12px;
         border: 1px solid var(--line);
         background: var(--card);
-        min-width: 320px;
+        width: 320px;
+        max-width: 100%;
         color: var(--ink);
       }
       .toolbar .hits {
@@ -1777,7 +1778,7 @@
               </div>
               <div class="card-why">
                 Embeddings live next to the rows they describe, inside transactions, under backups that already exist.
-                The category change rates too fast to anchor on a dedicated store early (T-02).
+                The category changes too fast to anchor on a dedicated store early (T-02).
               </div>
             </div>
             <div class="card">
@@ -2587,7 +2588,7 @@
               <div class="card-why">
                 T-01 applied to knowledge: an ADR in the repo is in-context at the moment of action; a wiki page is not.
                 Agent instruction files are load-bearing infrastructure — current version targets, conventions, and
-                waivers live in them (R108, App. A).
+                waivers live in them (R108, §9.2).
               </div>
             </div>
             <div class="card">
@@ -2673,7 +2674,7 @@
                 faster than this document.
               </div>
               <div class="card-caution">
-                <b>Caution</b>Fastest-change rateing category in the estate — this row is why the title block says
+                <b>Caution</b>This category changes faster than any other in the estate, so the title block calls for
                 quarterly review.
               </div>
             </div>
@@ -3273,8 +3274,8 @@
                 </div>
               </div>
               <div class="card-why">
-                A threat model in the repo is context an agent loads before touching auth or data flows; a outdated wiki
-                version is worse than none.
+                A threat model in the repo is context an agent loads before touching auth or data flows; an outdated
+                wiki version is worse than none.
               </div>
             </div>
             <div class="card compact">
@@ -3691,8 +3692,8 @@
                 </div>
               </div>
               <div class="card-why">
-                Duplicated change systems out-of-band change and rot; one system of record (T-01) makes compliance a
-                byproduct of working.
+                Duplicated change records drift apart; one system of record (T-01) makes compliance a byproduct of
+                working.
               </div>
             </div>
             <div class="card compact">
@@ -4472,7 +4473,8 @@
                 </div>
               </div>
               <div class="card-why">
-                git revert is the one remediation that is always pre-tested — it shipped before.
+                A revert undoes the selected change; its compatibility with current code, schema, data, and
+                configuration still needs verification.
               </div>
             </div>
           </div>
@@ -4644,8 +4646,8 @@
                 </div>
               </div>
               <div class="card-why">
-                Nodes that are replaced, not repaired, cannot out-of-band change — and remove the interactive access T3
-                prohibits anyway (§7).
+                Immutable replacement restores the declared node configuration and removes the interactive access
+                prohibited by T3 (§7).
               </div>
             </div>
             <div class="card compact">
@@ -5036,8 +5038,7 @@
                 </div>
               </div>
               <div class="card-why">
-                The single highest-leverage file in the repo: it is where App. A's pins become tokens in the agent's
-                context instead of facts in a lockfile.
+                The instruction file puts §9.2's version targets and local commands into the agent's working context.
               </div>
             </div>
             <div class="card compact">
@@ -6156,6 +6157,11 @@
         var input = document.getElementById('dfilter');
         if (!input) return;
         var cards = [].slice.call(document.querySelectorAll('#s5 .card'));
+        var searchText = new Map(
+          cards.map(function (c) {
+            return [c, c.innerText.toLowerCase().replace(/\s+/g, ' ')];
+          }),
+        );
         var grps = [].slice.call(document.querySelectorAll('#s5 .grp'));
         var hits = document.getElementById('dhits');
         var total = cards.length;
@@ -6163,7 +6169,7 @@
           var q = input.value.trim().toLowerCase();
           var shown = 0;
           cards.forEach(function (c) {
-            var ok = !q || c.textContent.toLowerCase().indexOf(q) > -1;
+            var ok = !q || searchText.get(c).indexOf(q) > -1;
             c.style.display = ok ? '' : 'none';
             if (ok) shown++;
           });

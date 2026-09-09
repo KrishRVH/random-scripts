@@ -74,7 +74,7 @@ cat > composer.json <<JSON
   },
   "autoload": {
     "psr-4": {
-      "App\\": "src/"
+      "App\\\\": "src/"
     }
   },
   "scripts": {
@@ -172,10 +172,6 @@ cat > public/assets/app.css <<'CSS'
   margin-top: 0.75rem;
 }
 
-/* Datastar cloak pattern */
-[data-cloak] {
-  display: none !important;
-}
 CSS
 
 cat > src/View.php <<'PHP'
@@ -972,8 +968,6 @@ $signalsJson = json_encode(
 ?>
 <div
   class="container"
-  data-cloak
-  data-init="el.removeAttribute('data-cloak')"
   data-signals='<?= $this->escapeHtmlAttr((string) $signalsJson) ?>'
 >
   <div class="level">

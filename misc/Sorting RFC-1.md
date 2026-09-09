@@ -235,7 +235,7 @@ def simple_filter_sort(arr: List[float], bounds: Tuple[float, float]) -> List[fl
     lower, upper = bounds
     normal = [x for x in arr if lower <= x <= upper]
     outliers = [x for x in arr if x < lower or x > upper]
-    return sorted(normal) + sorted(outliers)
+    return sorted(normal + outliers)
 ```
 
 ## 5. Validation Requirements

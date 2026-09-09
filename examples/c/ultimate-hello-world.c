@@ -7,28 +7,15 @@ education.
  * from basic concepts to cutting-edge C23 features and obscure techniques
  * that even veteran C programmers might not have encountered.
  *
- * Compilation:
- * gcc -std=c2x -Wall -Wextra -pedantic -O3 -march=native -pthread -lm -ldl
--fstack-protector-all -D_FORTIFY_SOURCE=2 -fPIC -fno-strict-aliasing
--finline-functions -funroll-loops -ftree-vectorize
-examples/c/ultimate-hello-world.c -o hello_world
- * Note: Some features require specific compiler support:
- * - C11 features: gcc 4.9+ or clang 3.1+
- * - C23 features: gcc 13+ or clang 16+
- * - SIMD intrinsics: -march=native or specific -mavx2
- * - Dynamic code generation: Requires executable stack (security consideration)
-Requires following tweaks:
- * ⚠️ WARNING: Only for educational purposes, never in production!
- * Disable ASLR temporarily
- * echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
- * Compile with relaxed security
-gcc -std=c2x -Wall -Wextra -O3 -march=native -pthread -lm -ldl \
-    -z execstack -no-pie -fno-stack-protector \
-    examples/c/ultimate-hello-world.c -o hello_world_unsafe
- * Run it
-./hello_world_unsafe
- * Re-enable ASLR afterward
-echo 2 | sudo tee /proc/sys/kernel/randomize_va_space
+ * Compilation (GNU/Linux on x86-64 with AVX2):
+ * gcc -std=c2x -Wall -Wextra -pedantic -O3 -march=native \
+ *     -fstack-protector-all -D_FORTIFY_SOURCE=2 -fPIC -fno-strict-aliasing \
+ *     examples/c/ultimate-hello-world.c -o hello_world -pthread -lm -ldl
+ *
+ * C23 sections depend on compiler and library support. The dynamic-code
+ * example allocates executable memory but leaves the generated function call
+ * disabled. The program is an educational showcase, not production code.
+ *
  * This program demonstrates:
  * 1. Basic C concepts (variables, functions, control flow)
  * 2. Advanced data structures (unions, bit fields, flexible array members)
@@ -320,7 +307,7 @@ echo 2 | sudo tee /proc/sys/kernel/randomize_va_space
 #define FIB(n) FIB_##n
 
 /* Use Fibonacci for performance testing */
-#define BENCHMARK_ITERATIONS FIB(11) /* 610 iterations */
+#define BENCHMARK_ITERATIONS FIB(11) /* 89 iterations */
 
 /*
  * Recursive macro expansion for compile-time loops.
@@ -431,13 +418,13 @@ static log_level_t current_log_level = LOG_ERROR | LOG_WARNING | LOG_INFO;
  */
 
 /*
- * Transparent union - allows type punning with type safety
- * The compiler treats the union as its first member in function calls
+ * Aligned union - stores either a pointer or an integer representation.
+ * Unlike a GNU transparent union, this type has no special calling convention.
  */
 typedef union {
   void *as_ptr;
   uintptr_t as_int;
-} ALIGNED(16) transparent_ptr_t;
+} ALIGNED(16) aligned_ptr_t;
 
 /*
  * Bit fields allow us to specify exact bit sizes for struct members.
@@ -492,10 +479,10 @@ typedef struct {
  * without traditional locks, improving performance and avoiding deadlocks.
  */
 
-/* ABA problem prevention using hazard pointers */
+/* Pointer and version fields; separate atomics alone do not prevent ABA. */
 typedef struct {
   _Atomic(void *) ptr;
-  _Atomic(uint64_t) counter; /* Prevent ABA problem */
+  _Atomic(uint64_t) counter; /* Version counter */
 } tagged_ptr_t;
 
 /* Node for lock-free queue */
@@ -963,7 +950,6 @@ static void demonstrate_prefetching(void);
 static inline int generic_popcount(uint64_t x) CONST_FUNC;
 static inline int generic_clz(uint64_t x) CONST_FUNC;
 static inline int generic_ctz(uint64_t x) CONST_FUNC;
-/* Add these three missing forward declarations */
 static void print_header(const char *title, const char *color);
 static void pulse_text(const char *text, const char *color, int pulses);
 static void spinning_loader(const char *message, int duration_ms);
@@ -1125,9 +1111,6 @@ int main(void) {
 
   spinning_loader("Initializing system", 2000);
 
-  /* Register cleanup function */
-  atexit(cleanup_handler);
-
   /* Set up signal handlers for multiple signals */
   struct sigaction sa = {.sa_handler = signal_handler, .sa_flags = SA_RESTART};
   sigemptyset(&sa.sa_mask);
@@ -1218,13 +1201,11 @@ int main(void) {
 
   /* SIMD-accelerated string construction */
   simd_string_t simd_hello = {0};
-  const char *hello_str = "Hello World!";
-  if (hello_str) {
-    _mm256_storeu_si256(&simd_hello.data[0],
-                        _mm256_loadu_si256((const __m256i *)hello_str));
-    simd_hello.len = strlen(hello_str);
-    log_debug("SIMD string initialized with %zu bytes\n", simd_hello.len);
-  }
+  const char hello_str[32] = "Hello World!";
+  _mm256_storeu_si256(&simd_hello.data[0],
+                      _mm256_loadu_si256((const __m256i *)hello_str));
+  simd_hello.len = strlen(hello_str);
+  log_debug("SIMD string initialized with %zu bytes\n", simd_hello.len);
 
   /* Demonstrate protected buffer */
   protected_buffer_t *protected = DEBUG_MALLOC(sizeof(protected_buffer_t));
@@ -1468,11 +1449,11 @@ int main(void) {
   point_t point = POINT(10, 20);
   log_verbose("Compound literal point: (%d, %d)\n", point.x, point.y);
 
-  /* Transparent union demonstration */
-  transparent_ptr_t trans = {.as_int = 0xDEADBEEF};
-  log_verbose("Transparent union as int: 0x%lX\n", trans.as_int);
+  /* Aligned union demonstration */
+  aligned_ptr_t trans = {.as_int = 0xDEADBEEF};
+  log_verbose("Aligned union as int: 0x%lX\n", trans.as_int);
   trans.as_ptr = container;
-  log_verbose("Transparent union as ptr: %p\n", trans.as_ptr);
+  log_verbose("Aligned union as ptr: %p\n", trans.as_ptr);
 
 /* C11 _Generic demonstration */
 #ifdef C11_AVAILABLE
@@ -1602,12 +1583,7 @@ coro_end:
     /* Only unmap if we actually allocated memory */
     munmap((void *)dynamic_func, 4096);
   }
-  arena_destroy(tls_data.local_arena);
-  pool_destroy(tls_data.local_pool);
-
-  /* Print memory statistics */
-  print_memory_stats();
-  /* Print arena statistics */
+  /* Print arena statistics while the allocator is still alive. */
   log_info("Arena statistics:\n");
   log_info(
       "  Total allocated: %llu bytes\n",
@@ -1622,9 +1598,13 @@ coro_end:
   log_info("  Deallocations: %llu\n", (unsigned long long)atomic_load(
                                           &tls_data.local_pool->deallocations));
 
+  arena_destroy(tls_data.local_arena);
+  pool_destroy(tls_data.local_pool);
+  print_memory_stats();
+
   /* Final memory verification */
   if (atomic_load(&total_bytes) == 0) {
-    log_info("✅ All memory properly freed - no leaks detected!\n");
+    log_info("✅ All tracked debug allocations freed!\n");
   } else {
     log_warning("⚠️  Final check: %llu bytes still allocated\n",
                 (unsigned long long)atomic_load(&total_bytes));
@@ -1886,7 +1866,7 @@ static void HOT_FUNC pool_free(object_pool_t *pool, void *obj) {
 /*
  * MEMORY DEBUGGING IMPLEMENTATION
  */
-/* Add a simple mutex for debug tracking */
+/* Serialize updates to the allocation tracking list. */
 static pthread_mutex_t debug_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static void *debug_malloc(size_t size, const char *file, int line) {
@@ -1992,7 +1972,7 @@ static void COLD_FUNC print_memory_stats(void) {
     printf(BOX_BR "\n");
   } else {
     printf("\n" GREEN BOLD CHECKMARK
-           " ALL MEMORY PROPERLY FREED - NO LEAKS!" RESET "\n");
+           " ALL TRACKED DEBUG ALLOCATIONS FREED!" RESET "\n");
     matrix_effect(3);
   }
 
@@ -2050,14 +2030,14 @@ static void demonstrate_cache_effects(void) {
   }
   TIMING_END("Sequential access");
 
-  /* Cache-unfriendly strided access */
+  /* Blocked sequential access */
   TIMING_START()
   for (size_t i = 0; i < SIZE; i += STRIDE) {
     for (size_t j = 0; j < STRIDE && i + j < SIZE; j++) {
       sum2 += data[i + j];
     }
   }
-  TIMING_END("Strided access");
+  TIMING_END("Blocked sequential access");
 
   /* Random access (worst case) */
   TIMING_START()
@@ -2430,7 +2410,8 @@ static void debug_generated_code(void *mem, size_t size) {
  * LOCK-FREE QUEUE OPERATIONS
  *
  * Lock-free data structures use atomic operations instead of locks.
- * This implementation uses Michael & Scott algorithm.
+ * This example exercises the queue serially. Concurrent use requires safe
+ * node reclamation and coordinated head/tail updates.
  */
 static void enqueue_char(lock_free_queue_t *queue, char c) {
   struct lfq_node *node = pool_alloc(tls_data.local_pool);
@@ -2530,7 +2511,7 @@ static void lock_free_demo(void) {
   atomic_flag_clear(&lock);
   printf("Released spinlock\n");
 
-  /* Demonstrate ABA problem prevention */
+  /* Demonstrate a pointer with a version counter. */
   tagged_ptr_t tagged = {0};
   atomic_init(&tagged.ptr, NULL);
   atomic_init(&tagged.counter, 0);
@@ -2539,7 +2520,7 @@ static void lock_free_demo(void) {
   uint64_t old_counter = 0;
   void *new_ptr = queue;
 
-  /* Update with counter to prevent ABA */
+  /* Update the pointer, then its counter; the pair is not one atomic update. */
   while (1) {
     old_ptr = atomic_load(&tagged.ptr);
     old_counter = atomic_load(&tagged.counter);
@@ -2639,8 +2620,6 @@ static uint64_t HOT_FUNC xorshift64star(uint64_t *state) {
   *state = x;
   return x * 0x2545F4914F6CDD1DULL;
 }
-
-/* Original functions continue below... */
 
 static char *process_with_vla(const char *input, size_t len) {
   recursion_depth++;
@@ -2850,18 +2829,17 @@ static void secure_free(void *ptr) {
   }
 
   /* Secure wipe using volatile to prevent optimization */
-  volatile unsigned char *p =
-      (volatile unsigned char *)ptr; // Changed to unsigned char
+  volatile unsigned char *p = (volatile unsigned char *)ptr;
   for (size_t i = 0; i < size; i++) {
     p[i] = 0;
   }
 
   /* Additional passes for paranoid security */
   for (size_t i = 0; i < size; i++) {
-    p[i] = 0xFF; // Now safe
+    p[i] = 0xFF;
   }
   for (size_t i = 0; i < size; i++) {
-    p[i] = 0xAA; // Now safe
+    p[i] = 0xAA;
   }
   for (size_t i = 0; i < size; i++) {
     p[i] = 0;
@@ -2898,7 +2876,7 @@ static char *decrypt_string(const char *encrypted, size_t length) {
 }
 
 static uint64_t PURE_FUNC compute_checksum(const char *data, size_t length) {
-  /* FNV-1a hash - 64-bit */
+  /* FNV-inspired 64-bit checksum using eight-byte chunks. */
   uint64_t hash = 14695981039346656037ULL;
   const uint64_t prime = 1099511628211ULL;
 

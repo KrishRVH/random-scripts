@@ -10,17 +10,11 @@ syft = "1.45.1"
 
 [tasks.install]
 description = "Install pinned project tools and dependencies"
-run = """
-mise install
-mise run ts:install
-"""
+run = ["mise install", { task = "ts:install" }]
 
 [tasks.lock]
 description = "Refresh project lockfiles"
-run = """
-mise lock
-mise run ts:lock
-"""
+run = ["mise lock", { task = "ts:lock" }]
 
 [tasks.doctor]
 description = "Inspect mise configuration and installed tools"
@@ -63,60 +57,51 @@ done
 """
 
 [tasks."c:test"]
-description = "Compile portable C examples"
+description = "Compile portable C examples and test walkthrough input"
 run = """
 set -eu
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 cc -std=c89 -Wall -Wextra -Wpedantic -c examples/c/cgol.c -o "$tmp/cgol.o"
 cc -std=c99 -Wall -Wextra -Wpedantic examples/c/c-programming-essentials.c -o "$tmp/c-programming-essentials"
+sh examples/c/c-programming-essentials.test.sh "$tmp/c-programming-essentials"
 """
 
 [tasks."shell:lint"]
 description = "Check scaffold shell syntax"
-run = "bash -n scaffolds/*.sh"
+run = """
+set -eu
+for file in scaffolds/*.sh; do
+  bash -n "$file"
+done
+"""
 
 [tasks.fmt]
 description = "Format project files"
-run = """
-mise run ts:fmt
-mise run c:fmt
-"""
+run = [{ task = "ts:fmt" }, { task = "c:fmt" }]
 
 [tasks."fmt:check"]
 description = "Check project formatting"
-run = """
-mise run ts:fmt:check
-mise run c:fmt:check
-"""
+run = [{ task = "ts:fmt:check" }, { task = "c:fmt:check" }]
 
 [tasks.lint]
 description = "Lint/analyze project files"
-run = """
-mise run ts:lint
-mise run shell:lint
-"""
+run = [{ task = "ts:lint" }, { task = "shell:lint" }]
 
 [tasks.test]
 description = "Run project tests"
-run = """
-mise run ts:test
-mise run c:test
-"""
+run = [{ task = "ts:test" }, { task = "c:test" }]
 
 [tasks.standards]
 description = "Run standards autofixes"
-run = """
-mise run ts:standards
-mise run c:fmt
-"""
+run = [{ task = "ts:standards" }, { task = "c:fmt" }]
 
 [tasks."standards:check"]
 description = "Run the project standards CI gate"
-run = """
-mise run secrets
-mise run ts:standards:check
-mise run c:fmt:check
-mise run c:test
-mise run shell:lint
-"""
+run = [
+  { task = "secrets" },
+  { task = "ts:standards:check" },
+  { task = "c:fmt:check" },
+  { task = "c:test" },
+  { task = "shell:lint" },
+]

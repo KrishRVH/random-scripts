@@ -39,7 +39,7 @@ export interface SimulationConfig {
   scale: number
 }
 
-export const COLORS = {
+export const COLORS: Record<number, number> = {
   [ParticleType.Empty]: 0x00000000,
   [ParticleType.Sand]: 0xFFC9A76A,
   [ParticleType.Water]: 0xFF3B82F6,
@@ -54,7 +54,7 @@ export const DEFAULT_CONFIG: SimulationConfig = {
 EOF
 
 # ==============================================================================
-# TypeScript Canvas Implementation (WORKING)
+# TypeScript Canvas Implementation
 # ==============================================================================
 
 cat > $BASE_DIR/components/falling-sand/typescript/CanvasSimulation.tsx << 'EOF'
@@ -64,8 +64,8 @@ import { ParticleType, COLORS, DEFAULT_CONFIG } from '../shared/types'
 
 export default function CanvasSimulation() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const gridRef = useRef<Uint8Array>()
-  const animationRef = useRef<number>()
+  const gridRef = useRef<Uint8Array | null>(null)
+  const animationRef = useRef<number | null>(null)
   const mouseDownRef = useRef(false)
   const [selectedType, setSelectedType] = useState(ParticleType.Sand)
 
@@ -196,7 +196,7 @@ export default function CanvasSimulation() {
     animationRef.current = requestAnimationFrame(gameLoop)
     
     return () => {
-      if (animationRef.current) {
+      if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current)
       }
     }
@@ -259,7 +259,7 @@ export default function CanvasSimulation() {
 EOF
 
 # ==============================================================================
-# Simplified Zig Implementation (Minimal, Working)
+# Zig Implementation (Vertical Sand Motion)
 # ==============================================================================
 
 cat > $BASE_DIR/components/falling-sand/zig/main.zig << 'EOF'
@@ -328,7 +328,8 @@ interface ZigWASM {
 export default function ZigSimulation() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [wasm, setWasm] = useState<ZigWASM | null>(null)
-  const animationRef = useRef<number>()
+  const [loadError, setLoadError] = useState(false)
+  const animationRef = useRef<number | null>(null)
   const mouseDownRef = useRef(false)
   const [selectedType, setSelectedType] = useState(ParticleType.Sand)
 
@@ -336,23 +337,13 @@ export default function ZigSimulation() {
     async function loadWasm() {
       try {
         const response = await fetch('/wasm/falling_sand.wasm')
+        if (!response.ok) throw new Error(`WASM request failed: ${response.status}`)
         const bytes = await response.arrayBuffer()
-        
-        const wasmMemory = new WebAssembly.Memory({
-          initial: 10,
-          maximum: 100,
-        })
-        
-        const { instance } = await WebAssembly.instantiate(bytes, {
-          env: { memory: wasmMemory },
-        })
-        
-        setWasm({
-          ...instance.exports as any,
-          memory: wasmMemory
-        })
+        const { instance } = await WebAssembly.instantiate(bytes)
+        setWasm(instance.exports as unknown as ZigWASM)
       } catch (error) {
         console.error('Failed to load Zig WASM:', error)
+        setLoadError(true)
       }
     }
     
@@ -389,7 +380,7 @@ export default function ZigSimulation() {
     }
     
     return () => {
-      if (animationRef.current) {
+      if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current)
       }
     }
@@ -413,7 +404,7 @@ export default function ZigSimulation() {
   if (!wasm) {
     return (
       <div className="flex items-center justify-center h-[600px] text-gray-400">
-        Loading Zig WASM...
+        {loadError ? 'Zig simulation unavailable. Run npm run build:simulations with Zig installed.' : 'Loading Zig WASM...'}
       </div>
     )
   }
@@ -475,7 +466,7 @@ export default function ZigSimulation() {
 EOF
 
 # ==============================================================================
-# WebGL Implementation (WORKING)
+# WebGL Implementation
 # ==============================================================================
 
 cat > $BASE_DIR/components/falling-sand/webgl/WebGLSimulation.tsx << 'EOF'
@@ -516,11 +507,11 @@ void main() {
 export default function WebGLSimulation() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [selectedType, setSelectedType] = useState(ParticleType.Sand)
-  const glRef = useRef<WebGLRenderingContext>()
-  const gridRef = useRef<Float32Array>()
-  const textureRef = useRef<WebGLTexture>()
+  const glRef = useRef<WebGLRenderingContext | null>(null)
+  const gridRef = useRef<Float32Array | null>(null)
+  const textureRef = useRef<WebGLTexture | null>(null)
   const mouseDownRef = useRef(false)
-  const animationRef = useRef<number>()
+  const animationRef = useRef<number | null>(null)
   
   const initWebGL = useCallback(() => {
     const canvas = canvasRef.current
@@ -528,6 +519,10 @@ export default function WebGLSimulation() {
     
     const gl = canvas.getContext('webgl', { alpha: false, antialias: false })
     if (!gl) return false
+    if (!gl.getExtension('OES_texture_float')) {
+      console.error('Floating-point WebGL textures are unavailable')
+      return false
+    }
     
     glRef.current = gl
     
@@ -669,7 +664,7 @@ export default function WebGLSimulation() {
     }
     
     return () => {
-      if (animationRef.current) {
+      if (animationRef.current !== null) {
         cancelAnimationFrame(animationRef.current)
       }
     }
@@ -789,8 +784,8 @@ export default function FallingSandPage() {
           </h2>
           <div className="mb-4 space-y-2 text-sm text-gray-400">
             <p>• Compiled to WebAssembly</p>
-            <p>• Manual memory management</p>
-            <p>• Native performance</p>
+            <p>• Fixed-size particle grid</p>
+            <p>• Vertical sand motion</p>
           </div>
           <Suspense fallback={<SimulationSkeleton />}>
             <ZigSimulation />
@@ -827,60 +822,41 @@ export default function FallingSandPage() {
 EOF
 
 # ==============================================================================
-# Build Script (Fixed for Zig)
+# Build Script
 # ==============================================================================
 
 cat > build-simulations.sh << 'EOF'
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "🚀 Building Falling Sand Simulations..."
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
-# Detect directory structure
 if [ -d "src/app" ]; then
     ZIG_DIR="src/components/falling-sand/zig"
 else
     ZIG_DIR="components/falling-sand/zig"
 fi
 
-# Create wasm directory
-mkdir -p public/wasm
-
-# Build Zig WASM
-echo "🔧 Building Zig WASM..."
-cd $ZIG_DIR
-
-if command -v zig &> /dev/null; then
-    echo "Zig version: $(zig version)"
-    
-    # Build as object file to avoid archive issues
-    zig build-obj main.zig \
-      -target wasm32-freestanding \
-      -O ReleaseSmall \
-      -fno-entry \
-      -mcpu=generic
-    
-    # Move to public (the .o is actually WASM for wasm32)
-    if [ -f "main.o" ]; then
-        # Get correct path depth
-        if [[ $ZIG_DIR == src/* ]]; then
-            mv main.o ../../../../public/wasm/falling_sand.wasm
-        else
-            mv main.o ../../../public/wasm/falling_sand.wasm
-        fi
-        echo "✅ Zig WASM built successfully"
-    else
-        echo "⚠️ Zig build failed, creating placeholder"
-        printf '\x00\x61\x73\x6d\x01\x00\x00\x00' > ../../../../public/wasm/falling_sand.wasm
-    fi
-else
-    echo "⚠️ Zig not installed, creating placeholder"
-    printf '\x00\x61\x73\x6d\x01\x00\x00\x00' > public/wasm/falling_sand.wasm
+if ! command -v zig >/dev/null 2>&1; then
+    echo "Zig is unavailable; Canvas and WebGL can run without the Zig demo."
+    echo "Install Zig, then run npm run build:simulations."
+    exit 0
 fi
 
-cd - > /dev/null
+mkdir -p public/wasm
+zig build-exe "$ZIG_DIR/main.zig" \
+  -target wasm32-freestanding \
+  -O ReleaseSmall \
+  -fno-entry \
+  --export=getGridPointer \
+  --export=getWidth \
+  --export=getHeight \
+  --export=setParticle \
+  --export=step \
+  --export-memory \
+  -femit-bin=public/wasm/falling_sand.wasm
 
-echo "✨ Build complete!"
-echo "Run: npm run dev:sand"
+echo "Built public/wasm/falling_sand.wasm"
 EOF
 
 chmod +x build-simulations.sh
@@ -889,7 +865,7 @@ chmod +x build-simulations.sh
 # Update package.json
 # ==============================================================================
 
-cat > update-package.js << 'EOF'
+node --input-type=commonjs << 'EOF'
 const fs = require('fs');
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 if (!pkg.scripts) pkg.scripts = {};
@@ -898,8 +874,6 @@ pkg.scripts['dev:sand'] = 'npm run build:simulations && next dev';
 fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2));
 console.log('✅ package.json updated');
 EOF
-
-node update-package.js && rm update-package.js
 
 # ==============================================================================
 # Initial build
@@ -912,14 +886,14 @@ echo ""
 echo "🎉 Falling Sand Scaffold Complete!"
 echo ""
 echo "Features:"
-echo "  ✅ All particle types work in all implementations"
-echo "  ✅ Dark mode UI matching your site"
-echo "  ✅ No fake statistics"
-echo "  ✅ Proper physics for sand, water, stone"
-echo "  ✅ Touch and mouse support"
+echo "  Canvas: sand and water motion, with stationary stone"
+echo "  Zig: vertical sand motion; water and stone stay fixed"
+echo "  WebGL: simple sand and water motion, with stationary stone"
+echo "  Touch and mouse drawing"
+echo "  These are experimental particle rules, ready for further development."
 echo ""
 echo "Quick Start:"
 echo "  npm run dev:sand"
 echo "  Visit: http://localhost:3000/falling-sand"
 echo ""
-echo "All three implementations are fully functional!"
+echo "Build Zig WASM with npm run build:simulations when Zig is installed."

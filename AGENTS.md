@@ -18,7 +18,9 @@ changing architecture or domain language. Use this file for agent working rules.
 
 ## Commands
 
-Everything a developer does goes through mise.
+Use `mise run` as the default, discoverable API for project workflows. Run
+ordinary utilities and standalone scripts directly. Use `mise exec` when an
+ad hoc command needs the project's pinned tools or environment.
 
 - `mise run tasks`: list available tasks.
 - `mise run install`: install pinned tools/dependencies.
@@ -31,11 +33,10 @@ Everything a developer does goes through mise.
 - `mise run secrets`: scan the working tree for secrets.
 - `mise run sbom`: generate a CycloneDX JSON SBOM under `sbom/`.
 
-Do not call package managers, compilers, or test runners directly unless you
-are fixing the mise task itself. This repo does not configure Dagger.
-
 ## Editing
 
+- The human owns product intent, scope, and acceptance. Agents implement and
+  verify the agreed work, resolving routine technical choices within that scope.
 - Make the smallest coherent change that solves the task.
 - Follow existing language/tool config instead of restating it here.
 - Keep strict type modes and static analysis passing.

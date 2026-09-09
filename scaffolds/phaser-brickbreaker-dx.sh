@@ -86,18 +86,18 @@ if [ "$HERE" -eq 1 ] || [ -z "${TARGET_DIR}" ]; then
 else
   PROJECT_NAME="$TARGET_DIR"
 fi
-# Safety: refuse to overwrite common files unless --force
-if [ "$TARGET_DIR" = "." ] && [ "$FORCE" -ne 1 ]; then
+if [ "$TARGET_DIR" != "." ]; then
+  mkdir -p "$TARGET_DIR"
+  cd "$TARGET_DIR"
+fi
+# Refuse to overwrite common files unless --force.
+if [ "$FORCE" -ne 1 ]; then
   for p in package.json tsconfig.json vite.config.ts index.html biome.json capacitor.config.ts src electron; do
     if [ -e "$p" ]; then
       echo "Refusing to overwrite existing '$p'. Use --force to override."
       exit 1
     fi
   done
-fi
-if [ "$TARGET_DIR" != "." ]; then
-  mkdir -p "$TARGET_DIR"
-  cd "$TARGET_DIR"
 fi
 
 # Initialize git only if not already a repo
@@ -114,10 +114,11 @@ cat > package.json <<EOF
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "main": "dist-electron/main.js",
   "scripts": {
     "dev": "bunx vite",
     "dev:web": "bunx vite",
-    "dev:desktop": "bunx vite",
+    "dev:desktop": "bunx vite --mode desktop",
     "dev:android": "bunx concurrently -k -n vite,android -c green,cyan \\"bun run dev:web\\" \\"bunx cap run android -l --external\\"",
     "dev:ios": "bunx concurrently -k -n vite,ios -c green,magenta \\"bun run dev:web\\" \\"bunx cap run ios -l --external\\"",
     "build": "tsc && bunx vite build",
@@ -128,7 +129,7 @@ cat > package.json <<EOF
     "cap:add:android": "bunx cap add android",
     "cap:add:ios": "bunx cap add ios",
     "cap:sync": "bunx cap sync",
-    "levels:generate": "go run ./tools/go/levelgen --rows 6 --cols 10 --width 75 --height 30 --padding 5 --offsetx 0 --offsety 90"
+    "levels:generate": "go run ./tools/go/levelgen/main.go --rows 6 --cols 10 --width 75 --height 30 --padding 5 --offsetx 0 --offsety 90"
   },
   "engines": {
     "bun": ">=1.1.0"
@@ -142,7 +143,7 @@ EOF
 # Runtime deps: phaser + dev HUD toys
 bun add phaser stats.js tweakpane @capacitor/core
 # Dev deps: types, bundler, pwa, checker, paths, electron, capacitor cli, biome
-bun add -d typescript vite vite-plugin-checker vite-tsconfig-paths vite-plugin-pwa vite-plugin-electron @biomejs/biome @tsconfig/strictest @types/node @types/stats.js concurrently @capacitor/cli
+bun add -d typescript vite vite-plugin-checker vite-plugin-pwa vite-plugin-electron electron @biomejs/biome @tsconfig/strictest @tweakpane/core @types/node @types/stats.js concurrently @capacitor/cli
 
 # -----------------------------------------------------------------------------
 # TypeScript config - strict, path aliases, JSON modules, bundler resolution
@@ -162,11 +163,10 @@ cat > tsconfig.json <<'EOF'
     "noPropertyAccessFromIndexSignature": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "skipLibCheck": true
   },
   "include": ["src/**/*"]
@@ -177,18 +177,18 @@ EOF
 # Vite config - DX-first: TS checker, tsconfig paths, PWA, Electron dev
 # -----------------------------------------------------------------------------
 # - PWA: lets you "install" the app and test offline quickly
-# - Electron: runs desktop shell in dev with a single command
+# - Electron: starts with dev:desktop; web and mobile use the web server
 # -----------------------------------------------------------------------------
 cat > vite.config.ts <<'EOF'
 import { defineConfig } from "vite";
 import checker from "vite-plugin-checker";
-import tsconfigPaths from "vite-tsconfig-paths";
 import { VitePWA } from "vite-plugin-pwa";
 import electron from "vite-plugin-electron/simple";
 
-export default defineConfig({
+export default defineConfig(({ command, mode }) => ({
+  base: "./",
+  resolve: { tsconfigPaths: true },
   plugins: [
-    tsconfigPaths(),
     checker({ typescript: true }),
     VitePWA({
       registerType: "autoUpdate",
@@ -203,15 +203,14 @@ export default defineConfig({
         icons: []
       }
     }),
-    electron({
+    (command === "build" || mode === "desktop") && electron({
       main: {
         entry: "electron/main.ts",
         onstart: ({ startup }) => startup()
       },
       preload: {
         input: { preload: "electron/preload.ts" }
-      },
-      renderer: {}
+      }
     })
   ],
   server: {
@@ -223,7 +222,7 @@ export default defineConfig({
     target: "es2022",
     sourcemap: true
   }
-});
+}));
 EOF
 
 # -----------------------------------------------------------------------------
@@ -277,9 +276,10 @@ cat > electron/main.ts <<'EOF'
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import process from "node:process";
+import { fileURLToPath } from "node:url";
 
-const isDev =
-  !!process.env.VITE_DEV_SERVER_URL || !!process.env.ELECTRON_START_URL;
+const directory = path.dirname(fileURLToPath(import.meta.url));
+const devUrl = process.env["VITE_DEV_SERVER_URL"] || process.env["ELECTRON_START_URL"];
 
 let win: BrowserWindow | null = null;
 
@@ -290,16 +290,15 @@ async function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, "preload.js")
+      preload: path.join(directory, "preload.mjs")
     }
   });
 
-  const devUrl = process.env.VITE_DEV_SERVER_URL || "http://localhost:5173";
-  if (isDev) {
+  if (devUrl) {
     await win.loadURL(devUrl);
     win.webContents.openDevTools({ mode: "detach" });
   } else {
-    await win.loadFile(path.join(__dirname, "../dist/index.html"));
+    await win.loadFile(path.join(directory, "../dist/index.html"));
   }
 
   win.on("closed", () => {
@@ -349,18 +348,13 @@ const config: CapacitorConfig = {
 export default config;
 EOF
 
-# Capacitor init is optional (we generate capacitor.config.ts).
-# Run only if the config is missing; Capacitor 7 syntax (no --npm-client).
-if [ ! -f capacitor.config.ts ]; then
-  bunx cap init "$APP_NAME" "$APP_ID" --web-dir=dist --yes >/dev/null || true
-fi
-
 # -----------------------------------------------------------------------------
 # Source files with rich JSDoc for AI assistance
 # -----------------------------------------------------------------------------
 mkdir -p src/{config,devtools,levels,scenes,types}
 # Game configuration
 cat > src/config/game.config.ts <<'EOF'
+import Phaser from "phaser";
 import type { Types } from "phaser";
 
 /**
@@ -410,7 +404,7 @@ import { Pane } from "tweakpane";
  * - Mute and Pause toggles
  * - This is intentionally lightweight: visual knobs beat over-testing for game feel.
  */
-export function installDevHud(game: Phaser.Game): void {
+export function installDevHud(game: Phaser.Game, setPaused: (paused: boolean) => void): void {
   const stats = new Stats();
   stats.showPanel(0);
   stats.dom.style.cssText =
@@ -441,10 +435,12 @@ export function installDevHud(game: Phaser.Game): void {
   f.addBinding(toggles, "mute").on("change", (ev) => {
     game.sound.mute = !!ev.value;
   });
-  f.addBinding(toggles, "pause").on("change", (ev) => {
-    const active = game.scene.getScenes(true);
-    if (ev.value) active.forEach((s) => s.scene.pause());
-    else active.forEach((s) => s.scene.resume());
+  const pauseBinding = f.addBinding(toggles, "pause").on("change", (ev) => {
+    setPaused(ev.value);
+  });
+  game.events.on("manualpausechange", (paused: boolean) => {
+    toggles.pause = paused;
+    pauseBinding.refresh();
   });
 
   // Keyboard: F toggles FPS panel quickly.
@@ -547,9 +543,10 @@ EOF
 
 # GameScene: playable core with bricks from JSON level
 cat > src/scenes/GameScene.ts <<'EOF'
-import Phaser, { Scene, Types } from "phaser";
+import Phaser, { Scene } from "phaser";
+import type { Types } from "phaser";
 import type { LevelSpec } from "@/types/level";
-import level1 from "@/levels/level1.json" assert { type: "json" };
+import level1 from "@/levels/level1.json";
 
 /**
  * GameScene: Minimal but fun brickbreaker loop.
@@ -560,7 +557,7 @@ import level1 from "@/levels/level1.json" assert { type: "json" };
  */
 export class GameScene extends Scene {
   private paddle!: Phaser.Physics.Arcade.Image;
-  private ball!: Phaser.Physics.Arcade.Image;
+  private ball!: Types.Physics.Arcade.ImageWithDynamicBody;
   private bricks!: Phaser.Physics.Arcade.StaticGroup;
   private cursors!: Types.Input.Keyboard.CursorKeys;
   private lives = 3;
@@ -592,13 +589,13 @@ export class GameScene extends Scene {
     this.buildBricks(level1 as LevelSpec);
 
     // Collisions
-    this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
-      const diff = ball.x - (paddle as Phaser.Physics.Arcade.Image).x;
+    this.physics.add.collider(this.ball, this.paddle, () => {
+      const diff = this.ball.x - this.paddle.x;
       // Nudge X velocity based on hit position to keep gameplay lively
-      ball.body.velocity.x += Phaser.Math.Clamp(diff * 3, -200, 200);
+      this.ball.body.velocity.x += Phaser.Math.Clamp(diff * 3, -200, 200);
     });
 
-    this.physics.add.collider(this.ball, this.bricks, (ball, brickObj) => {
+    this.physics.add.collider(this.ball, this.bricks, (_ball, brickObj) => {
       const b = brickObj as Phaser.Physics.Arcade.Image;
       // Remove brick
       b.destroy();
@@ -647,11 +644,10 @@ export class GameScene extends Scene {
 
     // Dev shortcuts
     this.input.keyboard?.on("keydown-R", () => this.scene.restart());
-    this.input.keyboard?.on("keydown-P", () => this.togglePause());
     this.input.keyboard?.on("keydown-M", () => (this.sound.mute = !this.sound.mute));
   }
 
-  update(): void {
+  override update(): void {
     // Keyboard paddle movement
     const speed = 520;
     if (this.cursors.left?.isDown) {
@@ -674,7 +670,7 @@ export class GameScene extends Scene {
 
     for (let r = 0; r < level.rows; r++) {
       for (let c = 0; c < level.cols; c++) {
-        if (level.mask && level.mask[r] && level.mask[r][c] === 0) continue;
+        if (level.mask?.[r]?.[c] === 0) continue;
         const x = startX + c * (level.brick.width + level.brick.padding);
         const y =
           level.brick.offsetY +
@@ -720,11 +716,6 @@ export class GameScene extends Scene {
     this.resetBall();
   }
 
-  /** Toggles scene pause/resume. */
-  private togglePause(): void {
-    if (this.scene.isPaused()) this.scene.resume();
-    else this.scene.pause();
-  }
 }
 EOF
 
@@ -748,18 +739,46 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const game = new Phaser.Game(config);
-installDevHud(game);
+let manuallyPaused = false;
+const pausedScenes = new Set<Phaser.Scene>();
+
+function syncPause(): void {
+  if (manuallyPaused || document.hidden) {
+    for (const scene of game.scene.getScenes(true)) {
+      pausedScenes.add(scene);
+      game.scene.pause(scene);
+    }
+  } else {
+    for (const scene of pausedScenes) {
+      if (scene.scene.isPaused()) game.scene.resume(scene);
+    }
+    pausedScenes.clear();
+  }
+}
+
+function setPaused(paused: boolean): void {
+  manuallyPaused = paused;
+  syncPause();
+  game.events.emit("manualpausechange", paused);
+}
+
+installDevHud(game, setPaused);
+window.addEventListener("keydown", (event) => {
+  if (event.key.toLowerCase() === "p" && !event.repeat) {
+    setPaused(!manuallyPaused);
+  }
+});
 
 // Mute/pause on tab hidden to avoid surprise sounds on multitask.
+let previouslyMuted = game.sound.mute;
 document.addEventListener("visibilitychange", () => {
-  const active = game.scene.getScenes(true);
   if (document.hidden) {
+    previouslyMuted = game.sound.mute;
     game.sound.mute = true;
-    active.forEach((s) => s.scene.pause());
   } else {
-    game.sound.mute = false;
-    active.forEach((s) => s.scene.resume());
+    game.sound.mute = previouslyMuted;
   }
+  syncPause();
 });
 
 // Developer convenience: access game from devtools
@@ -802,7 +821,7 @@ cat > tools/go/levelgen/main.go <<'EOF'
 // levelgen: tiny Go tool to generate a brick layout JSON.
 // Rationale: a small, useful Go piece that doesn't harm DX.
 // Usage example:
-//   go run ./tools/go/levelgen --rows 6 --cols 10 --width 75 --height 30 --padding 5 --offsetx 0 --offsety 90
+//   go run ./tools/go/levelgen/main.go --rows 6 --cols 10 --width 75 --height 30 --padding 5 --offsetx 0 --offsety 90
 package main
 
 import (
@@ -893,6 +912,7 @@ EOF
 cat > .gitignore <<'EOF'
 node_modules/
 dist/
+dist-electron/
 .DS_Store
 .idea/
 .vscode/
@@ -919,6 +939,7 @@ bun install
 bun run dev
 
 Open http://localhost:5173 (or your LAN IP on device).
+The web and mobile commands run Vite; dev:desktop also opens Electron.
 
 ## Platform dev
 

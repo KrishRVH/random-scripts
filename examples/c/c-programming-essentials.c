@@ -9,6 +9,10 @@
  * Run with: ./c-programming-essentials
  */
 
+#include <ctype.h>  /* For recognizing whitespace in user input */
+#include <errno.h>  /* For detecting numeric conversion errors */
+#include <limits.h> /* For the largest representable int */
+#include <stdint.h> /* For the largest allocation size, SIZE_MAX */
 #include <stdio.h>  /* For input/output functions like printf() */
 #include <stdlib.h> /* For memory management functions like malloc() */
 #include <string.h> /* For string manipulation functions like strlen() */
@@ -256,15 +260,40 @@ void demonstrate_memory_allocation(void) {
   print_separator("DYNAMIC MEMORY ALLOCATION");
 
   printf("How many numbers do you want to store? ");
-  int count;
-  scanf("%d", &count); /* Read user input */
+  char input[128];
+  if (fgets(input, sizeof(input), stdin) == NULL) {
+    printf("No number count read.\n");
+    return;
+  }
+
+  /* Read one whole line so the next lesson receives the next answer. */
+  if (strchr(input, '\n') == NULL && !feof(stdin)) {
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF) {
+    }
+    printf("Error: Number count is too long.\n");
+    return;
+  }
+
+  errno = 0;
+  char *end;
+  long count = strtol(input, &end, 10);
+  while (isspace((unsigned char)*end)) {
+    end++;
+  }
+  /* Both the allocation and every square must fit their destination types. */
+  if (errno == ERANGE || end == input || *end != '\0' || count <= 0 ||
+      count > INT_MAX / count || (size_t)count > SIZE_MAX / sizeof(int)) {
+    printf("Error: Enter a positive integer whose square fits in an int.\n");
+    return;
+  }
 
   /*
    * malloc() = "memory allocate"
    * Asks the operating system for a block of memory
    * Returns a pointer to that memory, or NULL if it fails
    */
-  int *dynamic_array = malloc(count * sizeof(int));
+  int *dynamic_array = malloc((size_t)count * sizeof(int));
 
   /*
    * ALWAYS check if malloc succeeded!
@@ -314,9 +343,9 @@ void demonstrate_strings(void) {
   /*
    * Different ways to create strings
    */
-  char greeting1[] = "Hello";   /* Array size calculated automatically */
-  char greeting2[20] = "World"; /* Fixed size array */
-  char *greeting3 = "from C!";  /* Pointer to string literal */
+  char greeting1[] = "Hello";        /* Array size calculated automatically */
+  char greeting2[20] = "World";      /* Fixed size array */
+  const char *greeting3 = "from C!"; /* Pointer to string literal */
 
   printf("Greeting parts: '%s', '%s', '%s'\n", greeting1, greeting2, greeting3);
 
@@ -356,12 +385,13 @@ void demonstrate_strings(void) {
   char *user_name = malloc(100 * sizeof(char));
   if (user_name != NULL) {
     printf("Enter your name: ");
-    fgets(user_name, 100, stdin); /* Safer than scanf for strings */
-
-    /* Remove newline that fgets includes */
-    user_name[strcspn(user_name, "\n")] = '\0';
-
-    printf("Hello, %s! Nice to meet you.\n", user_name);
+    if (fgets(user_name, 100, stdin) != NULL) {
+      /* Remove newline that fgets includes */
+      user_name[strcspn(user_name, "\n")] = '\0';
+      printf("Hello, %s! Nice to meet you.\n", user_name);
+    } else {
+      printf("No name read.\n");
+    }
     free(user_name); /* Remember to free! */
   }
 
@@ -458,7 +488,7 @@ void demonstrate_control_flow(void) {
  * Think of them like a form with multiple fields.
  */
 
-/* Define a structure BEFORE main() */
+/* Define a structure before using it. */
 struct Student {
   char name[50];
   int age;

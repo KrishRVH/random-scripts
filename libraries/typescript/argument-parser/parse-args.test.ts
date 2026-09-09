@@ -377,6 +377,7 @@ export function runTests(): void {
           temp: -0,
           a: true, // -a is still treated as a flag
         });
+        assertEqual(Object.is(result.flags['temp'], -0), true);
         assertDeepEqual(args, ['end']);
       },
     },
@@ -387,11 +388,9 @@ export function runTests(): void {
         args[2] = 'value'; // creates a hole at index 1 (sparse array)
         const result = parseArgs(args);
         assertDeepEqual(result.flags, { flag: true });
-        const compactArgs: Array<string | undefined> = Array.from(args);
-        assertDeepEqual(
-          compactArgs.filter((x): x is string => x !== undefined),
-          ['value'],
-        );
+        assertEqual(args.length, 2);
+        assertEqual(0 in args, false);
+        assertEqual(args[1], 'value');
       },
     },
     {
@@ -1161,39 +1160,6 @@ export function runTests(): void {
       },
     },
     {
-      name: 'Numeric long equals with plus sign coerces to number',
-      fn: () => {
-        const args = ['--n=+3'];
-        const result = parseArgs(args, { numericFlags: new Set(['n']) });
-        assertDeepEqual(result.flags, { n: 3 });
-        assertDeepEqual(args, []);
-      },
-    },
-    {
-      name: 'Numeric long consumes +3 as value',
-      fn: () => {
-        const args = ['--n', '+3', 'x'];
-        const result = parseArgs(args, {
-          flagsThatAcceptTheNextArgumentAsAValueIfItsValid: new Set(['n']),
-          numericFlags: new Set(['n']),
-        });
-        assertDeepEqual(result.flags, { n: 3 });
-        assertDeepEqual(args, ['x']);
-      },
-    },
-    {
-      name: 'Numeric long expects value: scientific notation consumed as string',
-      fn: () => {
-        const args = ['--n', '1e3'];
-        const result = parseArgs(args, {
-          flagsThatAcceptTheNextArgumentAsAValueIfItsValid: new Set(['n']),
-          numericFlags: new Set(['n']),
-        });
-        assertDeepEqual(result.flags, { n: '1e3' });
-        assertDeepEqual(args, []);
-      },
-    },
-    {
       name: 'Numeric long expects value: hex literal consumed as string',
       fn: () => {
         const args = ['--n', '0x10'];
@@ -1410,11 +1376,10 @@ export function runTests(): void {
         args[3] = 'pos';
         const r = parseArgs(args);
         assertDeepEqual(r.flags, { flag: true });
-        const compactArgs: Array<string | undefined> = Array.from(args);
-        assertDeepEqual(
-          compactArgs.filter((x): x is string => x !== undefined),
-          ['pos'],
-        );
+        assertEqual(args.length, 3);
+        assertEqual(0 in args, false);
+        assertEqual(1 in args, false);
+        assertEqual(args[2], 'pos');
       },
     },
     {
@@ -1450,17 +1415,13 @@ export function runTests(): void {
       },
     },
     {
-      name:
-        'Boolean long space-separated with surrounding whitespace is coerced ' +
-        '(since token is separate, no trimming needed)',
+      name: 'Boolean long space-separated value preserves surrounding whitespace',
       fn: () => {
         const args = ['--b', ' true '];
         const r = parseArgs(args, {
           flagsThatAcceptTheNextArgumentAsAValueIfItsValid: new Set(['b']),
           booleanFlags: new Set(['b']),
         });
-        // The token is " true ", but coercion checks tokens case-insensitively;
-        // no trimming occurs, so this remains a string (documenting the policy).
         assertDeepEqual(r.flags, { b: ' true ' });
         assertDeepEqual(args, []);
       },

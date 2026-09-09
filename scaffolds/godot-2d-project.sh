@@ -141,14 +141,6 @@ run_step() {
   return 0
 }
 
-run_command() {
-  if [ "$DRY_RUN" = true ]; then
-    print_info "[DRY RUN] Would run: $*"
-    return 0
-  fi
-  "$@"
-}
-
 make_directory() {
   local dir="$1"
   if [ "$DRY_RUN" = true ]; then
@@ -158,22 +150,8 @@ make_directory() {
   mkdir -p "$dir"
 }
 
-mktemp_dir() {
-  local d
-  d="$(mktemp -d 2>/dev/null)"
-  if [ -z "$d" ] || [ ! -d "$d" ]; then
-    print_error "Failed to create temporary directory (mktemp -d)"
-    return 1
-  fi
-  temp_dirs+=("$d")
-  echo "$d"
-  return 0
-}
-
 cleanup() {
-  if [ "$DRY_RUN" = true ]; then
-    return 0
-  fi
+  local d
   for d in "${temp_dirs[@]}"; do
     [ -n "$d" ] && [ -d "$d" ] && rm -rf "$d" >/dev/null 2>&1
   done
@@ -686,6 +664,22 @@ check_godot_installed() {
   return 1
 }
 
+download_file() {
+  if command_exists wget; then
+    wget -q --show-progress -O "$2" "$1"
+  else
+    curl -fL --progress-bar -o "$2" "$1"
+  fi
+}
+
+extract_archive() {
+  if command_exists unzip; then
+    unzip -q "$1" -d "$2"
+  else
+    python3 -m zipfile -e "$1" "$2"
+  fi
+}
+
 install_godot() {
   print_section "Godot Installation"
 
@@ -705,8 +699,18 @@ install_godot() {
     return 1
   fi
 
+  if [ "$DRY_RUN" = true ]; then
+    print_info "[DRY RUN] Would download Godot ${GODOT_VERSION} (${arch_suffix}) and export templates"
+    print_info "[DRY RUN] Would install Godot (${INSTALL_SCOPE} scope)"
+    return 0
+  fi
+
   local temp_dir
-  temp_dir="$(mktemp_dir)" || return 1
+  temp_dir="$(mktemp -d 2>/dev/null)" || {
+    print_error "Failed to create temporary directory (mktemp -d)"
+    return 1
+  }
+  temp_dirs+=("$temp_dir")
 
   local godot_zip="Godot_v${GODOT_VERSION}-stable_linux.${arch_suffix}.zip"
   local godot_bin="Godot_v${GODOT_VERSION}-stable_linux.${arch_suffix}"
@@ -721,7 +725,7 @@ install_godot() {
   local attempt ok=false
   for attempt in 1 2 3; do
     print_info "Downloading Godot (attempt $attempt/3): $godot_url"
-    if run_command wget -q --show-progress -O "$zip_path" "$godot_url"; then
+    if download_file "$godot_url" "$zip_path"; then
       ok=true
       break
     fi
@@ -736,13 +740,13 @@ install_godot() {
   fi
 
   print_subsection "Extracting Godot"
-  if ! run_command unzip -q "$zip_path" -d "$temp_dir"; then
+  if ! extract_archive "$zip_path" "$temp_dir"; then
     print_error "Failed to extract Godot zip"
     return 1
   fi
 
   local extracted="${temp_dir}/${godot_bin}"
-  if [ "$DRY_RUN" != true ] && [ ! -f "$extracted" ]; then
+  if [ ! -f "$extracted" ]; then
     print_error "Extracted Godot binary not found: $extracted"
     return 1
   fi
@@ -763,11 +767,11 @@ install_godot() {
 
   make_directory "$(dirname "$install_path")" || return 1
 
-  if [ "$DRY_RUN" != true ] && [ -f "$install_path" ]; then
+  if [ -f "$install_path" ]; then
     local backup="${install_path}.backup.$(date +%Y%m%d_%H%M%S)"
     print_info "Backing up existing Godot to: $backup"
     if [[ "$install_path" == /usr/* ]]; then
-      run_command sudo cp -p "$install_path" "$backup" || true
+      sudo cp -p "$install_path" "$backup" || true
     else
       cp -p "$install_path" "$backup" >/dev/null 2>&1 || true
     fi
@@ -779,11 +783,11 @@ install_godot() {
       print_error "sudo required for system install but not found"
       return 1
     fi
-    run_command sudo mv -f "$extracted" "$install_path" || return 1
-    run_command sudo chmod +x "$install_path" || return 1
+    sudo mv -f "$extracted" "$install_path" || return 1
+    sudo chmod +x "$install_path" || return 1
   else
-    run_command mv -f "$extracted" "$install_path" || return 1
-    run_command chmod +x "$install_path" || return 1
+    mv -f "$extracted" "$install_path" || return 1
+    chmod +x "$install_path" || return 1
     export PATH="${HOME}/.local/bin:${PATH}"
   fi
 
@@ -808,7 +812,7 @@ install_godot() {
   ok=false
   for attempt in 1 2 3; do
     print_info "Downloading templates (attempt $attempt/3): $templates_url"
-    if run_command wget -q --show-progress -O "$tpz_path" "$templates_url"; then
+    if download_file "$templates_url" "$tpz_path"; then
       ok=true
       break
     fi
@@ -820,23 +824,19 @@ install_godot() {
     local template_dir="${HOME}/.local/share/godot/export_templates"
     make_directory "$template_dir" || true
 
-    if [ "$DRY_RUN" != true ]; then
-      local target="${template_dir}/${GODOT_VERSION}.stable"
-      if [ -d "$target" ]; then
-        local b="${target}.backup.$(date +%Y%m%d_%H%M%S)"
-        print_info "Backing up existing templates to: $b"
-        mv "$target" "$b" >/dev/null 2>&1 || true
+    local target="${template_dir}/${GODOT_VERSION}.stable"
+    if [ -d "$target" ]; then
+      local b="${target}.backup.$(date +%Y%m%d_%H%M%S)"
+      print_info "Backing up existing templates to: $b"
+      mv "$target" "$b" >/dev/null 2>&1 || true
+    fi
+    if extract_archive "$tpz_path" "$template_dir" >/dev/null 2>&1; then
+      if [ -d "${template_dir}/templates" ]; then
+        mv "${template_dir}/templates" "$target" >/dev/null 2>&1 || true
       fi
-      if unzip -q "$tpz_path" -d "$template_dir" >/dev/null 2>&1; then
-        if [ -d "${template_dir}/templates" ]; then
-          mv "${template_dir}/templates" "$target" >/dev/null 2>&1 || true
-        fi
-        print_status "Export templates installed"
-      else
-        print_warning "Failed to extract export templates (continuing)"
-      fi
+      print_status "Export templates installed"
     else
-      print_info "[DRY RUN] Would extract templates to: ${template_dir}/${GODOT_VERSION}.stable"
+      print_warning "Failed to extract export templates (continuing)"
     fi
   else
     print_warning "Could not download export templates (continuing)"
@@ -1150,6 +1150,7 @@ func load_game(slot: int) -> bool:
 
 func save_settings(settings: Dictionary) -> void:
 	var config := ConfigFile.new()
+	config.load(SETTINGS_FILE)
 	for key in settings.keys():
 		config.set_value("settings", str(key), settings[key])
 	var err := config.save(SETTINGS_FILE)
@@ -1171,6 +1172,7 @@ func load_settings() -> Dictionary:
 	for k in defaults.keys():
 		if not out.has(k):
 			out[k] = defaults[k]
+	out["high_score"] = config.get_value("game", "high_score", out["high_score"])
 	return out
 
 func save_high_score(score: int) -> void:
@@ -1388,8 +1390,8 @@ func goto_scene(path: String, transition: TransitionType = TransitionType.FADE_B
 
 	match transition:
 		TransitionType.NONE:
-			if _change_scene(path):
-				_finish_transition()
+			_change_scene(path)
+			_finish_transition()
 		TransitionType.FADE_WHITE:
 			await _fade_to(path, Color.WHITE)
 		_:
@@ -1397,8 +1399,8 @@ func goto_scene(path: String, transition: TransitionType = TransitionType.FADE_B
 
 func _fade_to(path: String, color: Color) -> void:
 	if _overlay == null:
-		if _change_scene(path):
-			_finish_transition()
+		_change_scene(path)
+		_finish_transition()
 		return
 
 	_overlay.color = color
@@ -1418,21 +1420,25 @@ func _fade_to(path: String, color: Color) -> void:
 	_overlay.hide()
 	_finish_transition()
 
-func _change_scene(path: String) -> bool:
-	if current_scene:
-		current_scene.queue_free()
-
+func _change_scene(path: String) -> void:
 	var packed := load(path) as PackedScene
 	if packed == null:
 		push_error("SceneManager: failed to load scene: " + path)
-		return false
+		return
 
-	current_scene = packed.instantiate()
+	var next_scene := packed.instantiate()
+	if next_scene == null:
+		push_error("SceneManager: failed to instantiate scene: " + path)
+		return
+
+	current_scene = get_tree().current_scene
+	if current_scene:
+		current_scene.queue_free()
+	current_scene = next_scene
 	get_tree().root.add_child(current_scene)
 	get_tree().current_scene = current_scene
 
 	scene_changed.emit(path)
-	return true
 
 func _finish_transition() -> void:
 	is_transitioning = false
@@ -1482,8 +1488,14 @@ func _process(delta: float) -> void:
 	if current_state == GameState.PLAYING:
 		game_time += delta
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("pause") and current_state in [GameState.PLAYING, GameState.PAUSED]:
+		toggle_pause()
+		get_viewport().set_input_as_handled()
+
 func start_game() -> void:
 	current_state = GameState.PLAYING
+	get_tree().paused = false
 	current_score = 0
 	player_lives = 3
 	current_level = 1
@@ -1854,7 +1866,7 @@ func _apply_squash(x_scale: float, y_scale: float) -> void:
 BALL_PLAYER_EOF
 
   write_file "${PROJECT_DIR}/scenes/player/ball_player.tscn" 0644 << 'BALL_PLAYER_SCENE_EOF' || ok=false
-[gd_scene load_steps=6 format=3 uid="uid://b1234567890"]
+[gd_scene load_steps=7 format=3 uid="uid://b1234567890"]
 
 [ext_resource type="Script" path="res://scenes/player/ball_player.gd" id="1_player"]
 
@@ -1901,7 +1913,7 @@ libraries = { "": SubResource("AnimationLibrary_1") }
 BALL_PLAYER_SCENE_EOF
 
   write_file "${PROJECT_DIR}/scenes/common/platform.tscn" 0644 << 'PLATFORM_SCENE_EOF' || ok=false
-[gd_scene load_steps=3 format=3 uid="uid://bplatform12345"]
+[gd_scene load_steps=4 format=3 uid="uid://bplatform12345"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(200, 20)
@@ -1969,7 +1981,7 @@ offset_left = 10.0
 offset_top = -100.0
 offset_right = 420.0
 offset_bottom = -10.0
-text = "Arrow Keys / A,D - Move\\nSpace - Jump\\nEsc - Pause"
+text = "Arrow Keys / A,D - Move\nSpace - Jump\nEsc - Pause"
 theme_override_colors/font_color = Color(0.8, 0.8, 0.8, 0.7)
 GAME_UI_TSCN_EOF
 
@@ -2008,13 +2020,7 @@ func _spawn_player() -> void:
 
 	if camera:
 		camera.position = p.position
-		camera.current = true
-
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("pause"):
-		var gm := get_node_or_null("/root/GameManager")
-		if gm:
-			gm.toggle_pause()
+		camera.make_current()
 TEST_LEVEL_GD_EOF
 
   write_file "${PROJECT_DIR}/scenes/levels/test_level.tscn" 0644 << 'TEST_LEVEL_TSCN_EOF' || ok=false
@@ -2071,7 +2077,7 @@ offset_left = 10.0
 offset_top = 10.0
 offset_right = 520.0
 offset_bottom = 120.0
-text = "Arrow Keys / A,D - Move\\nSpace - Jump\\nEsc - Pause"
+text = "Arrow Keys / A,D - Move\nSpace - Jump\nEsc - Pause"
 TEST_LEVEL_TSCN_EOF
 
   if [ "$ok" = true ]; then
@@ -2109,15 +2115,10 @@ func _physics_process(delta: float) -> void:
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 	move_and_slide()
-
-	if Input.is_action_just_pressed("pause"):
-		var gm := get_node_or_null("/root/GameManager")
-		if gm:
-			gm.toggle_pause()
 TOPDOWN_GD_EOF
 
   write_file "${PROJECT_DIR}/scenes/player/player_topdown.tscn" 0644 << 'TOPDOWN_TSCN_EOF' || ok=false
-[gd_scene load_steps=4 format=3 uid="uid://btopdownplayer1"]
+[gd_scene load_steps=5 format=3 uid="uid://btopdownplayer1"]
 
 [ext_resource type="Script" path="res://scenes/player/player_topdown.gd" id="1_player"]
 
@@ -2187,7 +2188,7 @@ offset_left = 10.0
 offset_top = 10.0
 offset_right = 520.0
 offset_bottom = 120.0
-text = "WASD/Arrows - Move\\nEsc/P - Pause"
+text = "WASD/Arrows - Move\nEsc/P - Pause"
 TOPDOWN_LEVEL_TSCN_EOF
 
   if [ "$ok" = true ]; then
@@ -2258,7 +2259,7 @@ func _ready() -> void:
 PUZZLE_MAIN_GD_EOF
 
   write_file "${PROJECT_DIR}/scenes/main/puzzle_pawn.tscn" 0644 << 'PUZZLE_PAWN_TSCN_EOF' || ok=false
-[gd_scene load_steps=4 format=3 uid="uid://bpuzzlepawn1"]
+[gd_scene load_steps=5 format=3 uid="uid://bpuzzlepawn1"]
 
 [ext_resource type="Script" path="res://scripts/components/grid_movement.gd" id="1_grid"]
 
@@ -2302,7 +2303,7 @@ offset_left = 10.0
 offset_top = 10.0
 offset_right = 520.0
 offset_bottom = 120.0
-text = "Arrow Keys / WASD - Move on grid\\nEsc/P - Pause"
+text = "Arrow Keys / WASD - Move on grid\nEsc/P - Pause"
 PUZZLE_MAIN_TSCN_EOF
 
   if [ "$ok" = true ]; then
@@ -2406,10 +2407,9 @@ generate_import_files() {
   fi
 
   if command_exists timeout; then
-    timeout 8s godot --headless --path "$PROJECT_DIR" >/dev/null 2>&1 || true
+    timeout 8s godot --headless --editor --quit --path "$PROJECT_DIR" >/dev/null 2>&1 || true
   else
-    print_warning "timeout not available; running Godot headless briefly (may take longer)"
-    godot --headless --path "$PROJECT_DIR" >/dev/null 2>&1 || true
+    godot --headless --editor --quit --path "$PROJECT_DIR" >/dev/null 2>&1 || true
   fi
   print_status "Import generation attempted"
   return 0
