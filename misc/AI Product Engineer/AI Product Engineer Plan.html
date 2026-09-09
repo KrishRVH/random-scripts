@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#f7f6f0" />
     <meta
       name="description"
-      content="A 72-week course in AI-native product engineering. Nine hours a week, two primary companions, four practitioner studies, and one product."
+      content="A 72-week course in AI-native product engineering. Nine hours a week, AI and domain study, four practitioner studies, and one product."
     />
     <!-- Embedded font licenses:
 Copyright 2014 The DM Sans Project Authors (https://github.com/googlefonts/dm-fonts)
@@ -2039,7 +2039,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           ><a href="#market"><span class="nav-num">02</span><span>The market</span></a
           ><a href="#weekly"><span class="nav-num">03</span><span>Weekly rhythm</span></a
           ><a href="#practitioners"><span class="nav-num">04</span><span>Practitioner studies</span></a
-          ><a href="#pragmatic"><span class="nav-num">05</span><span>Primary companions</span></a
+          ><a href="#study"><span class="nav-num">05</span><span>Study and experiment</span></a
           ><span class="nav-group">The practice</span
           ><a href="#track"><span class="nav-num">06</span><span>The six phases</span></a
           ><a href="#reading"><span class="nav-num">07</span><span>Reading list</span></a
@@ -2167,11 +2167,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <span class="eyebrow"><span class="chapter-number">01</span>The role this plan develops</span>
             <h2 class="sec-title" id="target-title">Own the decisions around the code</h2>
             <p class="sec-sub">
-              Agent runtimes handle execution, sessions, tracing, guardrails, and orchestration. Building a career on
-              implementation alone is no longer defensible. Specification, verification, security, architecture, and
-              accountability matter <em>more</em>. Use SVPG's four risks to assess those decisions. As the person
-              directing agent work, check the problem definition against users and the domain before judging the
-              implementation.
+              Learn to use agents to engineer software and to build products whose behavior depends on models. Delegate
+              implementation and routine checks while owning the problem definition, acceptance criteria, permissions,
+              and operating decisions. Use SVPG's four risks to assess the result, checking it against users and the
+              domain.
             </p>
           </div>
 
@@ -2400,14 +2399,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <div class="card" style="margin-top: 1.3rem">
             <span class="eyebrow">Direct and review the agent's work</span>
             <p style="margin-top: 0.7rem; color: var(--fg-2); max-width: 72ch">
-              Reserve the first 20 minutes for your own sketch, prediction, or diagnosis. Use code and primary sources
-              to check your reasoning before asking an agent for an answer. Then specify the behavior, constraints, edge
-              states, and verification, and let the agent implement the slice.
+              Make a brief prediction before consulting an agent's answer, spending up to 20 minutes on the judgment you
+              most need to practice. Use code and primary sources to check your reasoning. This is a learning exercise;
+              in product work, choose the division of investigation, planning, and implementation that the task needs.
             </p>
             <p>
-              Inspect the diff closely and record every issue you catch in the decision log. Follow
-              <a href="#pstack-practice">Tan's verification practice</a> to check the running result.
-              <span class="amber">The block is complete only when you can verify the change.</span>
+              Give the agent the intended outcome, constraints, allowed actions, and required evidence. Inspect changed
+              boundaries and behavior with serious consequences directly. Use automated checks and targeted inspection
+              for routine changes. Record what you checked, what you delegated, and what remains uncertain. Follow
+              <a href="#pstack-practice">Tan's verification practice</a> to inspect the running result.
+              <span class="amber">The block is complete only when the evidence supports acceptance.</span>
             </p>
             <div class="note">
               Use real work throughout the 72 weeks. Keep the decision log as a record of what your reviews caught and
@@ -2679,92 +2680,164 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
       </section>
 
       <!-- ================= COMPANION STUDY ================= -->
-      <section class="section" id="pragmatic" aria-labelledby="pragmatic-title" tabindex="-1">
+      <section class="section" id="study" aria-labelledby="study-title" tabindex="-1">
         <div class="wrap">
           <div class="sec-head">
-            <span class="eyebrow"><span class="chapter-number">05</span>Two primary companions · 36 weeks each</span>
-            <h2 class="sec-title" id="pragmatic-title">Read, apply, and revise your judgment</h2>
+            <span class="eyebrow"><span class="chapter-number">05</span>Study and experiment</span>
+            <h2 class="sec-title" id="study-title">Learn the decisions behind the tools</h2>
             <p class="sec-sub">
-              Use <em>The Pragmatic Programmer</em> in weeks 1-16 and 53-72. Study Eric Evans's
-              <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em> in weeks 17-52. Each book gets
-              27 hours of reading, with experiments and review embedded in the week's product work.
+              Study how foundation models behave with Chip Huyen's <em>AI Engineering</em> and domain modeling with Eric
+              Evans's <em>Domain-Driven Design: Tackling Complexity in the Heart of Software</em>. Each gets 24 reading
+              hours. During the capstone, spend six more hours revisiting these texts to examine your weakest decisions.
+              The phase readings supply discovery, design, data correctness, and operational practice.
             </p>
           </div>
           <div class="grid risks">
             <div class="risk">
               <div class="rn">01 · Read · 45 min</div>
-              <h3>Find a decision in the work</h3>
+              <h3>Find the relevant principle</h3>
               <p>
-                Read the assigned passage with a current problem in mind. Write the question it helps you investigate.
+                Read the assigned topics with a current decision in mind. Check current primary documentation before
+                relying on a tool's behavior or limits.
               </p>
             </div>
             <div class="risk">
               <div class="rn">02 · Frame · 15 min</div>
-              <h3>Predict what will happen</h3>
+              <h3>Predict a result</h3>
               <p>
-                State the principle, when it applies, and the behavior you expect to change. Define the experiment
-                before seeing the result.
+                State when the principle applies and what you expect to observe. Define the experiment before seeing its
+                result.
               </p>
             </div>
             <div class="risk">
               <div class="rn">03 · Apply · within the build block</div>
-              <h3>Change the product</h3>
+              <h3>Test the decision</h3>
               <p>
-                Use at least 45 of the 225 build minutes to apply the lesson in code, architecture, tools, tests,
-                product work, or collaboration.
+                Use at least 45 of the 225 build minutes to apply the lesson to the product, model, tools, tests, or way
+                you delegate work.
               </p>
             </div>
             <div class="risk">
               <div class="rn">04 · Review · within the log block</div>
-              <h3>Keep, adapt, or reject it</h3>
+              <h3>Keep, adapt, or remove it</h3>
               <p>
-                Use 15 of the 45 log minutes to record the result and tradeoff. Keep a practice when the evidence
-                supports it.
+                Use 15 of the 45 log minutes to record the result and tradeoff. Retain a practice when its evidence
+                supports the cost.
               </p>
             </div>
           </div>
+          <div class="card" style="margin-bottom: 1rem">
+            <span class="eyebrow">AI Engineering · Chip Huyen · 24 reading hrs</span>
+            <h3 style="margin-top: 0.7rem">Build and evaluate products that use models</h3>
+            <p style="margin-top: 0.7rem; color: var(--fg-2)">
+              Use these selected topics to explain model behavior, choose an approach, and evaluate the complete user
+              workflow. Test what you learn on a small read-only task first, then carry the evaluation method into your
+              product.
+            </p>
+            <div class="more-body">
+              <div class="shelf-row">
+                <span class="sk">Weeks 1-4 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 1-2 and 4:</b> use-case fit, model capabilities and limits,
+                  probabilistic outputs, sampling, structured output, and success criteria.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 5-8 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 3-4:</b> evaluation methods, representative cases, human judgment,
+                  model-based graders, cost, and latency.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 9-12 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 5 and 8:</b> prompt and context design, defensive prompting, and
+                  dataset quality. Keep development examples separate from held-out evaluation cases.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 13-16 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 4, 6, and 10:</b> model selection, retrieval, and user feedback.
+                  Compare an answer with supplied evidence against one without it.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 49-52 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapter 6:</b> retrieval quality, agent tools, and memory. Separate failure
+                  to retrieve the right evidence from failure to use it correctly.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 53-56 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 3-4 and 8:</b> evaluation and data quality for the product's actual
+                  tasks.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 57-60 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapters 7 and 9:</b> deciding whether to fine-tune and measuring inference
+                  cost and latency.</span
+                >
+              </div>
+              <div class="shelf-row">
+                <span class="sk">Weeks 61-64 · 3 hrs</span
+                ><span class="sv"
+                  ><b>Selected topics from Chapter 10:</b> application architecture, operational feedback, and
+                  monitoring.</span
+                >
+              </div>
+            </div>
+            <div class="sources">
+              <a href="https://github.com/chiphuyen/aie-book">AI Engineering: author resources</a> ·
+              <a href="https://github.com/chiphuyen/aie-book/blob/main/ToC.md">Contents</a> ·
+              <a href="https://github.com/chiphuyen/aie-book/blob/main/chapter-summaries.md">Chapter summaries</a>
+            </div>
+          </div>
           <div class="card">
-            <span class="eyebrow">Evans · weeks 17-52 · primary reading</span>
+            <span class="eyebrow">Domain-Driven Design · Eric Evans · 24 reading hrs</span>
             <h3 style="margin-top: 0.7rem">Carry domain understanding into the software</h3>
             <p style="margin-top: 0.7rem; color: var(--fg-2)">
-              Study the same product throughout these readings, returning to users and domain experts as questions
-              arise. Trace important terms to observed behavior or a domain expert, mark assumptions, and revise the
-              model when examples contradict it. Generated code and tests can agree with each other while encoding the
-              wrong rule.
+              Return to users and domain experts as questions arise. Trace important terms to observed behavior, mark
+              assumptions, and revise the model when examples contradict it. Generated code and tests can agree while
+              encoding the wrong rule.
             </p>
             <div class="more-body">
               <div class="shelf-row">
                 <span class="sk">Weeks 17-30 · 10.5 hrs</span
                 ><span class="sv"
                   ><b>Chapters 1-3 and 15:</b> knowledge crunching, shared language, model-driven design, and the core
-                  domain. Build a glossary from interviews and test a core-domain statement against real work.</span
+                  domain. Build a glossary from interviews and test the important rules against real work.</span
                 >
               </div>
               <div class="shelf-row">
-                <span class="sk">Weeks 31-41 · 8.25 hrs</span
+                <span class="sk">Weeks 31-39 · 6.75 hrs</span
                 ><span class="sv"
                   ><b>Chapters 4-7 and selected Chapter 10:</b> domain isolation, entities, value objects, aggregates,
                   intention-revealing interfaces, side-effect-free functions, and assertions. Read Chapter 7 alongside
-                  Chapters 5-6 as their worked shipping example. Read factory and repository mechanics for the problem
-                  they solve. Enforce one rule in code and match its consistency boundary to a transaction.</span
+                  Chapters 5-6 as their worked example. Study factory and repository mechanics for the problems they
+                  solve. Enforce a rule and match its consistency boundary to a transaction.</span
                 >
               </div>
               <div class="shelf-row">
-                <span class="sk">Weeks 42-52 · 8.25 hrs</span
+                <span class="sk">Weeks 40-48 · 6.75 hrs</span
                 ><span class="sv"
-                  ><b>Chapters 8-10, 13, and selected Chapter 14:</b> discovering implicit concepts, supple design,
-                  refactoring the model, bounded contexts, and context maps. Finish any remaining Chapter 7 example
-                  before moving on. Use a domain conversation to revise both the model and implementation. Study the
-                  integration relationships your product actually needs.</span
+                  ><b>Selected Chapters 8-10, 13, and 14:</b> implicit concepts, supple design, refactoring, bounded
+                  contexts, and context maps. Finish the worked example if needed. Use a domain conversation to revise
+                  both model and implementation; study the integration relationships your product needs.</span
                 >
               </div>
             </div>
             <div class="note">
-              These are study allowances for the named topics. Continue an essential passage in the next companion
-              session when needed. To complete the week, test a modeling decision against domain evidence and code.
-              Knowing a pattern's name alone does not meet that requirement. Domain boundaries describe meaning,
-              transaction boundaries protect consistency, task dependencies determine work order, and permissions govern
-              allowed actions. Design each explicitly; none requires a separate agent or service.
+              Keep applying AI evaluation during these weeks. Turn domain examples into evaluation criteria, control
+              access to source data, and test writes proposed by an AI model against invariants. Include model calls in
+              the cost model, SLOs, and threat model. Domain boundaries describe meaning, transactions protect
+              consistency, task dependencies determine work order, and permissions govern allowed actions. Design each
+              explicitly; none requires a separate agent or service.
             </div>
             <div class="sources">
               <a
@@ -2774,48 +2847,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               · <a href="https://www.domainlanguage.com/ddd/reference/">DDD Reference</a>
             </div>
           </div>
-          <div class="grid g2" style="margin-top: 1rem">
-            <div class="card">
-              <div class="tranche-k now">
-                <span class="n">The Pragmatic Programmer · weeks 1-16</span>
-                <h3>Build habits for learning and change</h3>
-              </div>
-              <ul class="learn">
-                <li>
-                  <b>Craft and feedback:</b> care about the work, resist broken windows, maintain a knowledge portfolio,
-                  and communicate deliberately.
-                </li>
-                <li><b>Design for change:</b> ETC, DRY, orthogonality, reversibility, and visible consequences.</li>
-                <li>
-                  <b>Discovery and delivery:</b> tracer bullets, prototypes, estimation, requirements as learned
-                  constraints, and short feedback loops.
-                </li>
-              </ul>
-            </div>
-            <div class="card">
-              <div class="tranche-k later">
-                <span class="n">The Pragmatic Programmer · weeks 53-72</span>
-                <h3>Revisit the habits under operational pressure</h3>
-              </div>
-              <ul class="learn">
-                <li>
-                  <b>Reliability:</b> contracts, assertions, loud failures, resource balancing, defensive boundaries,
-                  and reversible architecture.
-                </li>
-                <li>
-                  <b>Tools and verification:</b> debugging, automation, testing, property-based thinking, security, and
-                  disciplined tool design.
-                </li>
-                <li>
-                  <b>Ownership:</b> refactoring, pragmatic teams, user delight, pride in the result, and responsibility
-                  for outcomes.
-                </li>
-              </ul>
-            </div>
-          </div>
           <div class="note">
-            Carry useful pragmatic habits through every phase, including the Evans weeks. Use the companion hour for the
-            scheduled book; consult the other book during phase study when the work calls for it.
+            <b>Weeks 65-72 · 6 reading hrs:</b> revisit Huyen and Evans on the capstone's weakest AI or domain decision.
+            Test your explanation in the build block. These reading allowances fit within the weekly schedule. Use the
+            course's pacing policy when essential study needs more time. Demonstrate understanding through the work you
+            produce.
           </div>
         </div>
       </section>
@@ -2924,9 +2960,22 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                         ></label
                       >
                     </li>
+                    <li>
+                      <label class="task"
+                        ><input type="checkbox" data-k="p1e" /><span
+                          >10 human-scored cases for a small read-only AI task, with repeated runs and an error
+                          log</span
+                        ></label
+                      >
+                    </li>
                   </ul>
                   <div class="subnote">
                     For each issue, record the evidence, violated principle, user consequence, severity, and correction.
+                  </div>
+                  <div class="subnote">
+                    Use one small task from this workflow to study AI behavior. Record its input, expected outcome,
+                    model settings, and actual result. Repeat selected cases to expose variation. Use these small
+                    samples to diagnose failures; they cannot establish production reliability.
                   </div>
                 </div>
               </div>
@@ -2935,7 +2984,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 <p>
                   You distinguish an observed problem from your interpretation, prioritize by user consequence, fix the
                   workflow, and verify the change helped. On an unfamiliar workflow, identify a usability issue from
-                  observation and test your explanation before reading an agent critique.
+                  observation and test your explanation before reading an agent critique. Explain one case where a
+                  well-formed AI response is wrong or unhelpful, using your own scoring criteria.
                 </p>
               </div>
               <div class="sources">
@@ -3037,6 +3087,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                         ></label
                       >
                     </li>
+                    <li>
+                      <label class="task"
+                        ><input type="checkbox" data-k="p2f" /><span
+                          >Read-only model interaction with a context comparison, held-out cases, and a tested
+                          fallback</span
+                        ></label
+                      >
+                    </li>
                   </ul>
                   <div class="subnote">Run preference tests only after users can complete the task.</div>
                 </div>
@@ -3045,12 +3103,20 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 For one workflow, compare two or three runnable variants on the same task. Capture screenshots or video,
                 measure the interaction, and use the result to choose the design.
               </div>
+              <div class="subnote">
+                Extend the same AI task into a read-only interaction. Compare two context choices and two eligible
+                models on cases kept out of prompt development. Show the supporting evidence and test missing or
+                conflicting information, correction, abstention, and human fallback. Observe how users respond to a
+                plausible mistake.
+              </div>
               <div class="pass">
                 <div class="col-h">Pass condition</div>
                 <p>
                   You explain every major visual decision in terms of hierarchy, comprehension, behavior, convention, or
                   brand. In the transfer check, predict how an unfamiliar interaction fails in one of the six states,
-                  then reproduce it. Use Tan's verification practice to inspect the running interface.
+                  then reproduce it. Use Tan's verification practice to inspect the running interface. Explain which
+                  model and context choice you retained, its observed failures, and how the fallback helps the user
+                  finish the task.
                 </p>
               </div>
               <div class="sources">
@@ -3161,7 +3227,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p3g" /><span
-                          >Domain glossary traced to interviews, assumptions marked, and a core-domain statement</span
+                          >Domain glossary traced to interviews, assumptions marked, a core-domain statement, and domain
+                          examples used as evaluation criteria</span
                         ></label
                       >
                     </li>
@@ -3194,8 +3261,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <div class="sources">
                 <div class="col-h">Phase readings, in order</div>
                 <p class="subnote">
-                  Read Evans alongside these sources in the companion hour: Chapters 1-3 and 15. Use the phase-study
-                  allocation in the reading list for discovery, systems, and measurement.
+                  Read Evans alongside these sources in the companion hour: Chapters 1-3 and 15. Carry the AI task and
+                  evaluation method into the chosen domain. Record each data source, permission to use it, sensitive
+                  fields, and who may retrieve it. Test a model suggestion against the original interview evidence. Use
+                  the phase-study allocation in the reading list for discovery, systems, and measurement.
                 </p>
                 <ol>
                   <li>
@@ -3289,22 +3358,24 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p4d" /><span
-                          >SLOs, error budget, runbook, 1 controlled failure drill</span
+                          >SLOs including model latency and failure, error budget, runbook, 1 controlled failure
+                          drill</span
                         ></label
                       >
                     </li>
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p4e" /><span
-                          >Cost model + threat model for the key workflow</span
+                          >Cost model and threat model for the key workflow, including model calls and access to
+                          context</span
                         ></label
                       >
                     </li>
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p4f" /><span
-                          >One invariant enforced in a type or API and one in a runtime check, with rejected
-                          counterexamples</span
+                          >One invariant enforced in a type or API and one in a runtime check, including a rejected
+                          model-proposed write</span
                         ></label
                       >
                     </li>
@@ -3356,14 +3427,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 <p>
                   Explain which rule the transaction protects, which permissions the agent needs, and where isolation
                   ends. Diagnose an interrupted write from evidence, then repeat on a changed failure case without a
-                  generated diagnosis. A timeout alone does not establish that the write stopped.
+                  generated diagnosis. A timeout alone does not establish that the write stopped. Explain why a valid
+                  tool schema does not establish that the requested action respects the domain rule.
                 </p>
               </div>
               <div class="sources">
                 <div class="col-h">Phase readings, in order</div>
                 <p class="subnote">
-                  Evans remains the primary companion through the first four weeks of Phase 5. Study its model-to-code
-                  examples alongside Ousterhout and the data-correctness readings below. Use FSA for quality attributes,
+                  Evans is the companion throughout this phase, ending at week 48. Study its model-to-code examples
+                  alongside Ousterhout and the data-correctness readings below. Use FSA for quality attributes,
                   decisions, and risk; consult architectural styles when the product needs them.
                 </p>
                 <ol>
@@ -3400,13 +3472,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <div class="pbody">
               <div class="pcols">
                 <div>
-                  <div class="col-h">Implementation order</div>
+                  <div class="col-h">Approaches to compare</div>
                   <ul class="learn">
-                    <li>① Deterministic code</li>
-                    <li>② Single model call</li>
-                    <li>③ Fixed workflow (routing, chaining, or parallel execution)</li>
-                    <li>④ Bounded agent</li>
-                    <li>⑤ Multi-agent: <span class="cyan">most projects stop before here</span></li>
+                    <li>Existing manual process or deterministic software</li>
+                    <li>Single model call or retrieval-assisted response</li>
+                    <li>Fixed workflow, bounded agent, or cooperating agents</li>
+                    <li>
+                      Choose feasible candidates for the task. Compare outcome quality, total cost, latency, and human
+                      intervention; implement only the comparisons that answer a real uncertainty.
+                    </li>
                   </ul>
                   <div class="col-h">Direction and supervision</div>
                   <ul class="learn">
@@ -3417,14 +3491,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>Durable role records, deterministic monitors, ownership, handoffs, and backpressure</li>
                     <li>Model selection by observed quality, review effort, elapsed time, cost, and available quota</li>
                   </ul>
-                  <div class="col-h" style="margin-top: 1.1rem">Evaluation stack</div>
+                  <div class="col-h" style="margin-top: 1.1rem">Data, context, and evaluation</div>
                   <ul class="learn">
                     <li>
-                      Deterministic checks · representative cases · behavioral graders · operational measures ·
-                      production feedback
+                      Representative cases, error types, held-out evaluation, repeated trials, and human calibration of
+                      model graders
                     </li>
                     <li>
-                      Human reliance · approval behavior · displaced work · feedback quality · compounding failure
+                      Retrieval quality versus answer quality; missing, stale, conflicting, or unauthorized context
+                    </li>
+                    <li>
+                      Human reliance, correction, fallback, approval behavior, displaced work, and compounding failure
                     </li>
                   </ul>
                 </div>
@@ -3434,27 +3511,32 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5a" /><span
-                          >Deterministic baseline for one useful task</span
+                          >Measured baseline from the existing process or deterministic software for one useful
+                          task</span
                         ></label
                       >
                     </li>
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5b" /><span
-                          >Bounded agent with ≤5 well-defined tools</span
+                          >Built and evaluated bounded agent, limited to ≤5 tools for this exercise</span
                         ></label
                       >
                     </li>
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5c" /><span
-                          >50-100 curated eval cases in the repository</span
+                          >50-100 curated eval cases, with development and held-out sets, explicit scoring, and human
+                          checks of model graders</span
                         ></label
                       >
                     </li>
                     <li>
                       <label class="task"
-                        ><input type="checkbox" data-k="p5d" /><span>Failure taxonomy derived from traces</span></label
+                        ><input type="checkbox" data-k="p5d" /><span
+                          >Failure taxonomy from traces and persisted outcomes, including retrieval, generation, and
+                          tool failures</span
+                        ></label
                       >
                     </li>
                     <li>
@@ -3476,8 +3558,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5g" /><span
-                          >Two-model comparison on two tasks, with correctness, review time, elapsed time, and cost
-                          recorded</span
+                          >Two-model comparison on two tasks, with quality, review time, elapsed time, interventions,
+                          and cost per successful task</span
                         ></label
                       >
                     </li>
@@ -3498,8 +3580,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     </li>
                   </ul>
                   <div class="subnote">
-                    Give each tool a narrow purpose, typed I/O, explicit side effects and authorization, idempotency,
-                    and machine-readable errors. Evaluate model output as part of the whole workflow.
+                    Give each tool an understandable contract: validated inputs, permissions, side effects, retry
+                    behavior, recovery, and machine-readable errors. A tool that runs code or searches broadly can be
+                    appropriate when you control its environment and authority and test its results. Prevent duplicate
+                    effects where possible. Otherwise, reconcile state or require human intervention before retrying.
+                    The tool limit bounds this exercise. Evaluate the whole workflow, including its persisted results.
                   </div>
                 </div>
               </div>
@@ -3509,26 +3594,63 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 <a href="https://github.com/poteto/verification-skill-example">verification-skill example</a>
                 shows the structure using a fictional app and CLI. Run Chen's supervision and routing exercises,
                 Emanuel's fresh-session and small-tool exercises, and Yegge's monitor and recovery exercises with your
-                existing tools. Complete Tan's recurring-defect and maintenance exercise on the same workflow. Try two
-                isolated workers only after the serial workflow has reliable checks.
+                existing tools. Complete Tan's recurring-defect and maintenance exercise on the same workflow. Establish
+                reliable checks before the two-worker drill. Compare it with the serial approach and record whether the
+                extra coordination earns its cost.
               </div>
               <div class="pass">
                 <div class="col-h">Pass condition</div>
                 <p>
-                  You demonstrate that the agentic approach beats the simpler baseline on a defined outcome. Its cost,
-                  latency, reliability, risk, displaced work, and harmful feedback effects must remain within acceptable
-                  limits.
+                  Build and evaluate the bounded agent, then justify deploying, limiting, or rejecting it against the
+                  baseline. Before comparing results, set acceptance criteria for outcome quality, cost, latency,
+                  reliability, risk, and human workload. A supported decision to withhold deployment can pass.
                 </p>
                 <p>
                   Independently identify a case where the agent follows the specification but violates the domain rule.
                   Explain the permission boundary, reject a hostile instruction in tool output, and recover from
-                  interrupted work. The monitor must make no model calls while idle. Show that a second model's
-                  agreement cannot substitute for evidence.
+                  interrupted work. The monitor must make no model calls while idle. Check where a model grader
+                  disagrees with human judgment and explain how you handle any disagreement. Keep acceptance cases
+                  separate from development examples and repeat selected high-risk cases. Report variation and errors by
+                  user or task group alongside aggregate scores, and explain the limits of the sample.
+                </p>
+              </div>
+              <div class="card" style="margin-top: 1.1rem; margin-bottom: 1.1rem">
+                <span class="eyebrow">Test what can be removed</span>
+                <p style="margin-top: 0.7rem">
+                  After a model, context, or tool change, remove one planning step, memory mechanism, wrapper, or extra
+                  agent in a controlled comparison. Hold the task set and acceptance criteria fixed. Compare quality,
+                  elapsed time, human intervention, and total cost including review. Keep or restore the mechanism based
+                  on the result. Preserve required permissions and outcome checks during the experiment.
+                </p>
+                <p class="subnote">
+                  Use the same evaluation work to separate retrieval failure from answer failure. Assess whether a
+                  prompt change, retrieval, another model, or fine-tuning would address the failure. Explain your
+                  choice; training a model is optional. Test regression detection and the user's correction or fallback
+                  path.
                 </p>
               </div>
               <div class="sources">
-                <div class="col-h">Sources, in order</div>
+                <div class="col-h">Phase readings, in order</div>
+                <p class="subnote">
+                  Read Huyen in the companion hour. Use these current sources for implementation, evaluation, and
+                  security details; measure their recommendations on your task.
+                </p>
                 <ol>
+                  <li>
+                    <a href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"
+                      >Anthropic: Demystifying evals for AI agents</a
+                    >
+                  </li>
+                  <li>
+                    <a href="https://www.anthropic.com/engineering/harness-design-long-running-apps"
+                      >Anthropic: Harness design for long-running application development</a
+                    >
+                  </li>
+                  <li>
+                    <a href="https://www.anthropic.com/engineering/writing-tools-for-agents"
+                      >Anthropic: Writing effective tools for agents</a
+                    >
+                  </li>
                   <li>
                     <a href="https://www.anthropic.com/research/building-effective-agents"
                       >Anthropic: Building Effective Agents</a
@@ -3578,7 +3700,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>People already use an awkward workaround</li>
                     <li>The task recurs and success is observable</li>
                     <li>You can reach real users</li>
-                    <li>One bounded agentic capability could make a substantial difference to the task</li>
+                    <li>A bounded AI capability has a testable opportunity to improve the task</li>
                   </ul>
                   <div class="col-h" style="margin-top: 1.1rem">Case study arc</div>
                   <ul class="learn">
@@ -3629,7 +3751,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p6f" /><span
-                          >Baseline, eval dataset, traces, permissions, measured comparison</span
+                          >Baseline, held-out evals, traces, permissions, measured comparison, and a justified
+                          deployment decision</span
                         ></label
                       >
                     </li>
@@ -3643,8 +3766,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     </li>
                   </ul>
                   <div class="subnote">
-                    Include failures and reversals so readers can assess your judgment. Label model claims as observed,
-                    measured, inferred, or speculative. Hiding mistakes makes the case study promotional.
+                    Include failures and reversals so readers can assess your judgment. Show the user's correction and
+                    fallback path, and the comparison that justified keeping or removing a step or component from the
+                    agent workflow. A prototype that failed its deployment criteria belongs in the evidence with the
+                    reason you withheld it. Label model claims as observed, measured, inferred, or speculative. Hiding
+                    mistakes makes the case study promotional.
                   </div>
                 </div>
               </div>
@@ -3673,39 +3799,38 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <span class="eyebrow"><span class="chapter-number">07</span>Reading order</span>
             <h2 class="sec-title" id="reading-title">Buy books when the work needs them</h2>
             <p class="sec-sub">
-              Study the primary companions throughout their assigned weeks and choose phase readings for the decisions
-              you are practicing. The course reserves 90 hours for phase study and 54 hours for companion reading. Use
-              the remaining chapters and titles as references when a concrete problem calls for them.
+              Required readings are chosen for the decisions they teach, the gaps they fill, and the work that will test
+              them. The schedule reserves 90 hours for phase study, 48 for the two companion texts, and six for capstone
+              source review. Follow the assigned scope; consult further references when a specific unresolved decision
+              needs them.
             </p>
           </div>
 
           <div class="card" style="margin-bottom: 1rem">
             <div class="tranche-k now">
-              <span class="n">Primary companions · 27 reading hours each</span>
-              <h3>Domain judgment and engineering practice</h3>
+              <span class="n">Required recurring study</span>
+              <h3>AI behavior and domain judgment</h3>
             </div>
             <ul class="books">
               <li class="book">
-                <a class="bt" href="#pragmatic">Domain-Driven Design: Tackling Complexity in the Heart of Software</a
-                ><span class="ba">Eric Evans · weeks 17-52</span>
+                <a class="bt" href="#study">AI Engineering</a
+                ><span class="ba">Chip Huyen · selected topics · 24 reading hrs · weeks 1-16 and 49-64</span>
               </li>
               <li class="book">
-                <a class="bt" href="#pragmatic">The Pragmatic Programmer, 20th Anniversary Edition</a
-                ><span class="ba">David Thomas &amp; Andrew Hunt · weeks 1-16 and 53-72</span>
+                <a class="bt" href="#study">Domain-Driven Design: Tackling Complexity in the Heart of Software</a
+                ><span class="ba">Eric Evans · selected chapters · 24 reading hrs · weeks 17-48</span>
               </li>
             </ul>
             <p style="margin-top: 0.8rem; color: var(--fg-2)">
-              Read for 45 minutes and spend 15 defining an experiment. Apply the lesson in the build block and evaluate
-              it in the decision log. Evans is sustained primary study: revisit the same domain model in interviews,
-              code, tests, and operations.
+              Follow the <a href="#study">reading and experiment schedule</a>. These texts support repeated decisions
+              across the product. The required phase readings below teach the other skills needed to complete it.
             </p>
           </div>
-
           <div class="grid g2">
             <div class="card">
               <div class="tranche-k now">
                 <span class="n">Begin with the active phase</span>
-                <h3>Core phase texts</h3>
+                <h3>Required phase texts</h3>
               </div>
               <ul class="books">
                 <li class="book">
@@ -3729,7 +3854,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <div class="card">
               <div class="tranche-k later">
                 <span class="n">When the phase begins</span>
-                <h3>Selected readings</h3>
+                <h3>Required selected topics</h3>
               </div>
               <ul class="books">
                 <li class="book"><span class="bt">Thinking with Type, 3e</span><span class="ba">Ellen Lupton</span></li>
@@ -3766,10 +3891,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             </summary>
             <div class="more-body">
               <p class="subnote">
-                The allocations include reading and notes. Read Krug and Ousterhout in full; use the specified topics
-                for other books. Reference reading replaces part of that phase's allocation. Spend less time on familiar
-                material and use the remaining time to improve an explanation you struggled with. If essential
-                understanding is still missing, repeat the week's practice.
+                The allocations include reading and notes. Read Krug and Ousterhout in full; study the specified topics
+                in the other books. The companions use their own scheduled hour. Reference reading replaces part of that
+                phase's allocation. Spend less time on familiar material and use the remaining time to improve an
+                explanation you struggled with. If essential understanding is still missing, repeat the week's practice.
               </p>
               <div class="shelf-row">
                 <span class="sk">Phase 1 · 10 hrs</span
@@ -3809,25 +3934,26 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <div class="shelf-row">
                 <span class="sk">Phase 5 · 20 hrs</span
                 ><span class="sv"
-                  ><b>7 hrs:</b> Anthropic's agents and context engineering, OpenAI's guardrails, tracing, and evals,
-                  and MCP. <b>5 hrs:</b> OWASP and NIST on threats, permissions, and risk. <b>4 hrs:</b> the four
-                  practitioner studies. <b>4 hrs:</b> evaluation design, failure analysis, and operational feedback
-                  using the project's traces and primary documentation.</span
+                  ><b>7 hrs:</b> current agent evaluation, context, tool design, tracing, and MCP documentation.
+                  <b>5 hrs:</b> OWASP and NIST on threats, permissions, and risk. <b>4 hrs:</b> the four practitioner
+                  studies and the experiment that removes a step or component from the agent workflow.
+                  <b>4 hrs:</b> failure analysis, grader calibration, and operational feedback using the project's
+                  traces and primary documentation.</span
                 >
               </div>
               <div class="shelf-row">
                 <span class="sk">Phase 6 · 10 hrs</span
                 ><span class="sv"
-                  ><b>6 hrs:</b> revisit the primary material behind the capstone's weakest decisions.
-                  <b>4 hrs:</b> check technical claims, eval methods, and operating procedures against their
-                  sources.</span
+                  ><b>6 hrs:</b> current implementation, operations, and security documentation for the capstone's
+                  unresolved technical questions. <b>4 hrs:</b> check technical claims, eval methods, and operating
+                  procedures against their sources.</span
                 >
               </div>
             </div>
           </details>
 
           <div class="card" style="margin-top: 1rem">
-            <span class="eyebrow">Use online: free, primary, authoritative</span>
+            <span class="eyebrow">Online sources</span>
             <div class="online">
               <a class="chip" href="https://basecamp.com/shapeup">Shape Up</a>
               <a class="chip" href="https://www.nngroup.com/articles/ten-usability-heuristics/">NN/g</a>
@@ -3842,7 +3968,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <a class="chip" href="https://genai.owasp.org/">OWASP</a>
               <a class="chip" href="https://openai.github.io/openai-agents-python/">OpenAI Agents</a>
               <a class="chip" href="https://www.anthropic.com/research/building-effective-agents">Anthropic</a>
-              <a class="chip" href="#pstack-practice">Lauren Tan: pstack practice</a
+              <a class="chip" href="https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents"
+                >Agent evaluation</a
+              ><a class="chip" href="https://www.anthropic.com/engineering/harness-design-long-running-apps"
+                >Workflow experiments</a
+              ><a class="chip" href="#pstack-practice">Lauren Tan: pstack practice</a
               ><a class="chip" href="#chen-practice">Kun Chen: authority</a
               ><a class="chip" href="#emanuel-practice">Jeffrey Emanuel: work packets</a
               ><a class="chip" href="#yegge-practice">Steve Yegge: recovery</a>
@@ -3857,9 +3987,19 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
 
           <details class="more">
             <summary>
-              <span>Further reading for gaps you encounter on a project</span><span style="color: var(--fg-3)">+</span>
+              <span>Reference reading for a specific gap</span><span style="color: var(--fg-3)">+</span>
             </summary>
             <div class="more-body">
+              <div class="shelf-row">
+                <span class="sk">Engineering habits</span
+                ><span class="sv"
+                  ><a href="https://pragprog.com/titles/tpp20/the-pragmatic-programmer-20th-anniversary-edition/"
+                    >The Pragmatic Programmer, 20th Anniversary Edition</a
+                  >
+                  · consult tracer bullets, reversibility, contracts, debugging, and property-based testing when a
+                  practice gap appears.</span
+                >
+              </div>
               <div class="shelf-row">
                 <span class="sk">Business &amp; positioning</span
                 ><span class="sv"
@@ -3911,7 +4051,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <h2 class="sec-title" id="start-title">Complete the loop once</h2>
             <p class="sec-sub">
               In the first month, follow one workflow from observation through redesign, testing, and a shipped
-              correction. Each of the four weeks produces an output and puts one pragmatic lesson into practice.
+              correction. Each week produces an output and develops the same small AI evaluation alongside the product
+              work.
             </p>
           </div>
 
@@ -3921,7 +4062,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <h3>Read and analyze a workflow</h3>
               <p>
                 In 9 hrs, begin Don't Make Me Think, Revisited (DMMT), choose one workflow, and evaluate it against
-                usability heuristics. Begin the pragmatic companion too.
+                usability heuristics. Begin Huyen's companion assignment too, defining one small read-only AI task and
+                its success criteria.
               </p>
               <span class="out">teardowns/001-baseline.md</span>
               <ul class="tasks" data-phase style="--acc: var(--amber)">
@@ -3969,13 +4111,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           </div>
 
           <div class="card" style="margin-top: 1rem">
-            <span class="eyebrow">Pragmatic companion · month one</span>
+            <span class="eyebrow">AI companion · month one</span>
             <p style="margin-top: 0.7rem; color: var(--fg-2)">
-              <b style="color: var(--fg)">Week 1:</b> craft, responsibility, and the knowledge portfolio ·
-              <b style="color: var(--fg)">Week 2:</b> ETC, DRY, and orthogonality ·
-              <b style="color: var(--fg)">Week 3:</b> engineering daybook and debugging discipline ·
-              <b style="color: var(--fg)">Week 4:</b> tracer-bullet delivery and a written decision to keep, change, or
-              reject the practice.
+              <b style="color: var(--fg)">Week 1:</b> define the AI task and acceptable outcomes ·
+              <b style="color: var(--fg)">Week 2:</b> write human-scored cases ·
+              <b style="color: var(--fg)">Week 3:</b> repeat selected cases and inspect variation ·
+              <b style="color: var(--fg)">Week 4:</b> record a failure and choose the next test. Continue the evaluation
+              assignment through week 8.
             </p>
           </div>
         </div>
@@ -4018,8 +4160,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <p>
                 Choose a candidate domain and reachable users by week 16, then use Phase 3 to validate the problem and
                 commit by week 30. If discovery exposes a poor fit, make one domain change by week 22 and repeat the
-                essential interviews. Favor constraints that require specific knowledge, such as money, health,
-                logistics, or compliance. Use that domain for the architecture, agent, and capstone work.
+                essential interviews. Carry over the evaluation method, then replace cases that no longer represent the
+                task. Favor constraints that require specific knowledge, such as money, health, logistics, or
+                compliance. Use that domain for the architecture, agent, and capstone work.
               </p>
             </div>
           </div>
@@ -4092,7 +4235,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <div class="risk">
               <div class="rn">Trap 03</div>
               <h3>Multi-agent novelty</h3>
-              <p>Add agents only after simpler designs fail a measured requirement.</p>
+              <p>
+                Compare feasible designs on the same task and constraints. Keep extra agents only when their measured
+                contribution justifies coordination and review.
+              </p>
             </div>
             <div class="risk">
               <div class="rn">Trap 04</div>
