@@ -1320,6 +1320,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         color: var(--fg-2);
         font-size: 14px;
       }
+      #convergence .shelf-row {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid var(--line);
+      }
       #start {
         background: #e9eddf;
       }
@@ -2266,7 +2271,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <p>
                 <a href="https://dora.dev/insights/balancing-ai-tensions/">DORA's research</a> associates higher AI
                 adoption with greater delivery throughput <em>and</em> instability. Developers also report more review
-                work. Use Phases 4-5 to practice precise specifications, careful review, and repeatable verification.
+                work. Use Phases 4-5 to practice precise specifications, risk-tiered review, and repeatable
+                verification.
               </p>
             </div>
             <div class="risk">
@@ -2406,7 +2412,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <p>
               Give the agent the intended outcome, constraints, allowed actions, and required evidence. Inspect changed
               boundaries and behavior with serious consequences directly. Use automated checks and targeted inspection
-              for routine changes. Record what you checked, what you delegated, and what remains uncertain. Follow
+              for routine changes. Require the result as an evidence report and read the code when its risk tier is not
+              low, following <a href="#chen-review">Chen's review tiers</a>. Record what you checked, what you
+              delegated, and what remains uncertain. Follow
               <a href="#pstack-practice">Tan's verification practice</a> to inspect the running result.
               <span class="amber">The block is complete only when the evidence supports acceptance.</span>
             </p>
@@ -2431,8 +2439,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <h2 class="sec-title" id="practitioners-title">Learn to direct work you can trust</h2>
             <p class="sec-sub">
               Study how Lauren Tan, Kun Chen, Jeffrey Emanuel, and Steve Yegge structure agent work. Apply their
-              practices to your own product: define its rules, constrain authority, verify behavior, and recover when
-              execution stops. Do each exercise in the phase that teaches the skills it requires.
+              practices to your own product: define its rules, make authority explicit, spend attention on decisions,
+              plan where a fix is cheapest, verify behavior, and recover when execution stops. All four get full
+              treatment, because they converge on the same trainable principles through different mechanisms. The
+              <a href="#convergence">map at the end of this chapter</a> names those principles and where the four
+              differ. Do each exercise in the phase that teaches the skills it requires.
             </p>
           </div>
           <details class="more" id="tan-study" open>
@@ -2529,52 +2540,163 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               </div>
             </div>
           </details>
-          <details class="more" id="chen-practice">
+          <details class="more" id="chen-practice" open>
             <summary>
-              <span><b>Kun Chen</b> · Authority and supervision</span><span aria-hidden="true">+</span>
+              <span><b>Kun Chen</b> · Authority, attention, and supervision</span><span aria-hidden="true">+</span>
             </summary>
             <div class="more-body">
-              <p>
-                Firstmate uses one liaison to supervise workers in isolated worktrees, with durable task records and
-                event-driven monitoring. Scout tasks cover investigation; ship tasks authorize delivery.
-              </p>
-              <div class="pcols">
-                <div>
-                  <h3>Study the boundaries</h3>
-                  <p class="subnote">
-                    Learn decision rights, Git isolation, reproducible verification, model selection, and failure
-                    detection. A worktree isolates files; shared databases, credentials, and deployment targets need
-                    their own controls.
-                  </p>
+              <div id="chen-review" tabindex="-1">
+                <h3 style="margin-top: 0.7rem">Spend attention on decisions, not mechanics</h3>
+                <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                  In his 2026 talk on high-throughput agentic engineering, Chen runs 36 projects and seven or more
+                  parallel workers from one session. He talks only to a liaison, the first mate, which dispatches
+                  workers into isolated worktrees, supervises them, escalates only decisions, and reports outcomes. His
+                  binding constraint is attention, not tokens. Each rule below exists to keep your judgment on what to
+                  build and what to accept. Firstmate encodes the rules as plain-text instructions, scripts, and state
+                  conventions that any harness can inhabit, so study the rules rather than the tool.
+                </p>
+                <div class="pcols">
+                  <div>
+                    <h4 class="col-h">Make authority explicit</h4>
+                    <ul class="learn">
+                      <li>
+                        Keep one point of contact that holds your intent across every project. It never does project
+                        work itself, so it stays available to you. It reports outcomes, consequences, and decisions
+                        while the machinery stays below deck.
+                      </li>
+                      <li>
+                        Give every task a shape. A scout task investigates and leaves a report without touching the
+                        project. A ship task delivers an authorized change. Keep the delivery path, whether a full gate,
+                        a direct PR, or a local merge, separate from merge authority, and write both down per
+                        repository.
+                      </li>
+                      <li>
+                        Set the gate by stakes. If you would have asked a colleague to review the change, run the full
+                        pipeline of review, tests, docs, and lint in an isolated worktree before the push reaches the
+                        remote. Grant self-merge only where nothing depends on the result yet, or where a merge does not
+                        release immediately and you can test before release.
+                      </li>
+                      <li>
+                        Authority is explicit, never inferred. Standing permissions never quietly widen, evidence never
+                        authorizes an action by itself, and a red check is never merged without a named waiver. A
+                        current, concrete instruction overrides a standing rule, but never by analogy and never for
+                        another object.
+                      </li>
+                      <li>
+                        Write dispatch rules that map task nature to eligible harnesses, models, and effort, each with a
+                        reason. Choose among the eligible models by remaining quota, and keep quota data as data that
+                        never routes. Test a new model before assuming it beats the last one.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://youtu.be/MSbacZ99E14">High Throughput Agentic Engineering with Kun</a> ·
+                      <a href="https://github.com/kunchenguid/firstmate/blob/main/AGENTS.md">Supervisor contract</a> ·
+                      <a href="https://github.com/kunchenguid/firstmate/blob/main/VISION.md">Vision</a>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="col-h">Review evidence, not every line</h4>
+                    <ul class="learn">
+                      <li>
+                        Require each change as an evidence report: the intent you gave, what changed, a risk tier, the
+                        live scenarios run against the intent with skipped ones named, and logs. Accept a low-risk,
+                        well-tested change on its evidence. Read the code when the tier is not low.
+                      </li>
+                      <li>
+                        Keep decisions as durable records, not chat memory. Status is an append-only log, open decisions
+                        resurface until you close them, and a restart is a non-event. Ask for a digest of what landed,
+                        what is under way, and what waits on you. Queue a follow-up behind current work instead of
+                        interrupting it.
+                      </li>
+                      <li>
+                        Supervise by events, not by watching. A deterministic watcher sleeps on worker state and wakes
+                        the model only when a decision is needed. Worker state is semantic and per-harness, whether
+                        working, blocked, or idle. Unknown stays unknown, and a quiet pane is not proof of a stuck
+                        worker.
+                      </li>
+                      <li>
+                        Have decisions arrive with their homework. Prototype two or three variants in parallel, review
+                        them on one interactive page with screenshots, tradeoffs, and a recommendation, and record your
+                        choices as form state rather than prose.
+                      </li>
+                      <li>
+                        Set a compaction threshold once and stop managing context by hand. Hide tool output while work
+                        runs. Let the liaison handle routine retries, and have it escalate only review-ready work,
+                        findings, blockers, credentials, and destructive actions.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://github.com/kunchenguid/no-mistakes">no-mistakes</a> ·
+                      <a href="https://github.com/kunchenguid/firstmate/blob/main/docs/architecture.md"
+                        >Firstmate architecture</a
+                      >
+                      · <a href="https://herdr.dev">herdr</a> ·
+                      <a href="https://github.com/kunchenguid/lavish-axi">lavish</a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3>Practice in Phases 4-5</h3>
-                  <ul class="learn">
-                    <li>
-                      Write investigation and implementation briefs for the same issue. Name the allowed actions,
-                      stopping condition, evidence, and person who can authorize release.
-                    </li>
-                    <li>
-                      Review an isolated change and record the checked revision. Change it and require fresh evidence
-                      before acceptance.
-                    </li>
-                    <li>
-                      Compare two eligible models on the same ordinary tasks. Record correctness, your review time,
-                      elapsed time, and cost. When quota runs out, keep the same capability requirements for any
-                      replacement model.
-                    </li>
-                    <li>
-                      Supervise two workers and interrupt one. Check what it actually completed before restarting it.
-                      Save a record of the owner, current state, and evidence for the next safe action. Explain when
-                      direct supervision is simpler than adding a liaison.
-                    </li>
-                  </ul>
+                <div class="note">
+                  For the weekly exercise, accept one change from its evidence report and log what the report let you
+                  skip and what it hid. Count dispatched tasks against your ask. In the talk, one of three requested
+                  prototypes was never dispatched, and nobody noticed for most of the session.
                 </div>
-              </div>
-              <div class="sources">
-                <a href="https://github.com/kunchenguid/firstmate">Firstmate</a> ·
-                <a href="https://github.com/kunchenguid/no-mistakes">no-mistakes</a> ·
-                <a href="https://github.com/kunchenguid/quota-axi">quota-axi</a>
+                <div class="subnote">
+                  <b>Study the boundaries.</b> Learn decision rights, Git isolation, reproducible verification, model
+                  selection, and failure detection. A worktree isolates files; shared databases, credentials, and
+                  deployment targets need their own controls. Hooks checked into an untrusted repository are not run,
+                  and a safety behavior that fails silently needs a visible warning. Feedback that bypasses the liaison
+                  leaves its records stale until the worker reports, so reconcile them. Split supervision by scope only
+                  when the liaison is too busy to answer you.
+                </div>
+                <div class="subnote">
+                  <b>Study the contracts.</b> Put deterministic logic in scripts that fail safely when surprised, and
+                  leave interpretation to the model. Design agent-facing tools for token cost: content first, definitive
+                  empty states, structured errors, idempotent mutations, and no interactive prompts. Change a standing
+                  instruction only on evidence from two or more sessions, and remove one only on evidence of harm.
+                </div>
+                <div class="subnote"><b>Practice in Phases 4-5.</b> Test six things on the same product:</div>
+                <ul class="learn">
+                  <li>
+                    Write a scout brief and a ship brief for the same issue. Name the allowed actions, stopping
+                    condition, required evidence, what stays out of scope, and the person who can authorize release. Run
+                    the scout first with a fresh worker and let its finding change the ship brief before you dispatch
+                    it.
+                  </li>
+                  <li>
+                    Write a delivery policy for each repository you touch: the delivery path and who holds merge
+                    authority. Decide by whether a colleague would have reviewed the change and whether a merge releases
+                    immediately. Route one change through the full gate and one around it, and record the reason for
+                    each.
+                  </li>
+                  <li>
+                    Review one isolated change from its evidence report and record the checked revision. Change the
+                    revision and require fresh evidence before acceptance. Then find one change whose risk tier was
+                    wrong and record what the report omitted.
+                  </li>
+                  <li>
+                    Write dispatch rules for your product's task types. Compare two eligible models on the same ordinary
+                    tasks and record correctness, your review time, elapsed time, cost, and quota used. When quota runs
+                    out, keep the same capability requirements for any replacement model.
+                  </li>
+                  <li>
+                    Supervise two workers with an append-only decision record and interrupt one. Check what it actually
+                    completed before restarting it, then save the owner, current state, and evidence for the next safe
+                    action. Ask for a digest and confirm it lists every open decision.
+                  </li>
+                  <li>
+                    Bring one product decision with its homework: parallel variants, one review page, an explicit
+                    decision list, and choices captured as form state. Explain when direct supervision is simpler than a
+                    liaison, and when splitting supervision by scope would earn its cost.
+                  </li>
+                </ul>
+                <div class="sources">
+                  <a href="https://github.com/kunchenguid/firstmate">Firstmate</a> ·
+                  <a href="https://github.com/kunchenguid/no-mistakes">no-mistakes</a> ·
+                  <a href="https://github.com/kunchenguid/quota-axi">quota-axi</a> ·
+                  <a href="https://github.com/kunchenguid/treehouse">treehouse</a> ·
+                  <a href="https://github.com/kunchenguid/axi">axi</a> ·
+                  <a href="https://github.com/kunchenguid/backpass">backpass</a>
+                </div>
               </div>
             </div>
           </details>
@@ -2583,45 +2705,122 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <span><b>Jeffrey Emanuel</b> · Plans that survive the conversation</span><span aria-hidden="true">+</span>
             </summary>
             <div class="more-body">
-              <p>
-                The Flywheel separates planning from self-contained execution tasks. Beads Rust stores tasks and
-                dependencies; Beads Viewer helps inspect the graph and select ready work.
-              </p>
-              <div class="pcols">
-                <div>
-                  <h3>Study the dependencies</h3>
-                  <p class="subnote">
-                    Learn specification, interface design, dependency graphs, source checking, and automation economics.
-                    Use the task graph to find blockers and product evidence to decide what deserves priority.
-                  </p>
+              <div id="emanuel-packets" tabindex="-1">
+                <h3 style="margin-top: 0.7rem">Buy correctness where it is cheapest</h3>
+                <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                  Emanuel's Flywheel separates three spaces by the cost of a fix: one plan document that fits in
+                  context, self-contained work packets with a dependency graph, and code. He puts most of the effort
+                  into the plan and the packets, because a mistake found there is a reasoning edit, while one found in
+                  code costs implementation and cleanup. Workers then pull ready packets from the graph in fresh
+                  sessions with no chat history. Learn the cost logic and the packet contract; his swarm sizes and model
+                  choices are dated and optional.
+                </p>
+                <div class="pcols">
+                  <div>
+                    <h4 class="col-h">Plan before packets</h4>
+                    <ul class="learn">
+                      <li>
+                        Write the plan as one document that fits in context: user, constraints, invariants, unknowns,
+                        workflows, and tradeoffs. Ask two or more independent models for competing plans, then merge
+                        them as explicit diffs you accept or reject with a reason.
+                      </li>
+                      <li>
+                        Stay in plan space while you are still redesigning the product. Move to packets only when the
+                        workflow questions have settled and what remains is sequencing.
+                      </li>
+                      <li>
+                        Convert the plan directly into real packets in the tracker, never into pseudo-tasks in prose.
+                        Each packet carries the outcome, acceptance criteria and failure modes, tests, reasoning, and
+                        dependencies, so a worker never needs the plan.
+                      </li>
+                      <li>
+                        Polish the packet set in rounds until responses shrink and stop changing. Then ask whether
+                        completing every open packet would close the gap to the goal. If not, revise the packets before
+                        resuming.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://agent-flywheel.com/complete-guide">The Complete Flywheel Guide</a>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="col-h">Run from the graph, not the chat</h4>
+                    <ul class="learn">
+                      <li>
+                        Store tasks and dependencies as durable records beside the code, and pull only ready work: open,
+                        unblocked, and not deferred. Use the graph to find what everything depends on, the bottlenecks,
+                        and the critical path before trusting intuition about priority.
+                      </li>
+                      <li>
+                        Give each packet to a fresh worker with no preceding chat, and have every worker reread the
+                        operating manual after compaction. If heavy thinking happens during implementation, the plan or
+                        the packets were too thin.
+                      </li>
+                      <li>
+                        Treat automation as economics. Turn a repeated inspection into a rerunnable command only when
+                        its total cost, including upkeep, beats the manual check. Small commits, advisory file
+                        reservations, and a mechanical guard on destructive commands prevent collisions without locks.
+                      </li>
+                      <li>
+                        Review in two passes: self-review after each packet until no defects remain, then a fresh-eyes
+                        review from another session. Keep a separate polish pass for friction and error messages once
+                        correctness is settled.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://github.com/Dicklesworthstone/beads_rust">Beads Rust</a> ·
+                      <a href="https://github.com/Dicklesworthstone/beads_viewer">Beads Viewer</a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3>Practice in Phases 3-5</h3>
-                  <ul class="learn">
-                    <li>
-                      Describe the user, constraints, invariants, and unknowns. Compare a competing plan and resolve one
-                      uncertainty with a prototype.
-                    </li>
-                    <li>
-                      Split a change into four to eight restartable tasks. Include context, dependencies, affected
-                      interfaces, tests, and completion evidence. Give one to a fresh worker with no preceding chat.
-                    </li>
-                    <li>
-                      Remove a false dependency and find a missing one. Include a deliberately stale claim in a handoff
-                      exercise and check it against the running system or source. Save the corrected dependency graph
-                      and the evidence that resolved the claim.
-                    </li>
-                    <li>
-                      Turn a repeated inspection into a rerunnable command. Compare its total cost, including upkeep,
-                      with the manual procedure.
-                    </li>
-                  </ul>
+                <div class="note">
+                  For the weekly exercise, write the slice's packet before building it: outcome, failure modes, tests,
+                  and dependencies. Hand it to a fresh session and log every question the worker has to ask. Each
+                  question is a gap in the packet.
                 </div>
-              </div>
-              <div class="sources">
-                <a href="https://agent-flywheel.com/complete-guide">The Complete Flywheel Guide</a> ·
-                <a href="https://github.com/Dicklesworthstone/beads_rust">Beads Rust</a> ·
-                <a href="https://github.com/Dicklesworthstone/beads_viewer">Beads Viewer</a>
+                <div class="subnote">
+                  <b>Study the dependencies.</b> Learn specification, interface design, dependency graphs, source
+                  checking, and automation economics. Use the task graph to find blockers and product evidence to decide
+                  what deserves priority. Emanuel runs every worker on one branch with reservations, while Chen isolates
+                  each task in a worktree. Test which fits your product and team, and record the collisions and
+                  reconciliation time either way.
+                </div>
+                <div class="subnote"><b>Practice in Phases 3-5.</b> Test six things on the same product:</div>
+                <ul class="learn">
+                  <li>
+                    Describe the user, constraints, invariants, and unknowns in one plan that fits in context. Get a
+                    competing plan from a second model, merge them as explicit diffs, and resolve one uncertainty with a
+                    prototype.
+                  </li>
+                  <li>
+                    Split a change into four to eight restartable packets in the tracker, with context, dependencies,
+                    affected interfaces, tests, and completion evidence. Give one to a fresh worker with no preceding
+                    chat and count the questions it asks.
+                  </li>
+                  <li>
+                    Remove a false dependency and find a missing one. Include a deliberately stale claim in a handoff
+                    exercise and check it against the running system or source. Save the corrected dependency graph and
+                    the evidence that resolved the claim.
+                  </li>
+                  <li>
+                    Turn a repeated inspection into a rerunnable command. Compare its total cost, including upkeep, with
+                    the manual procedure.
+                  </li>
+                  <li>
+                    Polish the packet set for three rounds and record when responses shrink and stop changing. Then ask
+                    whether completing every open packet closes the gap to the goal, and revise the packets if it does
+                    not.
+                  </li>
+                  <li>
+                    Run a self-review after one packet and a fresh-eyes review from a separate session. Record what each
+                    caught, and whether the plan, the packets, or the operating manual was too thin to prevent it.
+                  </li>
+                </ul>
+                <div class="sources">
+                  <a href="https://agent-flywheel.com/complete-guide">The Complete Flywheel Guide</a> ·
+                  <a href="https://github.com/Dicklesworthstone/beads_rust">Beads Rust</a> ·
+                  <a href="https://github.com/Dicklesworthstone/beads_viewer">Beads Viewer</a>
+                </div>
               </div>
             </div>
           </details>
@@ -2630,47 +2829,231 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <span><b>Steve Yegge</b> · Continuity and recovery</span><span aria-hidden="true">+</span>
             </summary>
             <div class="more-body">
-              <p>
-                Yegge describes persistent operational roles, monitors that wake models when judgment is needed, and
-                handoffs between temporary sessions. Practice session handoffs and recovery with one bounded local role.
-                These exercises require no assumptions about model welfare or his forecasts.
-              </p>
-              <div class="pcols">
-                <div>
-                  <h3>Study what survives a restart</h3>
-                  <p class="subnote">
-                    Learn durable state, ownership, cancellation, idempotency, monitoring, and backpressure. A timeout
-                    means the observer stopped waiting; the worker may still be running.
-                  </p>
+              <div id="yegge-roles" tabindex="-1">
+                <h3 style="margin-top: 0.7rem">Design roles that outlive the session</h3>
+                <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                  Yegge runs persistent operational roles, each with a standing responsibility, over a durable task
+                  graph. His rule is that crons watch and models act: cheap deterministic monitors detect conditions and
+                  wake a model only when judgment is needed. Sessions are temporary, so work moves through handoffs,
+                  leases, and gates rather than through one long conversation. Learn the mechanisms; his cost figures,
+                  fleet sizes, and forecasts about code review are context, not requirements.
+                </p>
+                <div class="pcols">
+                  <div>
+                    <h4 class="col-h">Give each role a charter</h4>
+                    <ul class="learn">
+                      <li>
+                        Define a role by its purpose, permissions, durable state, human owner, and escalation path, and
+                        let it own routine decisions in its domain. Separate the role, which persists, from the session,
+                        which ends.
+                      </li>
+                      <li>
+                        Make crons watch and models act. A deterministic monitor sleeps on system state and invokes a
+                        model only for an ambiguous event, so idle time costs nothing and every model call has a reason.
+                      </li>
+                      <li>
+                        Replace exit with a handoff. The agent finishes its current step and writes what completed, what
+                        is pending, and the next safe action before restart. Hand off while the context is still sharp
+                        rather than at the compaction limit.
+                      </li>
+                      <li>
+                        Keep the audit trail as the true history. Closed work is immutable, a postmortem fixes the
+                        system rather than the worker, and every role can escalate to a human.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come</a>
+                    </div>
+                  </div>
+                  <div>
+                    <h4 class="col-h">Make progress idempotent</h4>
+                    <ul class="learn">
+                      <li>
+                        Move work through explicit claims, leases, and gates so nothing is orphaned. A worker that dies
+                        releases its lease, and a sweeper finds stuck or dropped work and nudges it.
+                      </li>
+                      <li>
+                        Aim for nondeterministic idempotence. Any session may take an unpredictable path, but the
+                        defined workflow completes as long as you keep attaching sessions to the persistent role and its
+                        state.
+                      </li>
+                      <li>
+                        A timeout means the observer stopped waiting; the worker may still be running. Check the durable
+                        state before restarting anything, and never repeat an effect or overwrite another worker's work.
+                      </li>
+                      <li>
+                        Apply backpressure. When verification cannot keep up with delivery, limit incoming work or
+                        change the validation strategy. Yegge's merge queue recovered only when he stopped reviewing
+                        every failure himself and gave a role clear heuristics.
+                      </li>
+                    </ul>
+                    <div class="sources">
+                      <a href="https://yegge.ai/essays/model-welfare/">Model Welfare for Agentic Engineers</a> ·
+                      <a href="https://yegge.ai/gastown">Welcome to Gas Town</a>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3>Practice in Phases 4-5</h3>
-                  <ul class="learn">
-                    <li>
-                      Define a role by its purpose, permissions, durable state, human owner, and escalation path. Resume
-                      it in a fresh session and verify its work.
-                    </li>
-                    <li>
-                      Write a deterministic monitor that calls a model only for an ambiguous event. Test duplicate
-                      events, false alarms, and hostile log text. Authorize writes separately.
-                    </li>
-                    <li>
-                      Interrupt a job after a partial effect. Record completed work, pending effects, and the next safe
-                      action. Recover without repeating the effect or overwriting another worker's work.
-                    </li>
-                    <li>
-                      Inject a recoverable failure or integration conflict. Trace the cause, choose rollback or repair,
-                      and limit incoming work when verification cannot keep up.
-                    </li>
-                  </ul>
+                <div class="note">
+                  For the weekly exercise, end one build session with a handoff note instead of an exit. Resume it in a
+                  fresh session and verify each claim in the note against the durable state before continuing.
                 </div>
-              </div>
-              <div class="sources">
-                <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come</a> ·
-                <a href="https://yegge.ai/essays/model-welfare/">Model Welfare for Agentic Engineers</a>
+                <div class="subnote">
+                  <b>Study what survives a restart.</b> Learn durable state, ownership, cancellation, idempotency,
+                  monitoring, and backpressure. Yegge specializes persistent roles, Emanuel keeps workers fungible so
+                  any worker can resume any packet, and Chen keeps one liaison and adds supervisors only by scope. Test
+                  which failure your product can afford: a single point of failure or diluted context. These exercises
+                  require no assumptions about model welfare or his forecasts.
+                </div>
+                <div class="subnote"><b>Practice in Phases 4-5.</b> Test six things on the same product:</div>
+                <ul class="learn">
+                  <li>
+                    Define a role by its purpose, permissions, durable state, human owner, and escalation path. Resume
+                    it in a fresh session and verify its work.
+                  </li>
+                  <li>
+                    Write a deterministic monitor that calls a model only for an ambiguous event. Test duplicate events,
+                    false alarms, and hostile log text. Authorize writes separately.
+                  </li>
+                  <li>
+                    Interrupt a job after a partial effect. Record completed work, pending effects, and the next safe
+                    action. Recover without repeating the effect or overwriting another worker's work.
+                  </li>
+                  <li>
+                    Inject a recoverable failure or integration conflict. Trace the cause, choose rollback or repair,
+                    and limit incoming work when verification cannot keep up.
+                  </li>
+                  <li>
+                    Replace one session exit with a handoff note, then resume in a fresh session and check every claim
+                    in the note against the durable state. Record what the note got wrong.
+                  </li>
+                  <li>
+                    Write a sweeper that finds stuck or dropped work from leases and timestamps, and run it against a
+                    worker you stopped mid-task. Confirm it nudges the right work and never reruns a completed effect.
+                  </li>
+                </ul>
+                <div class="sources">
+                  <a href="https://yegge.ai/essays/the-shape-of-things-to-come/">The Shape of Things to Come</a> ·
+                  <a href="https://yegge.ai/essays/model-welfare/">Model Welfare for Agentic Engineers</a> ·
+                  <a href="https://yegge.ai/gastown">Welcome to Gas Town</a>
+                </div>
               </div>
             </div>
           </details>
+          <div class="card" id="convergence" tabindex="-1" style="margin-top: 1.4rem">
+            <span class="eyebrow">Where the four converge</span>
+            <p style="margin-top: 0.7rem; color: var(--fg-2)">
+              Eight principles that all four practitioners implement with different mechanisms. Train the principle; the
+              mechanism is replaceable. For each row, name the mechanism you use, the evidence it produces, and what it
+              costs.
+            </p>
+            <div class="shelf-row">
+              <span class="sk">Outcome, scope, evidence first</span
+              ><span class="sv"
+                >Tan gives the outcome, room to explore, and requires evidence from the running product. Chen's brief
+                names intent, what stays out of scope, and the definition of done. Emanuel's packet carries outcome,
+                failure modes, tests, and dependencies. Yegge's role states purpose, permissions, owner, and escalation
+                path. <b>Practice:</b> Phase 4 packets, Phase 5 briefs.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Record outside the chat</span
+              ><span class="sv"
+                >Tan maintains the feature map with the app and asks a fresh agent to extend a design. Chen keeps status
+                as an append-only log and resurfaces open decisions until closed. Emanuel stores tasks and dependencies
+                beside the code and hands packets to workers with no chat history. Yegge keeps role state and an audit
+                trail that outlive a session. <b>Practice:</b> Phase 4 fresh-worker handoff, Phase 5 tested
+                restart.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Verify the running system</span
+              ><span class="sv"
+                >Tan's verification skill drives the app and collects evidence. Chen accepts a change only from live
+                scenarios and denies a merge without current verification. Emanuel checks a stale claim against source
+                or the running system. Yegge treats a timeout as the observer giving up and reads durable state before
+                restarting. <b>Practice:</b> every build block from Phase 2 on.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Authority apart from capability</span
+              ><span class="sv"
+                >Tan checks authorization and persisted state directly when they matter. Chen writes delivery path and
+                merge authority per repository and never infers permission. Emanuel bounds each packet's scope and
+                mechanically blocks destructive commands. Yegge authorizes writes separately from monitoring and gives
+                roles a right to escalate. <b>Practice:</b> Phase 4 permissions, Phase 5 approval gates.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Routine work to scripts</span
+              ><span class="sv"
+                >Tan adds a control CLI and narrow checks. Chen keeps logic in scripts that fail safely and wakes the
+                model only for decisions. Emanuel prices a rerunnable inspection against its upkeep. Yegge's crons watch
+                and models act. <b>Practice:</b> Phase 5 monitor with no idle model calls.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Recover without repeating</span
+              ><span class="sv"
+                >Tan checks concurrent effects directly. Chen checks what a worker completed before restarting it and
+                never discards unlanded work. Emanuel makes packets restartable and forbids disturbing another worker's
+                work. Yegge records completed work, pending effects, and the next safe action. <b>Practice:</b> Phase 4
+                interrupted operation, Phase 5 recovery.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Agreement is not proof</span
+              ><span class="sv"
+                >Tan prototypes competing approaches and treats model agreement as no proof. Chen reviews parallel
+                variants and tests a new model before trusting it. Emanuel merges competing plans as explicit diffs and
+                reviews with fresh eyes. Yegge diagnoses failures in parallel rather than trusting one bisection.
+                <b>Practice:</b> Phase 3 competing plan, Phase 5 removal experiment.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Earn its cost</span
+              ><span class="sv"
+                >Tan removes stale instructions and unnecessary wrappers. Chen runs the full gate only where a colleague
+                would have reviewed and adds a supervisor only when the first cannot answer him. Emanuel stops refining
+                when changes shrink and asks whether the open packets close the gap. Yegge limits incoming work when
+                verification cannot keep up. <b>Practice:</b> Phase 5 removal experiment, Trap 03.</span
+              >
+            </div>
+            <span class="eyebrow" style="display: block; margin-top: 1.4rem"
+              >Where they differ, so test it on your product</span
+            >
+            <div class="shelf-row">
+              <span class="sk">Isolation</span
+              ><span class="sv"
+                >Emanuel runs every worker on one branch with advisory file reservations and small commits. Chen gives
+                each task a disposable worktree. Yegge gives each worker its own clone and a merge queue. Measure
+                collisions, reconciliation time, and review load on your product.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Roles</span
+              ><span class="sv"
+                >Yegge specializes persistent roles. Emanuel keeps workers fungible so any worker can resume any packet.
+                Chen keeps one liaison and adds supervisors only by scope. Decide which failure you can afford: a single
+                point of failure or diluted context.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Human review</span
+              ><span class="sv"
+                >Yegge expects per-change human approval to give way to rounds of agentic review. Chen tiers human
+                review by risk behind a gate. Tan requires evidence from the running product for every accepted change.
+                Set your own tier by consequence and keep the Phase 4-5 pass conditions.</span
+              >
+            </div>
+            <div class="shelf-row">
+              <span class="sk">Where effort goes</span
+              ><span class="sv"
+                >Emanuel puts most effort into the plan and packets before code. Tan resolves uncertainty with runnable
+                prototypes. Chen puts it into briefs, policies, and evidence review. Record where your defects
+                originated and shift effort there.</span
+              >
+            </div>
+          </div>
           <div class="note">
             Use your existing tools or a local simulation to test these practices. Keep a practice when its results
             justify the complexity, supervision, and cost. Use one product for all four case studies and their
@@ -2866,9 +3249,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               Start with human and product foundations in Part I, then develop technical judgment and agentic
               engineering in Part II. Carry one product through the phases. The 72 scheduled weeks total 648 hours at
               nine hours per week. If a pass condition needs more work, repeat its practice and check, adding nine hours
-              per week. Allow one repeat block per phase and up to eight additional weeks across the course. If you
-              still cannot meet the pass condition, get targeted feedback and revise the exercise. Demonstrate the
-              required judgment before moving on.
+              per week. Allow one repeat block per phase and up to eight additional weeks across the course, plus up to
+              four weeks in Phases 4-5 for the practitioner studies when their exercises need them. A longer course that
+              trains these principles is better than a shorter one that skips them. If you still cannot meet the pass
+              condition, get targeted feedback and revise the exercise. Demonstrate the required judgment before moving
+              on.
             </p>
           </div>
 
@@ -3323,7 +3708,10 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                       refinement
                     </li>
                     <li>Distinguishing model boundaries, transaction boundaries, task dependencies, and permissions</li>
-                    <li>Isolated changes, revision-bound approval, durable state, and idempotent recovery</li>
+                    <li>
+                      Isolated changes, revision-bound approval, delivery policy by stakes, durable state, and
+                      idempotent recovery
+                    </li>
                     <li>Quality attributes and their conflicts</li>
                     <li>Data models, transactions, consistency, replication, partitioning, streams</li>
                     <li>Timeouts, retries, idempotency, backpressure, overload</li>
@@ -3397,9 +3785,17 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     </li>
                     <li>
                       <label class="task"
+                        ><input type="checkbox" data-k="p4j" /><span
+                          >Plan that fits in context, a competing plan merged as explicit diffs, and a recorded check
+                          that the open packets would close the gap</span
+                        ></label
+                      >
+                    </li>
+                    <li>
+                      <label class="task"
                         ><input type="checkbox" data-k="p4i" /><span
-                          >Isolated review with a revision change, plus an interrupted operation recovered without
-                          duplicate effects</span
+                          >Isolated review with a revision change and a written delivery policy, plus an interrupted
+                          operation recovered without duplicate effects</span
                         ></label
                       >
                     </li>
@@ -3414,9 +3810,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 runtime check and a concrete condition for completion.
               </div>
               <div class="subnote">
-                Use Emanuel's packets, Chen's isolation and approval exercise, and Yegge's interruption drill on this
-                same change. Record a domain conversation that leads you to refactor both the model and the
-                implementation.
+                Write Emanuel's plan first, then use his packets, Chen's isolation, delivery-policy, and approval
+                exercises, and Yegge's interruption drill on this same change. Record a domain conversation that leads
+                you to refactor both the model and the implementation.
               </div>
               <div class="pass">
                 <div class="col-h">Pass condition</div>
@@ -3485,11 +3881,21 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                   <div class="col-h">Direction and supervision</div>
                   <ul class="learn">
                     <li>
-                      Investigation versus implementation authority; tool permissions, untrusted inputs, and human
-                      approval
+                      Scout versus ship authority and delivery path versus merge authority; tool permissions, untrusted
+                      inputs, and human approval
                     </li>
-                    <li>Durable role records, deterministic monitors, ownership, handoffs, and backpressure</li>
-                    <li>Model selection by observed quality, review effort, elapsed time, cost, and available quota</li>
+                    <li>
+                      Durable records of roles and open decisions, deterministic monitors, semantic worker state,
+                      ownership, handoffs, and backpressure
+                    </li>
+                    <li>
+                      Dispatch rules by task nature; model selection by observed quality, review effort, elapsed time,
+                      cost, and remaining quota
+                    </li>
+                    <li>
+                      Attention as the binding constraint: one point of contact, evidence reports, risk-tiered review,
+                      and decisions that arrive with their homework
+                    </li>
                   </ul>
                   <div class="col-h" style="margin-top: 1.1rem">Data, context, and evaluation</div>
                   <ul class="learn">
@@ -3542,8 +3948,16 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5e" /><span
-                          >Least-privilege permissions, stopping conditions, approval gates, and paired investigation
-                          and implementation briefs for one issue</span
+                          >Least-privilege permissions, stopping conditions, approval gates, a per-repository delivery
+                          policy, and paired scout and ship briefs for one issue</span
+                        ></label
+                      >
+                    </li>
+                    <li>
+                      <label class="task"
+                        ><input type="checkbox" data-k="p5j" /><span
+                          >Evidence report for one change with its risk tier and live scenarios, a review decision
+                          recorded by tier, and a digest that resurfaces open decisions until closed</span
                         ></label
                       >
                     </li>
@@ -3558,8 +3972,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     <li>
                       <label class="task"
                         ><input type="checkbox" data-k="p5g" /><span
-                          >Two-model comparison on two tasks, with quality, review time, elapsed time, interventions,
-                          and cost per successful task</span
+                          >Dispatch rules by task nature and a two-model comparison on two tasks, with quality, review
+                          time, elapsed time, interventions, cost per successful task, and quota used</span
                         ></label
                       >
                     </li>
@@ -3578,6 +3992,14 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                         ></label
                       >
                     </li>
+                    <li>
+                      <label class="task"
+                        ><input type="checkbox" data-k="p5k" /><span
+                          >Session handoff note verified in a fresh session, and a sweeper that finds stuck or dropped
+                          work without repeating a completed effect</span
+                        ></label
+                      >
+                    </li>
                   </ul>
                   <div class="subnote">
                     Give each tool an understandable contract: validated inputs, permissions, side effects, retry
@@ -3592,11 +4014,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 Use a project-specific verification skill to exercise the running app. Follow the affected paths in the
                 feature map, check failure and persistence behavior, and capture evidence for the reviewer. Tan's
                 <a href="https://github.com/poteto/verification-skill-example">verification-skill example</a>
-                shows the structure using a fictional app and CLI. Run Chen's supervision and routing exercises,
-                Emanuel's fresh-session and small-tool exercises, and Yegge's monitor and recovery exercises with your
-                existing tools. Complete Tan's recurring-defect and maintenance exercise on the same workflow. Establish
-                reliable checks before the two-worker drill. Compare it with the serial approach and record whether the
-                extra coordination earns its cost.
+                shows the structure using a fictional app and CLI. Run Chen's delivery-policy, dispatch,
+                evidence-review, and supervision exercises, Emanuel's fresh-session, drift-check, and small-tool
+                exercises, and Yegge's monitor, handoff, sweeper, and recovery exercises with your existing tools.
+                Complete Tan's recurring-defect and maintenance exercise on the same workflow. Establish reliable checks
+                before the two-worker drill. Compare it with the serial approach and record whether the extra
+                coordination earns its cost.
               </div>
               <div class="pass">
                 <div class="col-h">Pass condition</div>
@@ -3608,10 +4031,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 <p>
                   Independently identify a case where the agent follows the specification but violates the domain rule.
                   Explain the permission boundary, reject a hostile instruction in tool output, and recover from
-                  interrupted work. The monitor must make no model calls while idle. Check where a model grader
-                  disagrees with human judgment and explain how you handle any disagreement. Keep acceptance cases
-                  separate from development examples and repeat selected high-risk cases. Report variation and errors by
-                  user or task group alongside aggregate scores, and explain the limits of the sample.
+                  interrupted work. Show one change you accepted from its evidence report without reading the code and
+                  one whose risk tier sent you to the code, and justify both. The monitor must make no model calls while
+                  idle. Check where a model grader disagrees with human judgment and explain how you handle any
+                  disagreement. Keep acceptance cases separate from development examples and repeat selected high-risk
+                  cases. Report variation and errors by user or task group alongside aggregate scores, and explain the
+                  limits of the sample.
                 </p>
               </div>
               <div class="card" style="margin-top: 1.1rem; margin-bottom: 1.1rem">
@@ -3895,6 +4320,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 in the other books. The companions use their own scheduled hour. Reference reading replaces part of that
                 phase's allocation. Spend less time on familiar material and use the remaining time to improve an
                 explanation you struggled with. If essential understanding is still missing, repeat the week's practice.
+                Practitioner weeks added in Phases 4-5 carry their own study hour at the weekly rate.
               </p>
               <div class="shelf-row">
                 <span class="sk">Phase 1 · 10 hrs</span
@@ -3927,8 +4353,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                   ><b>5 hrs:</b> Ousterhout. <b>8 hrs:</b> DDIA on transactions, distributed faults, timeouts,
                   consistency, and idempotent retry. <b>2.5 hrs:</b> FSA on quality attributes, decisions, and risk.
                   <b>5 hrs:</b> Google SRE and AWS Builders' Library on SLOs, error budgets, retries, cascading failure,
-                  and postmortems. <b>2 hrs:</b> Chen, Emanuel, and Yegge's isolation, task, and recovery
-                  mechanisms.</span
+                  and postmortems. <b>2 hrs:</b> Chen's authority and delivery-policy rules with Emanuel's and Yegge's
+                  task and recovery mechanisms.</span
                 >
               </div>
               <div class="shelf-row">
@@ -3936,9 +4362,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 ><span class="sv"
                   ><b>7 hrs:</b> current agent evaluation, context, tool design, tracing, and MCP documentation.
                   <b>5 hrs:</b> OWASP and NIST on threats, permissions, and risk. <b>4 hrs:</b> the four practitioner
-                  studies and the experiment that removes a step or component from the agent workflow.
-                  <b>4 hrs:</b> failure analysis, grader calibration, and operational feedback using the project's
-                  traces and primary documentation.</span
+                  studies, Chen's talk, the convergence map, and the experiment that removes a step or component from
+                  the agent workflow. <b>4 hrs:</b> failure analysis, grader calibration, and operational feedback using
+                  the project's traces and primary documentation.</span
                 >
               </div>
               <div class="shelf-row">
@@ -3972,10 +4398,12 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 >Agent evaluation</a
               ><a class="chip" href="https://www.anthropic.com/engineering/harness-design-long-running-apps"
                 >Workflow experiments</a
+              ><a class="chip" href="https://youtu.be/MSbacZ99E14">Kun Chen: high-throughput talk</a
               ><a class="chip" href="#pstack-practice">Lauren Tan: pstack practice</a
-              ><a class="chip" href="#chen-practice">Kun Chen: authority</a
+              ><a class="chip" href="#chen-practice">Kun Chen: authority and attention</a
               ><a class="chip" href="#emanuel-practice">Jeffrey Emanuel: work packets</a
-              ><a class="chip" href="#yegge-practice">Steve Yegge: recovery</a>
+              ><a class="chip" href="#yegge-practice">Steve Yegge: recovery</a
+              ><a class="chip" href="#convergence">Where the four converge</a>
             </div>
             <div class="hier">
               <span class="eyebrow" style="width: 100%">Source-quality hierarchy</span>
@@ -4237,7 +4665,8 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <h3>Multi-agent novelty</h3>
               <p>
                 Compare feasible designs on the same task and constraints. Keep extra agents only when their measured
-                contribution justifies coordination and review.
+                contribution justifies coordination and review. Add a second supervisor only after the first is too busy
+                to answer you, and split it by scope, not by count.
               </p>
             </div>
             <div class="risk">
@@ -4289,7 +4718,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 </div>
                 <div class="tree-row">
                   <span class="tree-path"><span aria-hidden="true">└──</span> <span class="d">agents/</span></span
-                  ><span class="c"># tools, evals, traces, permissions</span>
+                  ><span class="c"># tools, evals, traces, permissions, policies</span>
                 </div>
               </div>
             </div>
