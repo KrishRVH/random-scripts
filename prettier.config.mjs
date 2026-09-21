@@ -19,4 +19,11 @@ export default {
   tabWidth: 2,
   trailingComma: 'all',
   useTabs: false,
+  overrides: [
+    {
+      // Wide lines keep inline markup intact instead of splitting tags
+      files: 'misc/AI Product Engineer/AI Product Engineer Plan.html',
+      options: { printWidth: 200 },
+    },
+  ],
 };
