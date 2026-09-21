@@ -2455,40 +2455,99 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           </div>
           <details class="more" id="tan-study" open>
             <summary>
-              <span><b>Lauren Tan / poteto</b> · Domain rules and verification</span><span aria-hidden="true">+</span>
+              <span><b>Lauren Tan / poteto</b> · Trust, verification, and an agent-friendly codebase</span
+              ><span aria-hidden="true">+</span>
             </summary>
             <div class="more-body">
               <div id="pstack-practice" tabindex="-1">
-                <h3 style="margin-top: 0.7rem">Give agents context and a way to check their work</h3>
+                <h3 style="margin-top: 0.7rem">Set up the environment so agents do the right thing by default</h3>
                 <p style="margin-top: 0.7rem; color: var(--fg-2)">
-                  During the weekly build block, use Tan's pstack techniques to give the agent a clear outcome and room
-                  to explore solutions. Require evidence from the running product before accepting its work.
+                  In her 2026 Cursor Compile talk, Tan reports shipping 2,000 pull requests to production in one month
+                  while working on GrokBot at SpaceX AI. Her thesis is that throughput follows trust. Set up the
+                  environment for your agents well enough and one person, or one team, produces high-quality code at far
+                  higher rates. She prefers the Michelin kitchen to the software factory as the analogy. The head chef
+                  no longer cooks each component but still owns the final dish and designs the stations, training,
+                  equipment, and staffing that make it good.
                 </p>
+                <p style="color: var(--fg-2)">
+                  The practice started when she was asked to fix performance in the new Cursor agent window. She spent
+                  her early weeks reading Chrome DevTools traces and heap snapshots by hand while pull requests landed
+                  faster than she could check them. The way out was a verification skill that taught the agent to run
+                  the application, take traces over the Chrome DevTools Protocol, and find hot spots itself. Every later
+                  skill, tool, and codebase change laddered up to the same idea: she was the bottleneck, so she had to
+                  move her engineering knowledge into the environment her agents work in. During the weekly build block,
+                  use these techniques to give the agent a clear outcome and room to explore, and require evidence from
+                  the running product before accepting its work.
+                </p>
+                <div class="card" id="tan-trust" tabindex="-1" style="margin-top: 1.1rem">
+                  <span class="eyebrow">The trust curve</span>
+                  <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                    Tan plots trust against the number of agents you can run. At one to five agents you babysit every
+                    chat, course-correct constantly, and nothing happens when you step away. She calls this the hardest
+                    phase to leave, because the way out is not obvious. The curve rises through five to ten, ten to
+                    twenty, hundreds, and thousands, and flattens toward the top. Spawning a hundred sub-agents or cloud
+                    agents before you trust them produces sloppy pull requests, regressions, and shipped bugs.
+                  </p>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Verification for correctness</span
+                    ><span class="sv"
+                      >Teach the agent to run the app and collect empirical evidence that the feature does what you
+                      want. Verification skills sit at the low end of a spectrum whose far end is formal methods in Lean
+                      or TLA+. Few teams can run formal methods, and verification skills alone get you very far.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Skills for quality</span
+                    ><span class="sv"
+                      >Verification proves correctness and yields real performance telemetry, but says nothing about
+                      code quality. Playbooks such as pstack teach agents to debug, build features, and prototype the
+                      way an experienced engineer would. Experienced engineers contribute here by building a team
+                      repository of skills.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Agent-friendly architecture</span
+                    ><span class="sv"
+                      >Refactor or rewrite so the codebase does the right thing by default. Tan calls this one of the
+                      most important investments a team can make if agents will write most future code. Greenfield and
+                      brownfield codebases start this from different places.</span
+                    >
+                  </div>
+                </div>
                 <div class="pcols">
                   <div>
                     <h4 class="col-h">Make verification repeatable</h4>
                     <ul class="learn">
                       <li>
+                        A feature map gives context and a CLI gives control. Put a CLI inside the skill directory so
+                        every session drives the real app the same way instead of writing throwaway scripts that differ
+                        between runs. Invest in it until it handles the cases your product has.
+                      </li>
+                      <li>
                         Use the existing test runner, API, or browser driver to launch the app, seed data, use test
-                        identities, drive interactions, and collect screenshots and runtime traces. Add a small control
-                        CLI where a capability is missing.
+                        identities, drive interactions, and collect screenshots and runtime traces. Provide subcommands
+                        that work together, useful <code>--help</code>, machine-readable output, errors that explain
+                        what to do next, and <code>--dry-run</code> for destructive operations.
                       </li>
                       <li>
-                        Provide subcommands that work together, useful <code>--help</code>, machine-readable output,
-                        errors that explain what to do next, and <code>--dry-run</code> for destructive operations.
+                        The feature map was born from vague bug reports: a cropped screenshot in Slack with three
+                        question marks that a capable agent could not locate in the product. Modeled on a sitemap, it
+                        records what each feature does, how a user reaches it by shortcut or element, and how the agent
+                        can exercise it. It lives in the skill directory as materialized memory, and an automation keeps
+                        it current with the app.
                       </li>
                       <li>
-                        Keep a feature map beside the verification skill: what each feature does, how users reach it,
-                        and how the agent can exercise it. Maintain the map with the app.
-                      </li>
-                      <li>
-                        In pstack, use <code>/create-verification-skill</code> to build the project-specific skill and
-                        <code>/maintain-verification-skill</code> to maintain it. Tan recommends a daily maintenance
-                        pass. Establish reliable verification before scaling parallel work.
+                        The combination let agents reproduce reports from internal and external users on their own. Tan
+                        treats the skill as critical infrastructure, maintains it constantly, and recommends a daily
+                        maintenance pass. In pstack, use
+                        <code>/create-verification-skill</code> to build the project-specific skill and
+                        <code>/maintain-verification-skill</code> to maintain it. Establish reliable verification before
+                        scaling parallel work.
                       </li>
                     </ul>
                     <div class="sources">
-                      <a href="https://x.com/poteto/status/2094457600259842065">The Complete Guide to pstack Pt. 1</a>
+                      <a href="https://x.com/poteto/status/2094457600259842065">The Complete Guide to pstack Pt. 1</a> ·
+                      <a href="https://github.com/poteto/verification-skill-example">verification-skill example</a>
                     </div>
                   </div>
                   <div>
@@ -2520,12 +2579,134 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     </div>
                   </div>
                 </div>
+                <div class="card" id="tan-correction" tabindex="-1" style="margin-top: 1.3rem">
+                  <span class="eyebrow">Whenever you correct your agent</span>
+                  <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                    Tan calls this the one slide to take away. Each time you intervene, ask which of five layers would
+                    stop the mistake from recurring, and prefer the earliest layer you can afford. The first two
+                    enforce. The next two guide, and an agent can skip a rule or a busy pilot can ignore it. The last
+                    works only when a human reads every line, which fails at the rate agents open pull requests.
+                  </p>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">1 · Codebase</span
+                    ><span class="sv"
+                      >Change the architecture or data structures so the mistake becomes categorically impossible. This
+                      is the strongest fix because agents extend whatever they see.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">2 · Static analysis</span
+                    ><span class="sv"
+                      >Lint rules, compiler diagnostics, and continuous integration turn a correction into a constraint
+                      that holds without you present.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">3 · Rules and Bugbot</span
+                    ><span class="sv"
+                      >Written guidance and automated review catch what static analysis cannot express, but the agent
+                      may not read them and the reviewer may not run them.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">4 · Skills</span
+                    ><span class="sv"
+                      >Playbooks that teach a workflow. They work when the agent loads them and do nothing when it does
+                      not.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">5 · Style guide</span
+                    ><span class="sv"
+                      >Enforced only by humans in code review. Use review comments to discover what the other four
+                      layers are missing, then move the lesson into an earlier layer.</span
+                    >
+                  </div>
+                </div>
+                <div class="card" id="tan-garden" tabindex="-1" style="margin-top: 1.3rem">
+                  <span class="eyebrow">Your codebase is memory</span>
+                  <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                    Agents extend the patterns in their context window, and the files they open are that context. They
+                    do not refactor on every pull request. So one innocent workaround, or a comment explaining it,
+                    spreads like a virus: agents copy it, and each copy makes the next copy likelier. Within days or
+                    weeks the workaround is the pattern and the product is slow and hard to maintain. In the Cursor
+                    codebase, Tan noticed agents using code comments as justification for papering over a problem with a
+                    short-term fix instead of solving it. Her team's framework bans code comments for that reason.
+                  </p>
+                  <p style="color: var(--fg-2)">
+                    The right target is a codebase you would be happy for an agent to copy: so conventional and locked
+                    down that it is annoying for humans and ideal for an agent with minimal context. That matters
+                    because the next contributor may be a designer, product manager, or executive piloting an agent with
+                    very little context. Every team needs a gardener who notices unwanted growth early and removes it
+                    before it propagates.
+                  </p>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Delete tech debt</span
+                    ><span class="sv"
+                      >Remove existing anti-patterns, because each one is a template the next agent will reuse.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Keep one paved path</span
+                    ><span class="sv"
+                      >One conventional way to do each thing, with enough guidance in code, lint, and CI that agents do
+                      not have to guess.</span
+                    >
+                  </div>
+                  <div class="shelf-row" style="margin-top: 12px">
+                    <span class="sk">Lint against anti-patterns</span
+                    ><span class="sv"
+                      >When you spot tech debt, your first instinct should be a lint rule. A rule stops the bleeding
+                      before you have time to clean up. Then schedule agents to do the cleanup.</span
+                    >
+                  </div>
+                </div>
+                <div class="card" id="tan-dune" tabindex="-1" style="margin-top: 1.3rem">
+                  <span class="eyebrow">A framework designed for agents</span>
+                  <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                    GrokBot runs on Dune, a client framework Tan's team built from lessons learned fixing Cursor's agent
+                    window. Its principle is that agents love shortcuts, so make the easy path the right path. Five
+                    nouns organize every app, each with one place in the tree and one job at runtime: a feature owns one
+                    folder of product UI, an entrypoint is one view a user can open, a transcript card is the
+                    feature-owned body for one entry type, the client holds durable renderer state behind hooks and
+                    commands, with a single writer, and the host provides always-on behavior behind a typed contract.
+                  </p>
+                  <p style="color: var(--fg-2)">
+                    Process boundaries are visible in the tree. A folder tells an agent where code runs and which
+                    imports are legal: renderer code, serving processes such as host extensions and the Electron main
+                    process, and a shared folder for cross-process types, joined by typed edges. Dune enforces the
+                    boundary through the import and dependency graph. The motivating defect was slow main-process code
+                    accidentally imported into the renderer, where a task longer than 16 milliseconds drops below 60
+                    frames per second, and longer than 8 milliseconds drops below 120. The framework is the point, not
+                    Dune itself: encode the tribal knowledge that once lived in style guides and review comments into
+                    the codebase, so an agent with little context or reasoning still writes good code.
+                  </p>
+                </div>
+                <div class="card" id="tan-outer-loop" tabindex="-1" style="margin-top: 1.3rem">
+                  <span class="eyebrow">The outer loop</span>
+                  <p style="margin-top: 0.7rem; color: var(--fg-2)">
+                    Once the environment earns trust, the same pieces compound outward. GrokBot connects to Slack,
+                    Datadog, Sentry, PlanetScale, and whatever else the team uses, aggregates that information, and
+                    kicks off cloud agents. Routines subscribe to Slack threads or Sentry alerts and act automatically.
+                    Cursor automations and the Agent SDK reuse the same skills and verification to run additional bots
+                    for more complex tasks. Tan distinguishes individual automation, the line cook agent, from team
+                    automation, the factory agent. Neither needs a sophisticated company brain, she argues, because
+                    agents are already good at using tools.
+                  </p>
+                  <p style="color: var(--fg-2)">
+                    Her example is an on-call assistant. A user posted a screen recording of a sidebar that kept
+                    reopening. The automation reproduced the bug on the prior commit, confirmed it was already fixed on
+                    main, and replied in the thread with the evidence and a link to the cloud agent run. Other
+                    automations open pull requests. The value comes from the lower layers compounding: codebase, lint,
+                    rules, skills, and verification.
+                  </p>
+                </div>
                 <div class="note">
                   For the weekly exercise, choose one uncertainty in the slice and resolve it with a runnable
                   experiment. Give the agent a repeatable check, then review the resulting evidence alongside the
-                  change.
+                  change. When the agent needed a correction, record which of the five layers you moved the lesson into.
                 </div>
-                <div class="subnote"><b>Practice in Phases 2-5.</b> Test four things on the same product:</div>
+                <div class="subnote"><b>Practice in Phases 2-5.</b> Test these on the same product:</div>
                 <ul class="learn">
                   <li>
                     Write an invalid domain example. Enforce its rule in a type, constructor, API, or runtime check,
@@ -2543,7 +2724,36 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                     Trace a recurring defect to its cause. Add a narrow check, test it against a legitimate case, and
                     remove a stale instruction or unnecessary wrapper.
                   </li>
+                  <li>
+                    Place yourself on the trust curve. Name the number of agents you run without babysitting and the
+                    failure that keeps you there. Pick the one investment from the three trust moves that would move you
+                    one band to the right, and measure it four weeks later.
+                  </li>
+                  <li>
+                    Keep a correction log for two weeks. For each intervention, choose the earliest layer that would
+                    have prevented it. Ship at least one codebase change and one lint rule from the log, and record
+                    whether the correction recurred.
+                  </li>
+                  <li>
+                    Run a gardener pass. Find one workaround or explanatory comment that has been copied more than once.
+                    Write the lint rule first, confirm it fails on the copies and passes on a legitimate case, then have
+                    an agent clean up the instances.
+                  </li>
+                  <li>
+                    Make one boundary visible in the tree. Choose a process, layer, or ownership boundary that lives
+                    only in convention, express it in folders, and enforce it with an import rule. Ask a fresh agent to
+                    add a feature and check whether the rule guided it without instructions.
+                  </li>
+                  <li>
+                    Build one outer-loop routine. Connect one event source, such as an error alert or a bug report
+                    channel, to an agent that reproduces the report with the verification skill and replies with
+                    evidence. Do not let it open a pull request until its reports have been right for a month.
+                  </li>
                 </ul>
+                <div class="sources">
+                  Lauren Tan, Cursor Compile talk on trust and verification (2026), local recording ·
+                  <a href="https://x.com/poteto/article/2069824386283319343">Loops You Can Trust</a>
+                </div>
               </div>
             </div>
           </details>
@@ -2960,11 +3170,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <div class="shelf-row">
               <span class="sk">Record outside the chat</span
               ><span class="sv"
-                >Tan maintains the feature map with the app and asks a fresh agent to extend a design. Chen keeps status
-                as an append-only log and resurfaces open decisions until closed. Emanuel stores tasks and dependencies
-                beside the code and hands packets to workers with no chat history. Yegge keeps role state and an audit
-                trail that outlive a session. <b>Practice:</b> Phase 4 fresh-worker handoff, Phase 5 tested
-                restart.</span
+                >Tan treats the codebase as the agent's memory, maintains the feature map with the app, and asks a fresh
+                agent to extend a design. Chen keeps status as an append-only log and resurfaces open decisions until
+                closed. Emanuel stores tasks and dependencies beside the code and hands packets to workers with no chat
+                history. Yegge keeps role state and an audit trail that outlive a session. <b>Practice:</b> Phase 4
+                fresh-worker handoff, Phase 5 tested restart.</span
               >
             </div>
             <div class="shelf-row">
@@ -3014,10 +3224,11 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             <div class="shelf-row">
               <span class="sk">Earn its cost</span
               ><span class="sv"
-                >Tan removes stale instructions and unnecessary wrappers. Chen runs the full gate only where a colleague
-                would have reviewed and adds a supervisor only when the first cannot answer him. Emanuel stops refining
-                when changes shrink and asks whether the open packets close the gap. Yegge limits incoming work when
-                verification cannot keep up. <b>Practice:</b> Phase 5 removal experiment, Trap 03.</span
+                >Tan removes stale instructions and unnecessary wrappers, and writes a lint rule before cleaning up a
+                spreading pattern. Chen runs the full gate only where a colleague would have reviewed and adds a
+                supervisor only when the first cannot answer him. Emanuel stops refining when changes shrink and asks
+                whether the open packets close the gap. Yegge limits incoming work when verification cannot keep up.
+                <b>Practice:</b> Phase 5 removal experiment, Trap 03.</span
               >
             </div>
             <span class="eyebrow" style="display: block; margin-top: 1.4rem"
@@ -3043,16 +3254,18 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
               <span class="sk">Human review</span
               ><span class="sv"
                 >Yegge expects per-change human approval to give way to rounds of agentic review. Chen tiers human
-                review by risk behind a gate. Tan requires evidence from the running product for every accepted change.
-                Set your own tier by consequence and keep the Phase 4-5 pass conditions.</span
+                review by risk behind a gate. Tan requires evidence from the running product for every accepted change
+                and treats a style guide enforced only in review as a hole at agent pull-request rates. Set your own
+                tier by consequence and keep the Phase 4-5 pass conditions.</span
               >
             </div>
             <div class="shelf-row">
               <span class="sk">Where effort goes</span
               ><span class="sv"
                 >Emanuel puts most effort into the plan and packets before code. Tan resolves uncertainty with runnable
-                prototypes. Chen puts it into briefs, policies, and evidence review. Record where your defects
-                originated and shift effort there.</span
+                prototypes and moves each correction into the codebase or static analysis so it stops recurring. Chen
+                puts it into briefs, policies, and evidence review. Record where your defects originated and shift
+                effort there.</span
               >
             </div>
           </div>
@@ -4512,6 +4725,7 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
                 >Workflow experiments</a
               ><a class="chip" href="https://youtu.be/MSbacZ99E14">Kun Chen: high-throughput talk</a
               ><a class="chip" href="#pstack-practice">Lauren Tan: pstack practice</a
+              ><a class="chip" href="#tan-correction">Lauren Tan: correction ladder</a
               ><a class="chip" href="#chen-practice">Kun Chen: authority and attention</a
               ><a class="chip" href="#emanuel-practice">Jeffrey Emanuel: work packets</a
               ><a class="chip" href="#yegge-practice">Steve Yegge: recovery</a
