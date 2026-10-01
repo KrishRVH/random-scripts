@@ -6,7 +6,9 @@ _Cloud evidence checked: **September 24, 2026**, America/Chicago (Fable 5 rows: 
 
 The original **Claude 4 Opus**—abbreviated **C4O**—was the reference moment when agent-driven software engineering began to feel like an irreversible change to the field. That bar has now been crossed in the cloud and, in capability, locally. It is retired to a historical record (§8).
 
-The new first-generation bar is **Claude Opus 4.6**: the model at which agentic software engineering became reliable enough to hand over substantial, multi-hour work.
+The new first-generation bar is **Claude Opus 4.6**: Opus 4.6-level agentic engineering with a **1M-token working context** for cloud Milestone A1. The cloud context cutoff is a requirement for crossing the bar. Local Milestone A2 retains its separate hardware-constrained target of **more than 200K usable context** on one RTX 4090 24GB.
+
+Opus 4.5 was a major inflection in coding capability and affordability. Opus 4.6 is this specification's reference because it added a 1M context window to the Opus line, alongside stronger long-task performance. The intended experience combines coding judgment, sustained execution, vision, mature tools, and enough usable context to work across large repositories and long sessions. Anthropic's [Opus 4.6 release announcement](https://www.anthropic.com/news/claude-opus-4-6) identifies it as the first Opus-class model with 1M context, launched in beta.
 
 This specification tracks two forms of capability abundance:
 
@@ -30,12 +32,12 @@ Benchmarks remain important, but they are evidence rather than the definition of
 
 ## 2. Current status
 
-| Milestone                                     | Status   | Current crossing                                                                                                                                               |
-| --------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A1 — Fast, cheap cloud Opus 4.6 successor** | **Open** | GPT-6 Luna and DeepSeek V4.1 Flash meet the speed, price, context, and vision envelope but are not accepted as Opus 4.6-level agentic engineers.               |
-| **A2 — Local Opus 4.6 successor on RTX 4090** | **Open** | Qwen3.8-27B is the best local model and a C4O successor, but not Opus 4.6-level, and its usable local context is ≈96K.                                         |
-| **B1 — Fast, cheap cloud Fable 5 successor**  | **Open** | No current model combines Fable-level capability, at least 100 output tokens/second, GPT-6 Luna-class economics, vision, and the complete 1M-context envelope. |
-| **B2 — Local Fable 5 successor on RTX 4090**  | **Open** | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090.                                                       |
+| Milestone                                     | Status   | Current crossing                                                                                                                                                                                      |
+| --------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A1 — Fast, cheap cloud Opus 4.6 successor** | **Open** | GPT-6 Luna and DeepSeek V4.1 Flash advertise at least 1M context and meet the listed speed, price, and vision targets; Opus 4.6-level capability and useful long-context operation remain unaccepted. |
+| **A2 — Local Opus 4.6 successor on RTX 4090** | **Open** | Qwen3.8-27B is the best local model and a C4O successor, but not Opus 4.6-level, and its usable local context is ≈96K.                                                                                |
+| **B1 — Fast, cheap cloud Fable 5 successor**  | **Open** | No current model combines Fable-level capability, at least 100 output tokens/second, GPT-6 Luna-class economics, vision, and the complete 1M-context envelope.                                        |
+| **B2 — Local Fable 5 successor on RTX 4090**  | **Open** | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090.                                                                                              |
 
 Retired C4O record (§8): cloud C4O successor **achieved** by GPT-6 Luna and DeepSeek V4.1 Flash; local C4O successor **core crossing achieved** by Qwen3.8-27B, context-incomplete.
 
@@ -121,6 +123,8 @@ Three context numbers must remain distinct:
 
 Only the third number determines local milestone completion.
 
+For cloud Milestone A1, **at least 1M usable context is a hard cutoff**. A 200K deployment cannot qualify through stronger coding scores, speed, or price. Record the exact provider and serving configuration, demonstrate useful retrieval and agent work at that context, and assess long-context pricing and latency. An advertised limit alone does not prove the intended experience; summarizing or compacting a smaller window does not make it a 1M working context.
+
 ---
 
 # Milestone A — Claude Opus 4.6 Successors
@@ -172,7 +176,7 @@ Opus 4.6 is the **practical agentic-engineering target** for Milestone A:
 - Mature tool use, including terminal and computer use.
 - Self-testing and error recovery.
 - Vision for design and UI validation.
-- Large working context.
+- **A 1M-token working context**, with useful retrieval and reasoning across the available context.
 
 Because the AA estimate is weak evidence, the milestone rests primarily on independent coding-agent results and owner-observed workflow comparison.
 
@@ -190,7 +194,7 @@ A full A1 crossing should provide:
 | Output speed   | **At least 100 tokens/second**                                              |
 | Economics      | GPT-6 Luna-class comfortable pricing and negligible practical task cost     |
 | Token behavior | Reasonable enough that verbosity does not erase the speed or cost advantage |
-| Context        | At least 200K; 1M preferred, matching Opus 4.6's API envelope               |
+| Context        | **At least 1M usable context**, matching Opus 4.6's API envelope            |
 | Modalities     | Text and image input for a full crossing                                    |
 | Tool use       | Opus 4.6-class coding, terminal, file, and structured tool reliability      |
 
@@ -209,7 +213,7 @@ A model may be somewhat more expensive per token and still qualify when cost per
 | **GPT-6 Luna `max`**          |              37 | **≈141 tok/s** |       ≈107 s |   1.05M | Yes    |             **$0.10 / $0.50** |                  ≈51K |    **$0.07** | **Not accepted** |
 | **DeepSeek V4.1 Flash `max`** |              39 | **≈232 tok/s** |        ≈10 s |      1M | Yes    |            $0.30 / $1.20 peak |                  ≈89K |    **$0.27** | **Not accepted** |
 
-Both candidates pass the speed, economics, context, and vision envelope. The open question is capability alone.
+Both candidates meet the listed speed and pricing targets, support vision, and advertise at least 1M context. Acceptance still requires Opus 4.6-level agentic capability and evidence that the advertised context is useful in the intended workflow, with acceptable long-context pricing and latency.
 
 [Official OpenAI documentation](https://developers.openai.com/api/docs/models/gpt-6-luna) specifies `gpt-6-luna`, 1.05M context, 128K maximum output, image input, tools, and $0.10/$0.50 pricing. The [Luna–Opus 4.6 comparison](https://artificialanalysis.ai/models/comparisons/claude-opus-4-6-adaptive-vs-gpt-6-luna) reports 37 intelligence, about 141 output tokens/second, about 107 seconds to first answer token, about 51K output tokens, and $0.07 per Intelligence Index task. Earlier checks measured 157.2 tok/s and 153 seconds; these live figures shift with serving conditions.
 
@@ -237,7 +241,7 @@ DeepSeek is the faster and stronger-scoring of the two, with short first-answer 
 
 > **Milestone A1 is open.**
 
-The envelope is already available; the missing piece is independently confirmed Opus 4.6-level agentic coding at GPT-6 Luna-class speed and cost.
+The advertised envelope is already available; a crossing requires independently confirmed Opus 4.6-level agentic coding at GPT-6 Luna-class speed and cost, including useful operation across at least 1M context.
 
 ---
 
@@ -257,6 +261,8 @@ A complete A2 crossing requires:
 | Context     | **More than 200K usable local context**                                      |
 | Speed       | Interactive enough for sustained agent use                                   |
 | Reliability | Stable multi-turn coding and tool workflows                                  |
+
+A2 retains **more than 200K usable local context** as its completion threshold. A1's 1M cloud cutoff does not apply to this hardware-constrained milestone; the local 1M target remains B2.
 
 Local speed is intentionally practical rather than ceremonial:
 
@@ -606,7 +612,7 @@ The [shared DeepSWE v1.1 leaderboard](https://deepswe.datacurve.ai/) does not ye
 
 2. **DeepSeek V4.1 Flash is faster to start and decode, but more verbose.** It uses approximately 89K AA output tokens per task versus Luna's 51K. Its measured AA task cost is $0.27 at peak pricing. Its DeepSWE cost and step count are not yet independently available.
 
-3. **The economics of A1 are already solved; the capability is not.** Both candidates deliver Opus 4.6-beating speed at a small fraction of its $5/$25 list price. A1 now waits on capability evidence, not price or speed.
+3. **A1 candidates meet the listed speed and pricing targets.** Both deliver Opus 4.6-beating decode speed at a small fraction of its $5/$25 list price. Acceptance still needs capability evidence and useful 1M-context operation with acceptable latency and task cost.
 
 4. **Fable remains far more expensive per measured AA task.** Its $8.75 cost reflects both its $10/$50 list pricing and the current v4.3.2 task mix. Do not infer a model's efficiency from total evaluation tokens alone.
 
@@ -698,6 +704,7 @@ For each serious candidate, record:
 
 - Do not substitute Qwen3.8 Max for Qwen3.8-27B.
 - Do not treat advertised context as usable local context.
+- Require at least 1M usable cloud context for A1; record quality, latency, and economics at that context.
 - Do not treat low list pricing as proof of low task cost.
 - Do not compare token totals across different accounting definitions without labeling them.
 - Do not treat Opus 4.6's estimated v4.3.2 score as a fresh full-suite result.
@@ -710,7 +717,7 @@ For each serious candidate, record:
 
 ### A1 — Opus 4.6 cloud abundance
 
-> Broadly Opus 4.6-level or better for agentic software engineering, at least 100 output tokens/second, GPT-6 Luna-class inexpensive, reasonably token-efficient, and at least 200K context.
+> Broadly Opus 4.6-level or better for agentic software engineering, at least 100 output tokens/second, GPT-6 Luna-class inexpensive, reasonably token-efficient, and **at least 1M usable context**.
 
 - **Full crossing:** includes vision.
 - **Text-only crossing:** lacks vision.
@@ -743,4 +750,4 @@ For each serious candidate, record:
 
 ## 17. Continuation prompt
 
-> Continue from this specification using exact model identities and current benchmark versions. Milestone A's reference is Claude Opus 4.6 (`claude-opus-4-6`, adaptive `max`); original C4O is a retired historical record and must not be revised. Update Milestones A1, A2, B1, and B2 separately. Always report output speed, first-answer latency, context, modalities, list pricing, output tokens per task, total agent tokens per task where available, cost per task, and direct workflow evidence. Use GPT-6 Luna (`gpt-6-luna`) and DeepSeek V4.1 Flash (`deepseek-flash`) for the current cloud comparison. Treat Qwen3.8-27B—not Qwen3.8 Max—as the current local model. Do not rank candidates against Opus 4.6's estimated AA score alone; require independent coding-agent evidence or owner-observed workflow evidence. Do not invent C4O or Opus 4.6 task-economics values where no comparable measurement exists. Preserve A1, A2, B1, and B2 as open unless new evidence materially changes those conclusions.
+> Continue from this specification using exact model identities and current benchmark versions. Milestone A's reference is Claude Opus 4.6 (`claude-opus-4-6`, adaptive `max`); original C4O is a retired historical record and must not be revised. A1 requires at least 1M usable context; do not downgrade this to a preference or count compaction of a smaller window as equivalent. Verify long-context workflow quality, latency, and economics. A2 retains more than 200K usable local context on one RTX 4090; the local 1M target remains B2. Update Milestones A1, A2, B1, and B2 separately. Always report output speed, first-answer latency, context, modalities, list pricing, output tokens per task, total agent tokens per task where available, cost per task, and direct workflow evidence. Use GPT-6 Luna (`gpt-6-luna`) and DeepSeek V4.1 Flash (`deepseek-flash`) for the current cloud comparison. Treat Qwen3.8-27B—not Qwen3.8 Max—as the current local model. Do not rank candidates against Opus 4.6's estimated AA score alone; require independent coding-agent evidence or owner-observed workflow evidence. Do not invent C4O or Opus 4.6 task-economics values where no comparable measurement exists. Preserve A1, A2, B1, and B2 as open unless new evidence materially changes those conclusions.
