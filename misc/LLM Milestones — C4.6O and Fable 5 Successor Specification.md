@@ -1,6 +1,6 @@
 # AI Engineering Milestones — Opus 4.6 and Fable 5 Successor Specification
 
-_Cloud evidence checked: **September 24, 2026**, America/Chicago (Fable 5 rows: September 22, 2026). Local owner observations were last recorded August 17, 2026._
+_Cloud evidence checked: **September 24, 2026**, America/Chicago (Fable 5 rows: September 22, 2026; DeepSeek V4.1 Flash 1017 rows: October 19, 2026). Local owner observations were last recorded August 17, 2026._
 
 ## 1. Purpose
 
@@ -32,12 +32,12 @@ Benchmarks remain important, but they are evidence rather than the definition of
 
 ## 2. Current status
 
-| Milestone                                     | Status   | Current crossing                                                                                                                                                                                      |
-| --------------------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **A1 — Fast, cheap cloud Opus 4.6 successor** | **Open** | GPT-6 Luna and DeepSeek V4.1 Flash advertise at least 1M context and meet the listed speed, price, and vision targets; Opus 4.6-level capability and useful long-context operation remain unaccepted. |
-| **A2 — Local Opus 4.6 successor on RTX 4090** | **Open** | Qwen3.8-27B is the best local model and a C4O successor, but not Opus 4.6-level, and its usable local context is ≈96K.                                                                                |
-| **B1 — Fast, cheap cloud Fable 5 successor**  | **Open** | No current model combines Fable-level capability, at least 100 output tokens/second, GPT-6 Luna-class economics, vision, and the complete 1M-context envelope.                                        |
-| **B2 — Local Fable 5 successor on RTX 4090**  | **Open** | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090.                                                                                              |
+| Milestone                                     | Status   | Current crossing                                                                                                                                                                                           |
+| --------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A1 — Fast, cheap cloud Opus 4.6 successor** | **Open** | GPT-6 Luna and DeepSeek V4.1 Flash 1017 advertise at least 1M context and meet the listed speed, price, and vision targets; Opus 4.6-level capability and useful long-context operation remain unaccepted. |
+| **A2 — Local Opus 4.6 successor on RTX 4090** | **Open** | Qwen3.8-27B is the best local model and a C4O successor, but not Opus 4.6-level, and its usable local context is ≈96K.                                                                                     |
+| **B1 — Fast, cheap cloud Fable 5 successor**  | **Open** | No current model combines Fable-level capability, at least 100 output tokens/second, GPT-6 Luna-class economics, vision, and the complete 1M-context envelope.                                             |
+| **B2 — Local Fable 5 successor on RTX 4090**  | **Open** | No current model provides Fable-level agency, multimodality, and 1M usable context on one 24GB RTX 4090.                                                                                                   |
 
 Retired C4O record (§8): cloud C4O successor **achieved** by GPT-6 Luna and DeepSeek V4.1 Flash; local C4O successor **core crossing achieved** by Qwen3.8-27B, context-incomplete.
 
@@ -208,40 +208,45 @@ A model may be somewhat more expensive per token and still qualify when cost per
 
 ### Current candidates
 
-| Candidate                     | AA Index v4.3.2 |   Output speed | First answer | Context | Vision | List price per M input/output | AA output tokens/task | AA cost/task | Status           |
-| ----------------------------- | --------------: | -------------: | -----------: | ------: | ------ | ----------------------------: | --------------------: | -----------: | ---------------- |
-| **GPT-6 Luna `max`**          |              37 | **≈141 tok/s** |       ≈107 s |   1.05M | Yes    |             **$0.10 / $0.50** |                  ≈51K |    **$0.07** | **Not accepted** |
-| **DeepSeek V4.1 Flash `max`** |              39 | **≈232 tok/s** |        ≈10 s |      1M | Yes    |            $0.30 / $1.20 peak |                  ≈89K |    **$0.27** | **Not accepted** |
+| Candidate                                          | AA Index v4.3.2 |   Output speed | First answer | Context | Vision | List price per M input/output | AA output tokens/task | AA cost/task | Status           |
+| -------------------------------------------------- | --------------: | -------------: | -----------: | ------: | ------ | ----------------------------: | --------------------: | -----------: | ---------------- |
+| **GPT-6 Luna `max`**                               |              37 | **≈141 tok/s** |       ≈107 s |   1.05M | Yes    |             **$0.10 / $0.50** |                  ≈51K |    **$0.07** | **Not accepted** |
+| **DeepSeek V4.1 Flash 1017 `max`**                 |              45 | **≈211 tok/s** |        ≈11 s |      1M | Yes    |            $0.30 / $1.20 peak |                  ≈89K |    **$0.26** | **Not accepted** |
+| _DeepSeek V4.1 Flash `max` (pre-1017, superseded)_ |              39 |     ≈232 tok/s |        ≈10 s |      1M | Yes    |            $0.30 / $1.20 peak |                  ≈89K |        $0.27 | Superseded       |
 
-Both candidates meet the listed speed and pricing targets, support vision, and advertise at least 1M context. Acceptance still requires Opus 4.6-level agentic capability and evidence that the advertised context is useful in the intended workflow, with acceptable long-context pricing and latency.
+Both current candidates meet the listed speed and pricing targets, support vision, and advertise at least 1M context. Acceptance still requires Opus 4.6-level agentic capability and evidence that the advertised context is useful in the intended workflow, with acceptable long-context pricing and latency.
 
 [Official OpenAI documentation](https://developers.openai.com/api/docs/models/gpt-6-luna) specifies `gpt-6-luna`, 1.05M context, 128K maximum output, image input, tools, and $0.10/$0.50 pricing. The [Luna–Opus 4.6 comparison](https://artificialanalysis.ai/models/comparisons/claude-opus-4-6-adaptive-vs-gpt-6-luna) reports 37 intelligence, about 141 output tokens/second, about 107 seconds to first answer token, about 51K output tokens, and $0.07 per Intelligence Index task. Earlier checks measured 157.2 tok/s and 153 seconds; these live figures shift with serving conditions.
 
-[DeepSeek's API documentation](https://api-docs.deepseek.com/quick_start/pricing/) identifies `deepseek-flash` as V4.1 Flash, with 1M context, up to 384K output, image input, tool calls, and $0.30/$1.20 peak pricing. Off-peak prices are $0.15/$0.60. The [DeepSeek–Opus 4.6 comparison](https://artificialanalysis.ai/models/comparisons/claude-opus-4-6-adaptive-vs-deepseek-v4-1-flash) reports 39 intelligence, about 232 output tokens/second, about 9.5 seconds to first answer token, about 89K output tokens, and $0.27 per task. The model has downloadable MIT-licensed weights, though its 552B total parameters do not make it a plausible single-4090 candidate.
+[DeepSeek's API documentation](https://api-docs.deepseek.com/quick_start/pricing/) now maps `deepseek-flash` to **DeepSeek-V4.1-Flash-1017**, released October 17, 2026 as a post-training update to V4.1 Flash. Legacy model names are still accepted but are served by the 1017 checkpoint, so the pre-1017 row above is a historical record and no longer selectable. The listing is otherwise unchanged: 1M context, up to 384K output, image input, tool calls, thinking by default, and $0.30/$1.20 peak pricing with no long-context premium. Off-peak prices are $0.15/$0.60, and cache hits cost $0.006 at peak. The [1017–Opus 4.6 comparison](https://artificialanalysis.ai/models/comparisons/claude-opus-4-6-adaptive-vs-deepseek-v4-1-flash-1017) reports 45 intelligence (ranked #2 of 121 on v4.3.2), about 211 output tokens/second, about 10.6 seconds to first answer token, about 89K output tokens per task (59K of them reasoning), and $0.26 per task. Total Intelligence Index output fell from ≈250M to ≈210M tokens. The [Hugging Face model card](https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash-1017) lists MIT-licensed image-text weights, 1M context, and 763B parameters, far beyond a single 4090. It reports no long-context results.
+
+The [DeepSeek changelog](https://api-docs.deepseek.com/updates/) reports these vendor results for 1017 versus the pre-1017 checkpoint: DeepSWE v1.1 **77.0** (from 74.2, Mini-SWE-V2 harness), Terminal-Bench 4.0 **42.3** (from 31.2, Claude Code harness), HLE without tools 42.6 (from 36.8), ProgramBench 29.1 (from 20.3), and NL2Repo-Bench 68.2 (from 65.4). It also claims shorter outputs and runtimes but gives no figures.
 
 ### Interpretation
 
-The headline AA index favors both challengers: 37 and 39 against Opus 4.6's estimated 32. That is **not** accepted as a crossing:
+The headline AA index favors both challengers: 37 for Luna and 45 for DeepSeek 1017 against Opus 4.6's estimated 32. That is **not** accepted as a crossing:
 
 - Opus 4.6's 32 is an estimate missing every agentic and coding component of v4.3.2, so the gap is not a like-for-like comparison.
-- On the components both sides actually ran, the picture is mixed rather than a clear lead. Luna and DeepSeek are ahead on CritPt (19% and 14% versus 13%) and AA-LCR (83% and 84% versus 78%). They trail on Humanity's Last Exam (39% each versus 40%) and on AA-Omniscience, where DeepSeek scores −5 against Opus 4.6's 14.
-- Neither challenger has an independent coding-agent row. OpenAI reports **66.6%** and DeepSeek **74.2%** on DeepSWE v1.1; both are vendor results, and neither appears on the [shared leaderboard](https://deepswe.datacurve.ai/).
-- Luna scores **13%** and DeepSeek **27%** on AA's Terminal-Bench 4.0, well short of Fable's 42%. No Opus 4.6 score exists for direct comparison, but these are weak results for a reference defined by terminal-heavy agent work.
-- Owner-observed use does not place either model at Opus 4.6's level for real agentic engineering.
+- On the components both sides actually ran, Luna's picture is mixed. It leads on CritPt (19% versus 13%) and AA-LCR (83% versus 78%) but trails on Humanity's Last Exam (39% versus 40%).
+- DeepSeek 1017 now leads Opus 4.6 on most of those shared components: Humanity's Last Exam (43% versus 40%), CritPt (24% versus 13%), and AA-LCR (83% versus 78%). It still trails on AA-Omniscience (5 versus 14), though that is up from the pre-1017 checkpoint's −5.
+- Neither challenger has an independent coding-agent row. OpenAI reports **66.6%** and DeepSeek **77.0%** (1017) on DeepSWE v1.1. Both are vendor results, and neither appears on the [shared leaderboard](https://deepswe.datacurve.ai/), which as of October 19 lists only the older `deepseek-v4-flash` at 53% ± 4%.
+- Luna scores **13%** on AA's Terminal-Bench 4.0. The AA comparison page shows **34%** for DeepSeek 1017, up from 27%, though the extracted page did not clearly attribute that value and it should be confirmed on the live page. DeepSeek's own 42.3% uses the Claude Code harness and must not be compared with Fable's 42% AA result. No Opus 4.6 score exists for direct comparison.
+- AA-LCR at 83% is retrieval and reasoning over long documents, not a demonstration of useful agent work across a 1M working context.
+- Owner-observed use does not place either model at Opus 4.6's level for real agentic engineering. The 1017 checkpoint has not yet been tried in the owner's workflow.
 
 #### GPT-6 Luna
 
 Luna remains the A1 economic reference. Its roughly 107-second first-answer delay at `max` also limits how fast it feels in practice, despite its decode speed.
 
-#### DeepSeek V4.1 Flash
+#### DeepSeek V4.1 Flash 1017
 
-DeepSeek is the faster and stronger-scoring of the two, with short first-answer latency. It is more verbose (≈89K versus Luna's ≈51K output tokens per AA task), though its $0.27 task cost shows verbosity has not erased its economics. Independent same-harness confirmation of its vendor DeepSWE result is the evidence most likely to move it toward acceptance.
+The 1017 checkpoint is the strongest A1 candidate so far. Its AA index rose six points to 45, five short of Fable's 50, at unchanged prices and a slightly lower $0.26 task cost. It still decodes at about 211 tok/s with roughly 11-second first-answer latency. Per-task output on AA is unchanged at ≈89K versus Luna's ≈51K, so the vendor's shorter-output claim is not yet visible in per-task AA figures, though total index output fell. Its vendor coding-agent gains (DeepSWE 77.0, Terminal-Bench 42.3) would very likely clear Opus 4.6 if confirmed independently. For comparison, the later Opus 4.8 scores 59% ± 2% on the shared DeepSWE leaderboard. The evidence most likely to produce acceptance is, in order: a shared DeepSWE v1.1 row with cost and steps, an owner-observed workflow comparison against Opus 4.6, and a demonstrated agent session near 1M context with its latency and cost recorded.
 
 ### A1 verdict
 
 > **Milestone A1 is open.**
 
-The advertised envelope is already available; a crossing requires independently confirmed Opus 4.6-level agentic coding at GPT-6 Luna-class speed and cost, including useful operation across at least 1M context.
+The advertised envelope is already available. DeepSeek V4.1 Flash 1017 has materially narrowed the capability gap, but the evidence is still vendor-reported or aggregate. A crossing requires independently confirmed Opus 4.6-level agentic coding at GPT-6 Luna-class speed and cost, including useful operation across at least 1M context.
 
 ---
 
@@ -490,7 +495,7 @@ Still missing:
 
 Its AA Index v4.3.2 score of **37** is materially below Fable's **50** in the same version. OpenAI reports **66.6%** on DeepSWE v1.1 at `max`, near Fable's current independent **70% ± 3%** result, but that Luna result has not yet appeared on the independent shared leaderboard with task cost and token use. A same-harness coding-agent result and direct evidence on ambitious real projects are still needed. Its approximately 107-second first-token delay also limits the practical meaning of its high decode speed.
 
-#### DeepSeek V4.1 Flash
+#### DeepSeek V4.1 Flash 1017
 
 Already satisfies:
 
@@ -498,15 +503,15 @@ Already satisfies:
 - Low measured cost per model-evaluation task.
 - 1M context.
 - Image input and mature tool support.
-- A vendor-reported 74.2% on DeepSWE v1.1.
+- A vendor-reported 77.0% on DeepSWE v1.1 (up from the pre-1017 checkpoint's 74.2%).
 
 Still missing:
 
-- Fable-level broad intelligence: its same-version AA score is **39**, versus **50** for Fable.
+- Fable-level broad intelligence: its same-version AA score is **45**, versus **50** for Fable (up from 39 before 1017).
 - Independent same-harness confirmation of Fable-level long-horizon coding performance.
 - Better token efficiency and direct evidence from ambitious real-world projects.
 
-The vendor DeepSWE score is promising but is not an independent shared-leaderboard row. The independent AA comparison also shows a notable Terminal-Bench 4.0 gap, **27% versus Fable's 42%**, despite DeepSeek's strength on other tasks.
+The vendor DeepSWE score exceeds Fable's independent 70% ± 3%, but it is not an independent shared-leaderboard row. On AA's Terminal-Bench 4.0, the 1017 checkpoint appears to score **34%** versus Fable's **42%** (pre-1017: 27%); that attribution still needs confirming on the live page. DeepSeek's own 42.3% uses the Claude Code harness and is not comparable.
 
 #### Qwen3.8-27B
 
@@ -587,7 +592,8 @@ Qwen3.8-27B establishes that C4O-class local agency is now practical. Opus 4.6-c
 | **Original C4O** _(retired)_           |   32* (historical) |              — |                    — |                           — |         — |               — |
 | **Claude Opus 4.6 adaptive `max`**     | 32* (v4.3.2, est.) |      ≈40 tok/s |                ≈21 s |                           — |         — |               — |
 | **GPT-6 Luna `max`**                   |        37 (v4.3.2) | **≈141 tok/s** |               ≈107 s |                        ≈51K | **$0.07** |           ≈150M |
-| **DeepSeek V4.1 Flash `max`**          |        39 (v4.3.2) | **≈232 tok/s** |                ≈10 s |                        ≈89K | **$0.27** |           ≈250M |
+| **DeepSeek V4.1 Flash 1017 `max`**     |        45 (v4.3.2) | **≈211 tok/s** |                ≈11 s |                        ≈89K | **$0.26** |           ≈210M |
+| _DeepSeek V4.1 Flash `max` (pre-1017)_ |        39 (v4.3.2) |     ≈232 tok/s |                ≈10 s |                        ≈89K |     $0.27 |           ≈250M |
 | **Qwen3.8-27B**                        | 52 (earlier index) |              — |                    — |  Not yet extracted reliably |         — |            160M |
 | **Claude Fable 5 `max` with fallback** |    **50 (v4.3.2)** |      ≈61 tok/s |               ≈113 s |                        ≈67K | **$8.75** |           ≈130M |
 
@@ -595,22 +601,22 @@ The Luna, DeepSeek, and Fable v4.3.2 rows can be compared directly on the curren
 
 ### Long-horizon software-engineering economics
 
-| Model                      | DeepSWE v1.1 pass rate | Evidence                       | Output tokens/task |  Cost/task | Steps/task |     Coding Agent Index |
-| -------------------------- | ---------------------: | ------------------------------ | -----------------: | ---------: | ---------: | ---------------------: |
-| **Original C4O**           |                      — | —                              |                  — |          — |          — |                      — |
-| **Claude Opus 4.6**        |                      — | No shared v1.1 row             |                  — |          — |          — |                      — |
-| **GPT-6 Luna `max`**       |                  66.6% | OpenAI release                 |                  — |          — |          — | Pending comparable row |
-| **DeepSeek V4.1 Flash**    |                  74.2% | DeepSeek release               |                  — |          — |          — | Pending comparable row |
-| **Qwen3.8-27B**            |                      — | No accepted exact-model row    |                  — |          — |          — |       No exact 27B row |
-| **Claude Fable 5 `xhigh`** |           **70% ± 3%** | Independent shared leaderboard |            **80K** | **$13.41** |     **68** |    Historical v1.3: 66 |
+| Model                        | DeepSWE v1.1 pass rate | Evidence                       | Output tokens/task |  Cost/task | Steps/task |     Coding Agent Index |
+| ---------------------------- | ---------------------: | ------------------------------ | -----------------: | ---------: | ---------: | ---------------------: |
+| **Original C4O**             |                      — | —                              |                  — |          — |          — |                      — |
+| **Claude Opus 4.6**          |                      — | No shared v1.1 row             |                  — |          — |          — |                      — |
+| **GPT-6 Luna `max`**         |                  66.6% | OpenAI release                 |                  — |          — |          — | Pending comparable row |
+| **DeepSeek V4.1 Flash 1017** |                  77.0% | DeepSeek release               |                  — |          — |          — | Pending comparable row |
+| **Qwen3.8-27B**              |                      — | No accepted exact-model row    |                  — |          — |          — |       No exact 27B row |
+| **Claude Fable 5 `xhigh`**   |           **70% ± 3%** | Independent shared leaderboard |            **80K** | **$13.41** |     **68** |    Historical v1.3: 66 |
 
-The [shared DeepSWE v1.1 leaderboard](https://deepswe.datacurve.ai/) does not yet list the two new candidates or Opus 4.6. The candidates' reported rates come from the [OpenAI](https://openai.com/index/introducing-gpt-6-sol-and-luna/) and [DeepSeek](https://api-docs.deepseek.com/updates/) releases, respectively. Neither release supplies the same-harness output-token, step, or cost measurements needed for the blank cells. Fable's Coding Agent Index 66 is from an earlier v1.3 run in Claude Code and is not a current cross-model comparison.
+The [shared DeepSWE v1.1 leaderboard](https://deepswe.datacurve.ai/) does not yet list the two new candidates or Opus 4.6 as of October 19, 2026; its only DeepSeek Flash row is the older `deepseek-v4-flash` at 53% ± 4%. The candidates' reported rates come from the [OpenAI](https://openai.com/index/introducing-gpt-6-sol-and-luna/) and [DeepSeek](https://api-docs.deepseek.com/updates/) releases, respectively. Neither release supplies the same-harness output-token, step, or cost measurements needed for the blank cells. Fable's Coding Agent Index 66 is from an earlier v1.3 run in Claude Code and is not a current cross-model comparison.
 
 ### Economic conclusions
 
 1. **GPT-6 Luna is the least expensive candidate.** It provides vision and 1.05M context at $0.10/$0.50 per million input/output tokens and $0.07 per AA task. Low AA task cost still does not establish cost per successful coding task.
 
-2. **DeepSeek V4.1 Flash is faster to start and decode, but more verbose.** It uses approximately 89K AA output tokens per task versus Luna's 51K. Its measured AA task cost is $0.27 at peak pricing. Its DeepSWE cost and step count are not yet independently available.
+2. **DeepSeek V4.1 Flash 1017 is faster to start and decode, but more verbose.** It uses approximately 89K AA output tokens per task versus Luna's 51K. Its measured AA task cost is $0.26 at peak pricing, essentially unchanged from the pre-1017 checkpoint's $0.27. Its DeepSWE cost and step count are not yet independently available.
 
 3. **A1 candidates meet the listed speed and pricing targets.** Both deliver Opus 4.6-beating decode speed at a small fraction of its $5/$25 list price. Acceptance still needs capability evidence and useful 1M-context operation with acceptable latency and task cost.
 
@@ -750,4 +756,4 @@ For each serious candidate, record:
 
 ## 17. Continuation prompt
 
-> Continue from this specification using exact model identities and current benchmark versions. Milestone A's reference is Claude Opus 4.6 (`claude-opus-4-6`, adaptive `max`); original C4O is a retired historical record and must not be revised. A1 requires at least 1M usable context; do not downgrade this to a preference or count compaction of a smaller window as equivalent. Verify long-context workflow quality, latency, and economics. A2 retains more than 200K usable local context on one RTX 4090; the local 1M target remains B2. Update Milestones A1, A2, B1, and B2 separately. Always report output speed, first-answer latency, context, modalities, list pricing, output tokens per task, total agent tokens per task where available, cost per task, and direct workflow evidence. Use GPT-6 Luna (`gpt-6-luna`) and DeepSeek V4.1 Flash (`deepseek-flash`) for the current cloud comparison. Treat Qwen3.8-27B—not Qwen3.8 Max—as the current local model. Do not rank candidates against Opus 4.6's estimated AA score alone; require independent coding-agent evidence or owner-observed workflow evidence. Do not invent C4O or Opus 4.6 task-economics values where no comparable measurement exists. Preserve A1, A2, B1, and B2 as open unless new evidence materially changes those conclusions.
+> Continue from this specification using exact model identities and current benchmark versions. Milestone A's reference is Claude Opus 4.6 (`claude-opus-4-6`, adaptive `max`); original C4O is a retired historical record and must not be revised. A1 requires at least 1M usable context; do not downgrade this to a preference or count compaction of a smaller window as equivalent. Verify long-context workflow quality, latency, and economics. A2 retains more than 200K usable local context on one RTX 4090; the local 1M target remains B2. Update Milestones A1, A2, B1, and B2 separately. Always report output speed, first-answer latency, context, modalities, list pricing, output tokens per task, total agent tokens per task where available, cost per task, and direct workflow evidence. Use GPT-6 Luna (`gpt-6-luna`) and DeepSeek V4.1 Flash 1017 (`deepseek-flash`, which now serves 1017 for all legacy names) for the current cloud comparison. Treat Qwen3.8-27B—not Qwen3.8 Max—as the current local model. Do not rank candidates against Opus 4.6's estimated AA score alone; require independent coding-agent evidence or owner-observed workflow evidence. Do not invent C4O or Opus 4.6 task-economics values where no comparable measurement exists. Preserve A1, A2, B1, and B2 as open unless new evidence materially changes those conclusions.
