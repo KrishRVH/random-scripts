@@ -2,19 +2,23 @@
 #
 # Claude Code statusline — one line, Codex-CLI style.
 #
-#   [PT] Opus 5.5 xhigh · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 5h 82% · 7d 93% · 1.2M in · 45K out · $1.23
+#   [PT] Opus 5.5 ▌▌▌▌▌ · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 82%/93% · 1.2M/45K · $1.23
 #
 # Claude Code pipes a JSON payload on stdin and renders whatever this prints.
 # Payload schema: https://code.claude.com/docs/en/statusline#available-data
 # Every segment is independent: one whose data is missing (fresh session,
 # non-git directory, plugin not installed) is simply omitted.
 #
-# The units are mixed on purpose:
+# Reading the line (the percentages are mixed on purpose):
+#   ▌▌▌▌▌        effort, five segments lit by level: 1 low (white), 2 medium
+#                and 3 high (green), 4 xhigh (orange), 5 max (red); purple
+#                and followed by ✦ while ultracode is on, at any level
 #   ████░░ 42%   context window USED      — you want to know how much is spent
-#   5h / 7d      rate-limit budget LEFT   — you want to know how much remains
+#   82%/93%      rate limits LEFT, 5h/7d  — you want to know how much remains
 #   cache cold   prompt cache expired; the next message re-writes the whole
 #                context at cache-write prices (shown only when cold)
-#   in / out     session-cumulative tokens, main transcript plus subagents
+#   1.2M/45K     session-cumulative input/output tokens, main transcript plus
+#                subagents
 #   $            Claude Code's own estimate of the session's cost
 #
 # The session cost is shown as Claude Code reports it rather than priced here.
@@ -32,8 +36,9 @@
 #
 # Requires POSIX sh, jq and awk; git is optional. Written for /bin/sh (tested
 # under dash), with no bashisms or GNU-only flags. The default glyphs need a
-# UTF-8 terminal and a font covering U+2588, U+2591 and U+00B7; set SL_ASCII=1
-# for ASCII-only output.
+# UTF-8 terminal and a font covering U+2588, U+258C, U+2591, U+00B7 and U+2726
+# (a fallback font is fine for that last one); set SL_ASCII=1 for ASCII-only
+# output, which names the effort level instead.
 # ---------------------------------------------------------------------------
 
 # Format numbers with a "." decimal point whatever the user's locale.
@@ -69,13 +74,15 @@ input_price() {
 }
 
 if [ "${SL_ASCII:-0}" = 1 ]; then
-  GLYPH_FILL='#' GLYPH_EMPTY='.' GLYPH_SEP='|'
+  GLYPH_FILL='#' GLYPH_EMPTY='.' GLYPH_SEP='|' GLYPH_STAR='*'
+  GLYPH_SEG=''    # no ASCII meter reads well, so the effort level is named
 else
-  GLYPH_FILL='█' GLYPH_EMPTY='░' GLYPH_SEP='·'
+  GLYPH_FILL='█' GLYPH_EMPTY='░' GLYPH_SEP='·' GLYPH_SEG='▌' GLYPH_STAR='✦'
 fi
 
 # --- Theme -----------------------------------------------------------------
-# 256-colour, deliberately desaturated. Retheming means editing only this block.
+# 256-colour and mostly desaturated, so the few bright colours (effort level,
+# alarms) stand out. Retheming means editing only this block.
 
 sgr() { printf '\033[%sm' "$1"; }    # raw SGR sequence
 fg()  { sgr "38;5;$1"; }             # 256-colour foreground
@@ -83,6 +90,13 @@ fg()  { sgr "38;5;$1"; }             # 256-colour foreground
 C_BADGE=$(fg 108)              # sage
 C_MODEL=$(fg 173)              # soft orange
 C_FAST=$(sgr '1;38;5;214')     # bold amber: fast mode bills at a premium
+C_EFF_LOW=$(fg 255)            # white
+C_EFF_MID=$(fg 76)             # green, for both medium and high
+C_EFF_XHI=$(fg 208)            # orange, brighter than C_MODEL beside it
+C_EFF_MAX=$(fg 203)            # alarm red
+C_EFF_OFF=$(fg 240)            # mid grey: unlit effort segments, still visible
+C_ULTRA=$(fg 135)              # purple: ultracode, replacing the level colour
+C_STAR=$(sgr '1;38;5;135')     # bold purple: the ultracode star
 C_PATH=$(fg 149)               # lime
 C_BRANCH=$(fg 74)              # steel blue
 C_ADD=$(fg 71)                 # sage green
@@ -123,6 +137,19 @@ meter() {
     fi
     _i=$((_i + 1))
   done
+}
+
+# Draw the five-segment effort meter: the first $1 segments in colour $2, the
+# rest in C_EFF_OFF, so the scale and its empty part both stay visible.
+effort_meter() {
+  printf '%s' "$2"
+  _i=0
+  while [ "$_i" -lt 5 ]; do
+    [ "$_i" -eq "$1" ] && printf '%s' "$C_EFF_OFF"
+    printf '%s' "$GLYPH_SEG"
+    _i=$((_i + 1))
+  done
+  printf '%s' "$RST"
 }
 
 # Print "<branch> <dirty>" for the work tree at $1, or nothing outside one.
@@ -201,8 +228,8 @@ sum_tokens() {
 # one per subagent (in a sibling <session-id>/subagents/ directory; their usage
 # is billed to this session too). $2 names the cache entry.
 #
-# Re-parsing a busy transcript costs ~50ms, and this runs on every update, so
-# the result is memoised against the files' sizes. Transcripts are append-only,
+# Re-parsing costs ~3ms per MB of transcript, and this runs on every update,
+# so the result is memoised against the files' sizes. Transcripts are append-only,
 # so any new turn changes the key, while updates that add nothing (mode
 # toggles, directory changes) reuse the cached line.
 session_tokens() {
@@ -226,6 +253,41 @@ session_tokens() {
   mkdir -m 700 "$CACHE_DIR" 2>/dev/null
   printf '%s %s\n' "$_key" "$_totals" > "$_cache" 2>/dev/null
   printf '%s' "$_totals"
+}
+
+# Succeed if ultracode is on in the session whose transcript is $1; $2 names
+# the cache entry. Ultracode (standing workflow orchestration, at any effort
+# level) is not in the payload, but each toggle lands in the transcript as an
+# ultra_effort_enter or ultra_effort_exit attachment, and the last one wins.
+# Matching needs unescaped quotes, so a transcript that merely quotes a marker
+# (in a tool result, say) does not count.
+#
+# Transcripts run to hundreds of MB and a full grep costs ~0.6ms/MB, so the
+# state is cached with the size it was read up to and later runs scan only
+# what was appended since. Each scan starts 64 bytes early in case the last
+# one caught a marker mid-write.
+ultracode_on() {
+  [ -f "$1" ] || return 1
+  _cache=$CACHE_DIR/$2.ultracode
+  _size=$(($(wc -c < "$1")))
+  _seen='' _state=''
+  { read -r _seen _state < "$_cache"; } 2>/dev/null
+  case $_seen in ''|*[!0-9]*) _seen=0 _state=off ;; esac
+  [ "$_seen" -gt "$_size" ] && _seen=0 _state=off    # transcript replaced
+
+  if [ "$_seen" -lt "$_size" ]; then
+    _from=$((_seen > 64 ? _seen - 64 : 0))
+    _last=$(tail -c +$((_from + 1)) -- "$1" |
+            grep -F -e '"type":"ultra_effort_enter"' -e '"type":"ultra_effort_exit"' |
+            tail -n 1)
+    case $_last in
+      *'"type":"ultra_effort_enter"'*) _state=on ;;
+      ?*)                              _state=off ;;
+    esac
+    mkdir -m 700 "$CACHE_DIR" 2>/dev/null
+    printf '%s %s\n' "$_size" "$_state" > "$_cache" 2>/dev/null
+  fi
+  [ "$_state" = on ]
 }
 
 # --- Payload ---------------------------------------------------------------
@@ -260,6 +322,12 @@ eval "$(jq -r '
     fast=\(if .fast_mode then "fast" else "" end)
     cwd=\(.workspace.current_dir // .cwd // "")
     ctx_pct=\(.context_window.used_percentage | int)
+    ctx_used=\(.context_window.current_usage
+               | if type == "object" then (.input_tokens // 0)
+                   + (.cache_creation_input_tokens // 0)
+                   + (.cache_read_input_tokens // 0) | int
+                 else "" end)
+    ctx_size=\(.context_window.context_window_size | int)
     left_5h=\(.rate_limits.five_hour.used_percentage | left)
     left_7d=\(.rate_limits.seven_day.used_percentage | left)
     cache_cold=\(if .prompt_cache | cold then "cold" else "" end)
@@ -289,15 +357,33 @@ if [ -f "$ponytail_flag" ]; then
   fi
 fi
 
-# Model and effort, with any "(1M context)" suffix trimmed for width, and a
-# flag when fast mode is on since it changes what the session costs.
+# Model, with any "(1M context)" suffix trimmed for width, then the effort
+# meter, lit to the level in that level's colour. Ultracode turns the meter
+# purple and adds a star. ASCII mode names the level instead, and an
+# unrecognised level is always named. Fast mode gets a flag since it changes
+# what the session costs.
 model=${model% (*}
 [ "$effort" = medium ] && effort=med
-if [ -n "$fast" ]; then
-  add "$C_MODEL$model${effort:+ $effort}$RST $C_FAST$fast$RST"
-else
-  add "$C_MODEL$model${effort:+ $effort}$RST"
+case $effort in
+  low)   lit=1 effort_color=$C_EFF_LOW ;;
+  med)   lit=2 effort_color=$C_EFF_MID ;;
+  high)  lit=3 effort_color=$C_EFF_MID ;;
+  xhigh) lit=4 effort_color=$C_EFF_XHI ;;
+  max)   lit=5 effort_color=$C_EFF_MAX ;;
+  *)     lit=''  effort_color=$C_MODEL ;;
+esac
+star=''
+if [ -n "$transcript" ] && ultracode_on "$transcript" "${session:-default}"; then
+  effort_color=$C_ULTRA star=$C_STAR$GLYPH_STAR$RST
 fi
+if [ -n "$lit" ] && [ -n "$GLYPH_SEG" ]; then
+  effort_seg=$(effort_meter "$lit" "$effort_color")$star
+else
+  effort_seg=${effort:+$effort_color$effort$RST}$star
+fi
+seg=$C_MODEL$model$RST${effort_seg:+ $effort_seg}
+[ -n "$fast" ] && seg="$seg $C_FAST$fast$RST"
+add "$seg"
 
 # Current directory, basename only.
 add "$C_PATH${cwd##*/}$RST"
@@ -310,7 +396,19 @@ if [ -n "$git" ]; then
   add "${dirty:-No changes}"
 fi
 
-# Context window meter.
+# Context window meter. Claude Code reports usage against the model's full
+# window, but an autoCompactWindow setting (per model under modelSettings, or
+# top-level) compacts well before that, so rescale against whichever limit
+# comes first. Only the user settings file is consulted.
+# shellcheck disable=SC2154 # model_id is assigned by the payload eval
+compact_window=$(jq -r --arg m "${model_id%%\[*}" '
+  .modelSettings[$m].autoCompactWindow // .autoCompactWindow
+  | select(type == "number" and . > 0) | floor
+' "$CONFIG_DIR/settings.json" 2>/dev/null)
+if [ -n "$compact_window" ] && [ -n "$ctx_used" ]; then
+  [ -n "$ctx_size" ] && [ "$ctx_size" -lt "$compact_window" ] && compact_window=$ctx_size
+  ctx_pct=$(( (ctx_used * 100 + compact_window / 2) / compact_window ))
+fi
 if [ -n "$ctx_pct" ]; then
   if   [ "$ctx_pct" -ge "$CTX_CRIT" ]; then color=$C_HI
   elif [ "$ctx_pct" -ge "$CTX_WARN" ]; then color=$C_MID
@@ -322,8 +420,7 @@ fi
 # Cold prompt cache. Silent while warm; once expired, the next message
 # re-writes the whole context at the cache-write rate (125% of input on the
 # 5-minute TTL, 200% on the 1-hour), so estimate that cost in whole cents.
-# SC2154: model_id and cache_ttl are assigned by the payload eval above.
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154 # cache_ttl is assigned by the payload eval
 if [ -n "$cache_cold" ]; then
   price=$(input_price "$model_id")
   if [ -n "$price" ] && [ -n "$recache" ]; then
@@ -335,17 +432,16 @@ if [ -n "$cache_cold" ]; then
   fi
 fi
 
-# Rate limits, shown as budget remaining.
-[ -n "$left_5h" ] && add "${C_5H}5h $left_5h%$RST"
-[ -n "$left_7d" ] && add "${C_7D}7d $left_7d%$RST"
+# Rate limits, shown as budget remaining: 5h then 7d, told apart by colour.
+limits=''
+[ -n "$left_5h" ] && limits="$C_5H$left_5h%$RST"
+[ -n "$left_7d" ] && limits="${limits:+$limits$C_DIM/$RST}$C_7D$left_7d%$RST"
+[ -n "$limits" ] && add "$limits"
 
-# Session-cumulative token counts.
+# Session-cumulative token counts, input then output.
 if [ -n "$transcript" ]; then
   tokens=$(session_tokens "$transcript" "${session:-default}")
-  if [ -n "$tokens" ]; then
-    add "$C_IN${tokens% *} in$RST"
-    add "$C_OUT${tokens#* } out$RST"
-  fi
+  [ -n "$tokens" ] && add "$C_IN${tokens% *}$RST$C_DIM/$RST$C_OUT${tokens#* }$RST"
 fi
 
 # Session cost.
