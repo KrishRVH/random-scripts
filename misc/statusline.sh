@@ -2,7 +2,7 @@
 #
 # Claude Code statusline — one line, Codex-CLI style.
 #
-#   [PT] Opus 5.5 ▌▌▌▌▌ · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 82%/93% · 1.2M/45K · $1.23
+#   [PT] Opus 5.5 ▌▌▌▌▌ · myrepo · main · +2 ~1 · ████░░░░░░ 42% · 82%/93% ↻14:30/Mon 09:00 · 1.2M/45K · $1.23
 #
 # Claude Code pipes a JSON payload on stdin and renders whatever this prints.
 # Payload schema: https://code.claude.com/docs/en/statusline#available-data
@@ -15,6 +15,8 @@
 #                and followed by ✦ while ultracode is on, at any level
 #   ████░░ 42%   context window USED      — you want to know how much is spent
 #   82%/93%      rate limits LEFT, 5h/7d  — you want to know how much remains
+#   ↻14:30/…     when each limit resets, in local time; the 7d reset carries
+#                its weekday ("Mon 09:00")
 #   cache cold   prompt cache expired; the next message re-writes the whole
 #                context at cache-write prices (shown only when cold)
 #   1.2M/45K     session-cumulative input/output tokens, main transcript plus
@@ -34,11 +36,11 @@
 #   2. In ~/.claude/settings.json:
 #        "statusLine": { "type": "command", "command": "~/.claude/statusline.sh" }
 #
-# Requires POSIX sh, jq and awk; git is optional. Written for /bin/sh (tested
-# under dash), with no bashisms or GNU-only flags. The default glyphs need a
-# UTF-8 terminal and a font covering U+2588, U+258C, U+2591, U+00B7 and U+2726
-# (a fallback font is fine for that last one); set SL_ASCII=1 for ASCII-only
-# output, which names the effort level instead.
+# Requires POSIX sh, jq 1.6+ and awk; git is optional. Written for /bin/sh
+# (tested under dash), with no bashisms or GNU-only flags. The default glyphs
+# need a UTF-8 terminal and a font covering U+2588, U+258C, U+2591, U+00B7,
+# U+2726 and U+21BB (a fallback font is fine for those last two); set
+# SL_ASCII=1 for ASCII-only output, which names the effort level instead.
 # ---------------------------------------------------------------------------
 
 # Format numbers with a "." decimal point whatever the user's locale.
@@ -74,10 +76,11 @@ input_price() {
 }
 
 if [ "${SL_ASCII:-0}" = 1 ]; then
-  GLYPH_FILL='#' GLYPH_EMPTY='.' GLYPH_SEP='|' GLYPH_STAR='*'
+  GLYPH_FILL='#' GLYPH_EMPTY='.' GLYPH_SEP='|' GLYPH_STAR='*' GLYPH_RESET='@'
   GLYPH_SEG=''    # no ASCII meter reads well, so the effort level is named
 else
-  GLYPH_FILL='█' GLYPH_EMPTY='░' GLYPH_SEP='·' GLYPH_SEG='▌' GLYPH_STAR='✦'
+  GLYPH_FILL='█' GLYPH_EMPTY='░' GLYPH_SEP='·' GLYPH_STAR='✦' GLYPH_RESET='↻'
+  GLYPH_SEG='▌'
 fi
 
 # --- Theme -----------------------------------------------------------------
@@ -309,10 +312,14 @@ fi
 # The cache counts as cold once its expires_at has passed, judged against the
 # clock rather than trusting .warm alone. Claude Code re-runs this script when
 # a warm cache reaches expires_at, so the warning appears on time even while
-# the session sits idle.
+# the session sits idle. It does the same when a rate limit resets, so reset
+# times are formatted as wall-clock times that never go stale, and one already
+# past is dropped.
 eval "$(jq -r '
   def int:  if type == "number" then round           else "" end;
   def left: if type == "number" then 100 - . | round else "" end;
+  def at($fmt): if type == "number" and . > now then strflocaltime($fmt)
+                else "" end;
   def cold: .caching_observed == true
             and (.warm != true or (.expires_at // 0) <= now);
   @sh "
@@ -330,6 +337,8 @@ eval "$(jq -r '
     ctx_size=\(.context_window.context_window_size | int)
     left_5h=\(.rate_limits.five_hour.used_percentage | left)
     left_7d=\(.rate_limits.seven_day.used_percentage | left)
+    reset_5h=\(.rate_limits.five_hour.resets_at | at("%H:%M"))
+    reset_7d=\(.rate_limits.seven_day.resets_at | at("%a %H:%M"))
     cache_cold=\(if .prompt_cache | cold then "cold" else "" end)
     cache_ttl=\(.prompt_cache.ttl // "")
     recache=\(.prompt_cache.recache_tokens_if_cold // "")
@@ -432,10 +441,15 @@ if [ -n "$cache_cold" ]; then
   fi
 fi
 
-# Rate limits, shown as budget remaining: 5h then 7d, told apart by colour.
-limits=''
+# Rate limits, shown as budget remaining and then when each resets: 5h then
+# 7d, told apart by colour. The 5h reset is under five hours away, so the time
+# alone is unambiguous; the 7d one needs its weekday.
+limits='' resets=''
 [ -n "$left_5h" ] && limits="$C_5H$left_5h%$RST"
 [ -n "$left_7d" ] && limits="${limits:+$limits$C_DIM/$RST}$C_7D$left_7d%$RST"
+[ -n "$reset_5h" ] && resets="$C_5H$reset_5h$RST"
+[ -n "$reset_7d" ] && resets="${resets:+$resets$C_DIM/$RST}$C_7D$reset_7d$RST"
+[ -n "$resets" ] && limits="${limits:+$limits }$C_DIM$GLYPH_RESET$RST$resets"
 [ -n "$limits" ] && add "$limits"
 
 # Session-cumulative token counts, input then output.
